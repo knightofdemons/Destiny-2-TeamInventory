@@ -1,0 +1,151 @@
+$prime: #ff6e48;
+$second: #0c1016;
+
+$blue: #00EDFF;
+$red: #FF00AA;
+$green: #63F3AB;
+
+// ###############################################
+// ###############################################
+// START Boilerplate (not Important for the Tutorial)
+
+body,
+html{
+    align-items: center;
+    background-color: $second;
+    display: flex;
+    font-family: 'Roboto';
+    font-size: 10px;
+    height: 100%;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+
+    box-sizing: border-box
+}
+// END Boilerplate (not Important for the Tutorial)
+// ###############################################
+// ###############################################
+
+
+header {
+    width: 100%;
+    height: 8rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .search {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+
+        &.open {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.3);
+            .close-button {
+                display: block;
+            }
+            .searchbar {
+                form {
+                    input[type='search'] {
+                        border-bottom: 1px solid white;
+                        width: 100%;
+                        color: white;
+                    }
+                    button {
+                        img {
+                            opacity: 1;
+                        }
+                    }
+                }
+                
+            }
+
+        .searchbar {
+            position: relative;
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: 50%;
+
+            form {
+                width: 100%;
+
+                input[type='search'] {
+                    background-color: transparent;
+                    border: none;
+                    border-bottom: 1px solid transparent;
+                    font-size: 3rem;
+                    padding: 1rem 3rem 1rem 0;
+                    width: 0;
+                    -webkit-appearance: none;
+
+                    &:focus {
+                        outline: none;
+                        color: white;
+                    }
+                }
+
+                input[type="search"]::-webkit-search-cancel-button {
+                    display: none;
+                }
+                button {
+                    position: absolute;
+                    right: 0;
+                    top: 1.5rem;
+                    background-color: transparent;
+                    border: none;
+                    cursor: pointer;
+
+                    &:focus {
+                        outline: none;
+                        color: white;
+                    }
+
+                        img {
+                            opacity: 1;
+                        }
+
+                    img {
+                        transition: all 250ms;
+                        opacity: 0.2;
+                        width: 2rem;
+                    }
+                }
+            }
+        }
+        
+        .close-button {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            display: none;
+
+            &:focus {
+                outline: none;
+                color: white;
+            }
+                
+            img {
+                transition: all 250ms;
+                opacity: 1;
+                width: 2rem;
+            }
+        }
+    }
+}}
