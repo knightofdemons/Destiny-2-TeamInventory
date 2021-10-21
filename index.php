@@ -1,6 +1,7 @@
 <?php
 $apiKey = $_GET["apikey"];
-$url = 'https://www.bungie.net/Platform/User/Search/Prefix/Hühnchen/0/';
+$account = $_GET["account"];
+$url = 'https://www.bungie.net/Platform/User/Search/Prefix/' . $account . '/0/';
 
 $ch = curl_init($url);
 
