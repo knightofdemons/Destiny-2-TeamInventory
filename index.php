@@ -1,6 +1,6 @@
 <header>
 	<script type="text/javascript" src="search.js"></script>
-	<link rel="stylesheet/less" type="text/css" href="main.less" /> <script src="https://cdn.jsdelivr.net/npm/less@4.1.1" ></script>
+	<link rel="stylesheet/less" type="text/css" href="search.css" /> <script src="https://cdn.jsdelivr.net/npm/less@4.1.1" ></script>
 	<div class="search">
 		<button id="closeButton" class="close-button" type="button">
 			<img src="https://assets.codepen.io/907368/close_1.svg">
