@@ -25,6 +25,7 @@
       <i class='bx bx-search'></i>
       <input type="text" placeholder="Search...">
       <span class="tooltip">Search</span>
+	    <script type="text/javascript" src="search.js"></script>
     </li>
     <li>
       <a href="#">
