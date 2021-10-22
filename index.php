@@ -1,6 +1,6 @@
 <header>
 	<script type="text/javascript" src="search.js"></script>
-	<link rel="stylesheet/less" type="text/css" href="search.css" /></script>
+	<link rel="stylesheet/less" type="text/css" href="search2.css" /></script>
 	<div class="search">
 		<button id="closeButton" class="close-button" type="button">
 			<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjQgMjAuMTg4bC04LjMxNS04LjIwOSA4LjItOC4yODItMy42OTctMy42OTctOC4yMTIgOC4zMTgtOC4zMS04LjIwMy0zLjY2NiAzLjY2NiA4LjMyMSA4LjI0LTguMjA2IDguMzEzIDMuNjY2IDMuNjY2IDguMjM3LTguMzE4IDguMjg1IDguMjAzeiIvPjwvc3ZnPg=="></img>
