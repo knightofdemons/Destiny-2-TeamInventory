@@ -59,8 +59,8 @@
 	 <div class="main-inv"></div>
 	 <div class="main-rec">
 	 <?php
-	  	//include 'rec_query.php'; 
-	  	include 'test_query_old.php'; 
+	  	include 'rec_query.php'; 
+	  	//include 'test_query_old.php'; 
 	 ?>
 	</div>
   </div>
