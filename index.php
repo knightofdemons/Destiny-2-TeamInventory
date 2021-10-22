@@ -56,16 +56,18 @@
     <a class="list-header-char3">Char3</a>
   </div>
 <div class="main-inv_rec">
-<!--  <div class="main-inv"><?php include 'inv_query.php'; ?></div> -->
-	 <div class="main-rec"><?php
+	 <div class="main-inv"></div>
+	 <div class="main-rec">
+	 <?php
      		// get API key
     		$apiKey = $_GET["apikey"];
     		// get player name
     		$account = $_GET["account"];
 	  	include 'rec_query.php'; 
-		echo "a: ".$account . "k: ".$apiKey ;
-	  ?></div>
+		echo "a: " + $account + "k: " + $apiKey ;
+	 ?>
 	</div>
+  </div>
 </section>
 </body>
 </html>
