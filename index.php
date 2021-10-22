@@ -63,7 +63,7 @@
     		$apiKey = $_GET["apikey"];
     		// get player name
     		$account = $_GET["account"];
-	  	include 'rec_query.php'; 
+	  	include 'test_query_old.php'; 
 		echo "a: " + $account + "k: " + $apiKey ;
 	 ?>
 	</div>
