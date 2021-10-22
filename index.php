@@ -7,22 +7,44 @@
 		<link rel="stylesheet" type="text/css" href="search2.css" />
  </head>
  <body>
-	<header>
-	<div class="search">
-		<button id="closeButton" class="close-button" type="button">
-			<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjQgMjAuMTg4bC04LjMxNS04LjIwOSA4LjItOC4yODItMy42OTctMy42OTctOC4yMTIgOC4zMTgtOC4zMS04LjIwMy0zLjY2NiAzLjY2NiA4LjMyMSA4LjI0LTguMjA2IDguMzEzIDMuNjY2IDMuNjY2IDguMjM3LTguMzE4IDguMjg1IDguMjAzeiIvPjwvc3ZnPg==" />
-		</button>
-		<div class="searchbar">
-			<form id="searchform">
-				<input placeholder="Dein Suchbegriff" type="search" id="mainSearch" name="mainSearch" class="close">
-				<button type="submit" id="searchButton">
-					<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjMuODIyIDIwLjg4bC02LjM1My02LjM1NGMuOTMtMS40NjUgMS40NjctMy4yIDEuNDY3LTUuMDU5LjAwMS01LjIxOS00LjI0Ny05LjQ2Ny05LjQ2OC05LjQ2N3MtOS40NjggNC4yNDgtOS40NjggOS40NjhjMCA1LjIyMSA0LjI0NyA5LjQ2OSA5LjQ2OCA5LjQ2OSAxLjc2OCAwIDMuNDIxLS40ODcgNC44MzktMS4zMzNsNi4zOTYgNi4zOTYgMy4xMTktMy4xMnptLTIwLjI5NC0xMS40MTJjMC0zLjI3MyAyLjY2NS01LjkzOCA1LjkzOS01LjkzOCAzLjI3NSAwIDUuOTQgMi42NjQgNS45NCA1LjkzOCAwIDMuMjc1LTIuNjY1IDUuOTM5LTUuOTQgNS45MzktMy4yNzQgMC01LjkzOS0yLjY2NC01LjkzOS01LjkzOXoiLz48L3N2Zz4=" />
-				</button>
-				</input>
-			</form>
-		</div>
-	</div>
-	</header>
- 	<script type="text/javascript" src="search.js"></script>
+<div class="profile">
+           <div class="name_job">
+             <div class="name">Hühnchen Süß-Sauer 7,99€</div>
+             <div class="job">Warlock</div>
+           </div><img src="https://www.bungie.net/img/profile/avatars/cc000016.jpg" alt="profileImg">
+         <i class='bx bx-log-out' id="log_out" ></i>
+</div>
+<div class="sidebar">
+    <div class="logo-details">
+      <img src="https://raw.githubusercontent.com/knightofdemons/Destiny-2-TeamInventory/main/favicon.ico"></img>
+        <div class="logo_name">D2 TeamInv</div>
+        <i class='bx bx-menu' id="btn" ></i>
+    </div>
+    <ul class="nav-list">
+      <li>
+          <i class='bx bx-search' ></i>
+         <input type="text" placeholder="Search...">
+         <span class="tooltip">Search</span>
+ 	 <script type="text/javascript" src="search.js"></script>
+      </li>
+      <li>
+        <a href="#">
+          <i class='bx bx-heart'></i>
+          <span class="links_name">PLACEHOLDER</span>
+        </a>
+         <span class="tooltip">PLACEHOLDER</span>
+      </li>
+     <li>
+       <a href="#">
+         <i class='bx bx-cog' ></i>
+         <span class="links_name">Settings</span>
+       </a>
+       <span class="tooltip">Settings</span>
+     </li>
+    </ul>
+  </div>
+  <section class="home-section">
+      <div class="text">Recordprogess here</div>
+  </section>
  </body>
 </html>
