@@ -1,12 +1,3 @@
-<html lang="en" dir="ltr">
- <head>
-   <meta charset="utf-8">
-   <title>D2 TeamInv</title>
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    		<link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
-		<link rel="stylesheet" type="text/css" href="search.css" />
- </head>
- <body>
 <div class="profile">
   <div class="name_job">
     <div class="name">Hühnchen Süß-Sauer 7,99€</div>
@@ -25,7 +16,6 @@
       <i class='bx bx-search'></i>
       <input type="text" placeholder="Search...">
       <span class="tooltip">Search</span>
-	    <script type="text/javascript" src="search.js"></script>
     </li>
     <li>
       <a href="#">
@@ -55,6 +45,8 @@
     <a class="list-header-char2">Char2</a>
     <a class="list-header-char3">Char3</a>
   </div>
+<div class="main-inv_rec">
+  <div class="main-inv" w3-include-html="inv_query.php">></div>
+  <div class="main-rec" w3-include-html="rec_query.php"></div>
+</div>
 </section>
- </body>
-</html>
