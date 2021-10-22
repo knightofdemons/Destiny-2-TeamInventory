@@ -1,6 +1,6 @@
 /* Google Font Link */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
-body  {
+body {
   background: #2b2b2b;
 }
 * {
@@ -21,30 +21,31 @@ body  {
   transition: all 0.3s ease;
 }
 .sidebar.open {
-  width: 30rem;
+  width: 20rem;
 }
-.sidebar .logo-details {
+.sidebar .sidebar-logo-details {
   height: 60px;
   display: flex;
   align-items: center;
   position: relative;
+  padding: 0px 2.5rem;
 }
-.sidebar .logo-details .icon {
+.sidebar .sidebar-logo-details .sidebar-icon {
   opacity: 0;
   transition: all 0.3s ease;
 }
-.sidebar .logo-details .logo_name {
+.sidebar .sidebar-logo-details .sidebar-logo_name {
   color: #fff;
   font-size: 20px;
   font-weight: 600;
   opacity: 0;
   transition: all 0.3s ease;
 }
-.sidebar.open .logo-details .icon,
-.sidebar.open .logo-details .logo_name {
+.sidebar.open .sidebar-logo-details .sidebar-icon,
+.sidebar.open .sidebar-logo-details .sidebar-logo_name {
   opacity: 1;
 }
-.sidebar .logo-details #btn {
+.sidebar .sidebar-logo-details #sidebar-btn {
   position: absolute;
   top: 50%;
   right: 0;
@@ -54,7 +55,7 @@ body  {
   text-align: center;
   cursor: pointer;
 }
-.sidebar.open .logo-details #btn {
+.sidebar.open .sidebar-logo-details #sidebar-btn {
   text-align: right;
 }
 .sidebar i {
@@ -65,7 +66,7 @@ body  {
   text-align: center;
   line-height: 60px;
 }
-.sidebar .nav-list {
+.sidebar .nav-list .nav-settings {
   margin-top: 20px;
   height: 100%;
 }
@@ -177,10 +178,19 @@ body  {
   border-radius: 6px;
   margin-right: 10px;
 }
+.sidebar.open ~ .main-content {
+  left: 250px;
+  width: calc(100% - 250px);
+}
+.sidebar-settings {
+  position: absolute;
+  bottom: 0px;
+  width: 95%;
+}
 .profile {
   position: fixed;
-  height: 35px;
-  width: 250px;
+  height: 34px;
+  width: 240px;
   right: 0px;
   top: 0px;
   background: #1d1b31;
@@ -190,6 +200,8 @@ body  {
   align-items: right;
   flex-wrap: nowrap;
   z-index: 99;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
 }
 .profile .name {
   text-align: right;
@@ -198,51 +210,73 @@ body  {
   color: #fff;
   white-space: nowrap;
 }
-.profile .job {
+.profile .plattform {
   text-align: right;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 200;
   color: #fff;
   white-space: nowrap;
 }
-.profile #log_out {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  transform: scale(200%);
-  transition: all 0.5s ease;
-}
-.profile img {
-  position: absolute;
-  height: 30px;
-  width: 30px;
-  right: 30px;
-  top: 0px;
-  background: #1d1b31;
+.profile #profilePlat {
+  bottom: -2px;
+  position: relative;
+  height: 14px;
+  width: 14px;
   transition: all 0.5s ease;
   flex-wrap: nowrap;
   z-index: 1;
 }
-.home-section {
+.profile #profilePic {
+  position: relative;
+  top: 3px;
+  left: 5px;
+  height: 30px;
+  width: 30px;
+  transition: all 0.5s ease;
+  flex-wrap: nowrap;
+  z-index: 1;
+}
+.profile #logout {
+  position: relative;
+  padding: 9px 16px;
+  transform: scale(250%);
+  transition: all 0.5s ease;
+}
+.main-content {
   position: relative;
   background: #2b2b2b;
   min-height: 100vh;
   top: 0;
-  left: 10rem;
-  width: calc(100% - 10rem);
+  left: 5%;
+  width: calc(100% - 5%);
   transition: all 0.5s ease;
   z-index: 2;
 }
-.sidebar.open ~ .home-section {
-  left: 250px;
-  width: calc(100% - 250px);
-}
-.home-section .text {
+.main-content .text {
   display: inline-block;
   color: #11101d;
   font-size: 25px;
   font-weight: 500;
   margin: 18px;
+}
+.main-header {
+  border: 1px solid black;
+  position: relative;
+  left: 5%;
+  width: 90%;
+  text-align: center;
+}
+.list-header-playername {
+  text-align: center;
+}
+.list-header-char1 {
+  text-align: left;
+}
+.list-header-char2 {
+  text-align: center;
+}
+.list-header-char3 {
+  text-align: right;
 }
 @media (max-width: 420px) {
   .sidebar li .tooltip {
