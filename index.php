@@ -1,3 +1,5 @@
+<html>
+<body>
 <header>
 	<script type="text/javascript" src="search.js"></script>
 	<link rel="stylesheet/less" type="text/css" href="search2.css" /></script>
@@ -21,3 +23,5 @@
 		</div>
 	</div>
 </header>
+</body>
+</html>
