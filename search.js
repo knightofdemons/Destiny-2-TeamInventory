@@ -1,5 +1,3 @@
-"use strict";
-
 const SEARCH = document.querySelector('.search');
 const MAINSEARCH = document.querySelector('#mainSearch');
 const SEARCHBUTTON = document.querySelector('#searchButton');
