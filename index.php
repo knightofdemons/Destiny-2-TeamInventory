@@ -1,4 +1,13 @@
-<div class="profile">
+<html lang="en" dir="ltr">
+ <head>
+   <meta charset="utf-8">
+   <title>D2 TeamInv</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    		<link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
+		<link rel="stylesheet" type="text/css" href="search.css" />
+ </head>
+ <body>
+  <div class="profile">
   <div class="name_job">
     <div class="name">Hühnchen Süß-Sauer 7,99€</div>
     <div class="plattform"><img id="profilePlat" src="https://cdn.freebiesupply.com/images/large/2x/steam-logo-transparent.png" alt="profilePlat">Steam</div>
@@ -16,6 +25,7 @@
       <i class='bx bx-search'></i>
       <input type="text" placeholder="Search...">
       <span class="tooltip">Search</span>
+      <script type="text/javascript" src="search.js"></script>
     </li>
     <li>
       <a href="#">
@@ -50,3 +60,5 @@
   <div class="main-rec" w3-include-html="rec_query.php"></div>
 </div>
 </section>
+</body>
+</html>
