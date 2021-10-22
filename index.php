@@ -1,13 +1,13 @@
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>D2 TeamInv</title>
+ <head>
+   <meta charset="utf-8">
+   <title>D2 TeamInv</title>
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-  </head>
-<body>
-<header>
-	<link rel="stylesheet/less" type="text/css" href="search2.css" /></script>
+    		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+		<link rel="stylesheet/css" type="text/css" href="search2.css" /></script>
+ </head>
+ <body>
+	<header>
 	<div class="search">
 		<button id="closeButton" class="close-button" type="button">
 			<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjQgMjAuMTg4bC04LjMxNS04LjIwOSA4LjItOC4yODItMy42OTctMy42OTctOC4yMTIgOC4zMTgtOC4zMS04LjIwMy0zLjY2NiAzLjY2NiA4LjMyMSA4LjI0LTguMjA2IDguMzEzIDMuNjY2IDMuNjY2IDguMjM3LTguMzE4IDguMjg1IDguMjAzeiIvPjwvc3ZnPg=="></img>
@@ -27,7 +27,7 @@
 			</form>
 		</div>
 	</div>
-</header>
-  <script type="text/javascript" src="search.js"></script>
-</body>
+	</header>
+ 	<script type="text/javascript" src="search.js"></script>
+ </body>
 </html>
