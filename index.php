@@ -1,9 +1,19 @@
+<html lang="en" dir="ltr">
+ <head>
+   <meta charset="utf-8">
+   <title>D2 TeamInv</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    		<link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
+		<link rel="stylesheet" type="text/css" href="sidebar.css" />
+		<link rel="stylesheet" type="text/css" href="search.css" />
+ </head>
 <body>
   <div class="profile">
     <div class="name_job">
       <div class="name">Hühnchen Süß-Sauer 7,99€</div>
       <div class="plattform"><img id="profilePlat" src="https://cdn.freebiesupply.com/images/large/2x/steam-logo-transparent.png" alt="profilePlat">Steam</div>
-    </div><img id="profilePic" src="https://www.bungie.net/img/profile/avatars/cc000016.jpg" alt="profilePic">
+    </div>
+    <img id="profilePic" src="https://www.bungie.net/img/profile/avatars/cc000016.jpg" alt="profilePic"></img>
     <i class="bx bx-log-out" id="logout"></i>
   </div>
   <div class="sidebar">
@@ -59,3 +69,5 @@
   <script type="text/javascript" src="sidebar.js"></script>
   <script type="text/javascript" src="test_search_response.js"></script>
   <script type="text/javascript" src="search.js"></script>
+</body>
+</html>
