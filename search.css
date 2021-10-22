@@ -1,114 +1,251 @@
-body, html {
-	 align-items: center;
-	 background-color: #0c1016;
-	 display: flex;
-	 font-family: 'Roboto';
-	 font-size: 10px;
-	 height: 100%;
-	 justify-content: center;
-	 margin: 0;
-	 padding: 0;
-	 width: 100%;
-	 box-sizing: border-box;
+/* Google Font Link */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+body  {
+  background: #2b2b2b;
 }
- header {
-	 width: 100%;
-	 height: 8rem;
-	 background-color: rgba(255, 255, 255, 0.05);
-	 position: fixed;
-	 top: 0;
-	 left: 0;
-	 padding: 2rem;
-	 display: flex;
-	 justify-content: flex-end;
-	 align-items: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
- header .search {
-	 display: flex;
-	 justify-content: center;
-	 align-items: center;
-	 position: relative;
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 5%;
+  height: 90%;
+  width: 10rem;
+  background: #11101d;
+  padding: 2px 8px;
+  z-index: 99;
+  transition: all 0.3s ease;
 }
- header .search.open {
-	 position: fixed;
-	 top: 0;
-	 left: 0;
-	 bottom: 0;
-	 right: 0;
-	 background-color: rgba(0, 0, 0, 0.3);
+.sidebar.open {
+  width: 30rem;
 }
- header .search.open .close-button {
-	 display: block;
+.sidebar .logo-details {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
- header .search.open .searchbar form input[type='search'] {
-	 border-bottom: 1px solid white;
-	 width: 100%;
-	 color: white;
+.sidebar .logo-details .icon {
+  opacity: 0;
+  transition: all 0.3s ease;
 }
- header .search.open .searchbar form button img {
-	 opacity: 1;
+.sidebar .logo-details .logo_name {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  opacity: 0;
+  transition: all 0.3s ease;
 }
- header .search.open .searchbar {
-	 position: relative;
-	 display: flex;
-	 align-items: center;
-	 position: relative;
-	 width: 50%;
+.sidebar.open .logo-details .icon,
+.sidebar.open .logo-details .logo_name {
+  opacity: 1;
 }
- header .search.open .searchbar form {
-	 width: 100%;
+.sidebar .logo-details #btn {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: 22px;
+  transition: all 0.4s ease;
+  text-align: center;
+  cursor: pointer;
 }
- header .search.open .searchbar form input[type='search'] {
-	 background-color: transparent;
-	 border: none;
-	 border-bottom: 1px solid transparent;
-	 font-size: 3rem;
-	 padding: 1rem 3rem 1rem 0;
-	 width: 0;
-	 -webkit-appearance: none;
+.sidebar.open .logo-details #btn {
+  text-align: right;
 }
- header .search.open .searchbar form input[type='search']:focus {
-	 outline: none;
-	 color: white;
+.sidebar i {
+  color: #fff;
+  height: 60px;
+  min-width: 50px;
+  font-size: 28px;
+  text-align: center;
+  line-height: 60px;
 }
- header .search.open .searchbar form input[type="search"]::-webkit-search-cancel-button {
-	 display: none;
+.sidebar .nav-list {
+  margin-top: 20px;
+  height: 100%;
 }
- header .search.open .searchbar form button {
-	 position: absolute;
-	 right: 0;
-	 top: 1.5rem;
-	 background-color: transparent;
-	 border: none;
-	 cursor: pointer;
+.sidebar li {
+  position: relative;
+  margin: 8px 0;
+  list-style: none;
 }
- header .search.open .searchbar form button:focus {
-	 outline: none;
-	 color: white;
+.sidebar li .tooltip {
+  position: absolute;
+  top: -20px;
+  left: calc(100% + 15px);
+  z-index: 3;
+  background: #fff;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 400;
+  opacity: 0;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: 0s;
 }
- header .search.open .searchbar form button img {
-	 opacity: 1;
+.sidebar li:hover .tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transition: all 0.4s ease;
+  top: 50%;
+  transform: translateY(-50%);
 }
- header .search.open .searchbar form button img {
-	 transition: all 250ms;
-	 opacity: 0.2;
-	 width: 2rem;
+.sidebar.open li .tooltip {
+  display: none;
 }
- header .search.open .close-button {
-	 position: absolute;
-	 right: 1.5rem;
-	 top: 1.5rem;
-	 background-color: transparent;
-	 border: none;
-	 cursor: pointer;
-	 display: none;
+.sidebar input {
+  font-size: 15px;
+  color: #fff;
+  font-weight: 400;
+  outline: none;
+  height: 50px;
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  transition: all 0.5s ease;
+  background: #1d1b31;
 }
- header .search.open .close-button:focus {
-	 outline: none;
-	 color: white;
+.sidebar.open input {
+  padding: 0 20px 0 50px;
+  width: 100%;
 }
- header .search.open .close-button img {
-	 transition: all 250ms;
-	 opacity: 1;
-	 width: 2rem;
+.sidebar .bx-search {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 22px;
+  background: #1d1b31;
+  color: #fff;
+}
+.sidebar.open .bx-search:hover {
+  background: #1d1b31;
+  color: #fff;
+}
+.sidebar .bx-search:hover {
+  background: #fff;
+  color: #11101d;
+}
+.sidebar li a {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  border-radius: 12px;
+  align-items: center;
+  text-decoration: none;
+  transition: all 0.4s ease;
+  background: #11101d;
+}
+.sidebar li a:hover {
+  background: #fff;
+}
+.sidebar li a .links_name {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 400;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.4s;
+}
+.sidebar.open li a .links_name {
+  opacity: 1;
+  pointer-events: auto;
+}
+.sidebar li a:hover .links_name,
+.sidebar li a:hover i {
+  transition: all 0.5s ease;
+  color: #11101d;
+}
+.sidebar li i {
+  height: 50px;
+  line-height: 50px;
+  font-size: 18px;
+  border-radius: 12px;
+}
+.sidebar li img {
+  height: 45px;
+  width: 45px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 10px;
+}
+.profile {
+  position: fixed;
+  height: 35px;
+  width: 250px;
+  right: 0px;
+  top: 0px;
+  background: #1d1b31;
+  transition: all 0.5s ease;
+  overflow: hidden;
+  display: flex;
+  align-items: right;
+  flex-wrap: nowrap;
+  z-index: 99;
+}
+.profile .name {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 300;
+  color: #fff;
+  white-space: nowrap;
+}
+.profile .job {
+  text-align: right;
+  font-size: 10px;
+  font-weight: 200;
+  color: #fff;
+  white-space: nowrap;
+}
+.profile #log_out {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transform: scale(200%);
+  transition: all 0.5s ease;
+}
+.profile img {
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  right: 30px;
+  top: 0px;
+  background: #1d1b31;
+  transition: all 0.5s ease;
+  flex-wrap: nowrap;
+  z-index: 1;
+}
+.home-section {
+  position: relative;
+  background: #2b2b2b;
+  min-height: 100vh;
+  top: 0;
+  left: 10rem;
+  width: calc(100% - 10rem);
+  transition: all 0.5s ease;
+  z-index: 2;
+}
+.sidebar.open ~ .home-section {
+  left: 250px;
+  width: calc(100% - 250px);
+}
+.home-section .text {
+  display: inline-block;
+  color: #11101d;
+  font-size: 25px;
+  font-weight: 500;
+  margin: 18px;
+}
+@media (max-width: 420px) {
+  .sidebar li .tooltip {
+    display: none;
+  }
 }
