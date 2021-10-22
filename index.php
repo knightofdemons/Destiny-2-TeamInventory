@@ -9,7 +9,7 @@
       		<script type="text/javascript" src="search.js"></script>
  </head>
  <body>
-  <div class="profile">
+<div class="profile">
   <div class="name_job">
     <div class="name">Hühnchen Süß-Sauer 7,99€</div>
     <div class="plattform"><img id="profilePlat" src="https://cdn.freebiesupply.com/images/large/2x/steam-logo-transparent.png" alt="profilePlat">Steam</div>
@@ -24,9 +24,14 @@
   </div>
   <ul class="nav-list">
     <li>
+      <div class="search-input">
       <i class='bx bx-search'></i>
-      <input type="text" placeholder="Search...">
+      <input id="search" type="text" placeholder="Search...">
       <span class="tooltip">Search</span>
+        <div class="autocom-box">
+          <!-- here list are inserted from javascript -->
+        </div>
+      </div>
     </li>
     <li>
       <a href="#">
@@ -57,14 +62,9 @@
     <a class="list-header-char3">Char3</a>
   </div>
 <div class="main-inv_rec">
-	 <div class="main-inv"></div>
-	 <div class="main-rec">
-	 <?php
-	  	include 'rec_query.php'; 
-	  	//include 'test_query_old.php'; 
-	 ?>
-	</div>
-  </div>
+  <div class="main-inv" w3-include-html="inv_query.php">></div>
+  <div class="main-rec" w3-include-html="rec_query.php"></div>
+</div>
 </section>
 </body>
 </html>
