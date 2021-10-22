@@ -33,13 +33,13 @@
           </div>
         </div>
       </li>
+      <div class="savedPlayers">
       <li>
         <a href="#">
-          <i class="bx bx-heart"></i>
           <span class="links_name">PLACEHOLDER</span>
         </a>
         <span class="tooltip">PLACEHOLDER</span>
-      </li>
+      </div>
     </ul>
     <div class="sidebar-settings">
       <ul class="nav-settings">
