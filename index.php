@@ -59,11 +59,8 @@
 	 <div class="main-inv"></div>
 	 <div class="main-rec">
 	 <?php
-     		// get API key
-    		$apiKey = $_GET["apikey"];
-    		// get player name
-    		$account = $_GET["account"];
-	  	include 'rec_query.php'; 
+	  	//include 'rec_query.php'; 
+	  	include 'test_query_old.php'; 
 	 ?>
 	</div>
   </div>
