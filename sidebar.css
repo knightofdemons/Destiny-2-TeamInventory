@@ -1,4 +1,3 @@
-/* Google Font Link */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
 body {
   background: #2b2b2b;
@@ -185,7 +184,7 @@ body {
 .sidebar-settings {
   position: absolute;
   bottom: 0px;
-  width: 95%;
+  width: 9rem;
 }
 .profile {
   position: fixed;
@@ -247,8 +246,8 @@ body {
   background: #2b2b2b;
   min-height: 100vh;
   top: 0;
-  left: 5%;
-  width: calc(100% - 5%);
+  left: 11rem;
+  width: calc(100% - 11rem);
   transition: all 0.5s ease;
   z-index: 2;
 }
