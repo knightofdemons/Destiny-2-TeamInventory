@@ -4,6 +4,7 @@
    <title>D2 TeamInv</title>
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     		<link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
+		<link rel="stylesheet" type="text/css" href="sidebar.css" />
 		<link rel="stylesheet" type="text/css" href="search.css" />
       		<script type="text/javascript" src="sidebar.js"></script>
       		<script type="text/javascript" src="search.js"></script>
