@@ -1,10 +1,11 @@
 <?php
+$apiKey = $_GET["apikey"];
+$account = $_GET["account"];
 // set options for curl sessions
     $options = array(	CURLOPT_HTTPGET => true,
     					CURLOPT_HTTPHEADER => array('X-API-Key: ' . $apiKey),
     					CURLOPT_RETURNTRANSFER => true
     				);
-
 
     // url for api request
     $urlAccDetail = 'https://www.bungie.net/Platform/User/Search/Prefix/' . $account . '/0/';
