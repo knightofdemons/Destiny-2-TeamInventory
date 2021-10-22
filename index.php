@@ -56,7 +56,7 @@
     <a class="list-header-char3">Char3</a>
   </div>
 <div class="main-inv_rec">
-  <div class="main-inv"><?php include 'inv_query.php'; ?></div>
+<!--  <div class="main-inv"><?php include 'inv_query.php'; ?></div> -->
   <div class="main-rec"><?php include 'rec_query.php'; ?></div>
 </div>
 </section>
