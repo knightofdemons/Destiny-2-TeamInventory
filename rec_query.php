@@ -1,15 +1,11 @@
 <?php
-// get API key
-$apiKey = $_GET["apikey"];
 // set options for curl sessions
     $options = array(	CURLOPT_HTTPGET => true,
     					CURLOPT_HTTPHEADER => array('X-API-Key: ' . $apiKey),
     					CURLOPT_RETURNTRANSFER => true
     				);
 
-// get details for player name
-    // get player name
-    $account = $_GET["account"];
+
     // url for api request
     $urlAccDetail = 'https://www.bungie.net/Platform/User/Search/Prefix/' . $account . '/0/';
     // new curl session
