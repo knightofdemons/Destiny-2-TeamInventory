@@ -1,64 +1,23 @@
-const SEARCH = document.querySelector('.search');
-const MAINSEARCH = document.querySelector('#mainSearch');
-const SEARCHBUTTON = document.querySelector('#searchButton');
-const CLOSEBUTTON = document.querySelector('#closeButton');
-const SEARCHFORM = document.querySelector('#searchform');
+let sidebar = document.querySelector(".sidebar");
+let closeBtn = document.querySelector("#btn");
+let searchBtn = document.querySelector(".bx-search");
 
-SEARCHFORM.addEventListener('submit', $event => {
-  $event.preventDefault();
-  var data = new FormData(SEARCHFORM);
-  for (const [name, value] of data) {
-    search(value);
-  }
+closeBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+  menuBtnChange(); //calling the function(optional)
 });
 
-SEARCHBUTTON.addEventListener('click', $event => {
-  if (!searchIsOpen()) {
-    $event.preventDefault();
-    openSearchbar();
-  }
+searchBtn.addEventListener("click", () => {
+  // Sidebar open when you click on the search iocn
+  sidebar.classList.toggle("open");
+  menuBtnChange(); //calling the function(optional)
 });
 
-CLOSEBUTTON.addEventListener('click', () => {
-  closeSearchbar();
-});
-
-MAINSEARCH.addEventListener('keyup', () => {
-  search(MAINSEARCH.value);
-});
-
-window.onkeyup = $keyboardEvent => {
-  if (searchShortcut($keyboardEvent)) {
-    openSearchbar();
+// following are the code to change sidebar button(optional)
+function menuBtnChange() {
+  if (sidebar.classList.contains("open")) {
+    closeBtn.classList.replace("bx-menu", "bx-menu-alt-right"); //replacing the iocns class
+  } else {
+    closeBtn.classList.replace("bx-menu-alt-right", "bx-menu"); //replacing the iocns class
   }
-  if (isleavingSearchbar($keyboardEvent)) {
-    closeSearchbar();
-  }
-};
-
-const searchIsOpen = () => {
-  return SEARCH.classList.contains('open');
-};
-
-const search = searchString => {
-  console.log(`Searchstring: ${searchString}`);
-};
-
-const searchShortcut = keyboardEvent => {
-  return keyboardEvent.code === 'KeyS' && keyboardEvent.target === document.body;
-};
-
-const isleavingSearchbar = keyboardEvent => {
-  return keyboardEvent.code === 'Escape';
-};
-
-const openSearchbar = () => {
-  SEARCH.classList.add('open');
-  MAINSEARCH.focus();
-};
-
-const closeSearchbar = () => {
-  SEARCH.classList.remove('open');
-  MAINSEARCH.value = '';
-  document.activeElement.blur();
-};
+}
