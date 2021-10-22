@@ -5,6 +5,8 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     		<link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
 		<link rel="stylesheet" type="text/css" href="search.css" />
+      		<script type="text/javascript" src="sidebar.js"></script>
+      		<script type="text/javascript" src="search.js"></script>
  </head>
  <body>
   <div class="profile">
@@ -25,7 +27,6 @@
       <i class='bx bx-search'></i>
       <input type="text" placeholder="Search...">
       <span class="tooltip">Search</span>
-      <script type="text/javascript" src="search.js"></script>
     </li>
     <li>
       <a href="#">
