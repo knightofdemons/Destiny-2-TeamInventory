@@ -67,6 +67,7 @@
 </section>
 
       		<script type="text/javascript" src="sidebar.js"></script>
+      		<script type="text/javascript" src="test_search_response.js"></script>
       		<script type="text/javascript" src="search.js"></script>
 </body>
 </html>
