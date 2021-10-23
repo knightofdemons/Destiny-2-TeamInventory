@@ -14,7 +14,7 @@ inputBox.onkeyup = (e)=>{
     let userData = e.target.value; //user enetered data
     let emptyArray = [];
     if(userData){
-      rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/ + userData + /+ platt + /";
+      rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + userData + "/" + platt + "/";
       var client = new HttpClient();
       client.get(rqURL, akey, function(response) {
             console.log("suggestions: " + suggestions);
