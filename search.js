@@ -16,7 +16,7 @@ inputBox.onkeyup = (e)=>{
     if(userData){
       rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/ + userData + /+ platt + /";
       var client = new HttpClient();
-      client.get(rqURL, function(response), akey) {
+      client.get(rqURL, akey, function(response) {
             console.log("suggestions: " + suggestions);
           return suggestions;
       });
