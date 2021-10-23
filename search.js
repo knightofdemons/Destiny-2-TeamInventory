@@ -5,13 +5,23 @@ const suggBox = searchWrapper.querySelector(".autocom-box");
 const icon = searchWrapper.querySelector(".icon");
 let linkTag = searchWrapper.querySelector("a");
 let webLink;
+let rqURL;
+let akey = findGet(apikey);
+let acc = findGet(account);
+let platt = findGet(plt);
 // if user press any key and release
 inputBox.onkeyup = (e)=>{
     let userData = e.target.value; //user enetered data
     let emptyArray = [];
     if(userData){
+      rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/ + acc + /+ platt + /";
+      var client = new HttpClient();
+      client.get(rqURL, function(response), akey) {
+          return suggestions;
+      });
+        
         emptyArray = suggestions.filter((data)=>{
-            //filtering array value and user characters to lowercase and return only those words which are start with user enetered chars
+            //filtering array value and user characters to lowercase and return only those words which are start with user entered chars
             return data.toLocaleLowerCase().startsWith(userData.toLocaleLowerCase());
         });
         emptyArray = emptyArray.map((data)=>{
@@ -46,4 +56,28 @@ function showSuggestions(list){
       listData = list.join('');
     }
     suggBox.innerHTML = listData;
+}
+var HttpClient = function() {
+    this.get = function(aUrl, aCallback, apikey) {
+        var anHttpRequest = new XMLHttpRequest();
+        anHttpRequest.onreadystatechange = function() { 
+            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
+                aCallback(anHttpRequest.responseText);
+        }
+
+        anHttpRequest.open( "GET", aUrl, true );
+        anHttpRequest.setRequestHeader("X-API-Key",apikey);
+        anHttpRequest.send( null );
+    }
+}
+function findGet(parameterName) {
+    var result = null,
+        tmp = [];
+    var items = location.search.substr(1).split("&");
+    for (var index = 0; index < items.length; index++) {
+        tmp = items[index].split("=");
+        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+    }
+  console.log(result);
+    return result;
 }
