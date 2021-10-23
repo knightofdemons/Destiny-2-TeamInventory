@@ -59,7 +59,7 @@ function showSuggestions(list){
     suggBox.innerHTML = listData;
 }
 var HttpClient = function() {
-    this.get = function(aUrl, aCallback, apikey) {
+    this.get = function(aUrl, apikey, aCallback) {
         var anHttpRequest = new XMLHttpRequest();
         anHttpRequest.onreadystatechange = function() { 
             if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
