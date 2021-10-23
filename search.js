@@ -9,7 +9,6 @@ let webLink;
 inputBox.onkeyup = (e)=>{
     let userData = e.target.value; //user enetered data
     let emptyArray = [];
-  console.log("e");
     if(userData){
         emptyArray = suggestions.filter((data)=>{
             //filtering array value and user characters to lowercase and return only those words which are start with user enetered chars
@@ -40,7 +39,6 @@ function select(element){
 }
 function showSuggestions(list){
     let listData;
-  console.log("F");
     if(!list.length){
         userValue = inputBox.value;
         listData = `<li>${userValue}</li>`;
