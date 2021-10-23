@@ -7,19 +7,17 @@ let linkTag = searchWrapper.querySelector("a");
 let webLink;
 let rqURL;
 let akey = findGet("apikey");
-let acc = findGet("account");
-let platt = findGet("plt");
+//let platt = findGet(plt);
+let platt = "0";
 // if user press any key and release
 inputBox.onkeyup = (e)=>{
     let userData = e.target.value; //user enetered data
     let emptyArray = [];
     if(userData){
-      rqURL = 'https://www.bungie.net/Platform/User/Search/Prefix/' + acc + '/' + platt + '/';
-        console.log("rqURL: " + rqURL);
+      rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/ + userData + /+ platt + /";
       var client = new HttpClient();
-      client.get(rqURL, akey, function(response) {
+      client.get(rqURL, function(response), akey) {
           return suggestions;
-        console.log("suggestions: " + suggestions);
       });
         
         emptyArray = suggestions.filter((data)=>{
@@ -60,7 +58,7 @@ function showSuggestions(list){
     suggBox.innerHTML = listData;
 }
 var HttpClient = function() {
-    this.get = function(aUrl, apikey, aCallback) {
+    this.get = function(aUrl, aCallback, apikey) {
         var anHttpRequest = new XMLHttpRequest();
         anHttpRequest.onreadystatechange = function() { 
             if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
