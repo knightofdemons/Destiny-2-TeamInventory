@@ -79,6 +79,5 @@ function findGet(parameterName) {
         tmp = items[index].split("=");
         if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
     }
-  console.log("decodeURIComponent:" + result);
     return result;
 }
