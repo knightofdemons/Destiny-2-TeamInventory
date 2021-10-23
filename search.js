@@ -6,9 +6,9 @@ const icon = searchWrapper.querySelector(".icon");
 let linkTag = searchWrapper.querySelector("a");
 let webLink;
 let rqURL;
-let akey = findGet(apikey);
-let acc = findGet(account);
-let platt = findGet(plt);
+let akey = findGet("apikey");
+let acc = findGet("account");
+let platt = findGet("plt");
 // if user press any key and release
 inputBox.onkeyup = (e)=>{
     let userData = e.target.value; //user enetered data
