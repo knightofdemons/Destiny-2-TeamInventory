@@ -6,6 +6,7 @@ const icon = searchWrapper.querySelector(".icon");
 let linkTag = searchWrapper.querySelector("a");
 let webLink;
 let rqURL;
+let suggestions;
 let akey = findGet("apikey");
 //let platt = findGet(plt);
 let platt = "0";
