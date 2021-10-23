@@ -17,6 +17,7 @@ inputBox.onkeyup = (e)=>{
       rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/ + userData + /+ platt + /";
       var client = new HttpClient();
       client.get(rqURL, function(response), akey) {
+            console.log("suggestions: " + suggestions);
           return suggestions;
       });
         
@@ -78,6 +79,6 @@ function findGet(parameterName) {
         tmp = items[index].split("=");
         if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
     }
-  console.log(result);
+  console.log("decodeURIComponent:" + result);
     return result;
 }
