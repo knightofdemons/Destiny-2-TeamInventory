@@ -5,7 +5,6 @@
     } else {
         $plattform = "0";
     }
-    echo "plattform: " . $plattform;
 $apiKey = $_GET["apikey"];
 // set options for curl sessions
     $options = array(	CURLOPT_HTTPGET => true,
