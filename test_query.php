@@ -14,6 +14,11 @@
 <body>
 <?php
 // get API key
+    if (isset($_GET["plt"])) {
+        $plattform = $_GET["plt"];
+    } else {
+        $plattform = "0";
+    }
 $apiKey = $_GET["apikey"];
 // set options for curl sessions
     $options = array(	CURLOPT_HTTPGET => true,
@@ -25,7 +30,7 @@ $apiKey = $_GET["apikey"];
     // get player name
     $account = $_GET["account"];
     // url for api request
-    $urlAccDetail = 'https://www.bungie.net/Platform/User/Search/Prefix/' . $account . '/0/';
+    $urlAccDetail = 'https://www.bungie.net/Platform/User/Search/Prefix/' . $account . '/'. $plattform .'/';
     // new curl session
     $chAccDetail = curl_init($urlAccDetail);
     // set options for curl session				
