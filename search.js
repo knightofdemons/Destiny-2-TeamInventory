@@ -14,10 +14,12 @@ inputBox.onkeyup = (e)=>{
     let userData = e.target.value; //user enetered data
     let emptyArray = [];
     if(userData){
-      rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/ + acc + /+ platt + /";
+      rqURL = 'https://www.bungie.net/Platform/User/Search/Prefix/' + acc + '/' + platt + '/';
+        console.log("rqURL: " + rqURL);
       var client = new HttpClient();
-      client.get(rqURL, function(response), akey) {
+      client.get(rqURL, akey, function(response) {
           return suggestions;
+        console.log("suggestions: " + suggestions);
       });
         
         emptyArray = suggestions.filter((data)=>{
@@ -58,7 +60,7 @@ function showSuggestions(list){
     suggBox.innerHTML = listData;
 }
 var HttpClient = function() {
-    this.get = function(aUrl, aCallback, apikey) {
+    this.get = function(aUrl, apikey, aCallback) {
         var anHttpRequest = new XMLHttpRequest();
         anHttpRequest.onreadystatechange = function() { 
             if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
