@@ -67,7 +67,7 @@ var HttpClient = function() {
         }
 
         anHttpRequest.open( "GET", aUrl, true );
-        anHttpRequest.setRequestHeader("X-API-Key",apikey);
+        //anHttpRequest.setRequestHeader("X-API-Key",apikey);
         anHttpRequest.send( null );
     }
 }
