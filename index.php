@@ -15,24 +15,19 @@
 </head>
 
 <body>
-<div class="profile" w3-include-html="scripts/profile.php"></div>
-<div class="sidebar" w3-include-html="scripts/sidebar.html"></div>
+<!-- <div class="profile" w3-include-html="scripts/profile.php"><include src="scripts/profile.php"></include></div>
+<div class="sidebar" w3-include-html="scripts/sidebar.html"><include src="scripts/sidebar.html"></include></div> -->
   <section class="main-content">
     <div class="main-header">
-      <a class="list-header-playername">Accountname</a>
-      <br>
-      <a class="list-header-char1">Char1</a>
-      <a class="list-header-char2">Char2</a>
-      <a class="list-header-char3">Char3</a>
     </div>
     <div class="main-inv_rec">
 		<div class="main-inv" w3-include-html="inv_query.php">INVENTORY</div>  
-		<div class="main" w3-include-html="scripts/query_collection.php"></div>
+		<div class="main"><include src="scripts/query_collection.php"></include></div>
     </div>
   </section>
 
-  <script type="text/javascript" src="sidebar.js"></script>
-  <script type="text/javascript" src="search.js"></script>
+  <script type="text/javascript" src="js/sidebar.js"></script>
+  <script type="text/javascript" src="js/search.js"></script>
 </body>
 </html>
 

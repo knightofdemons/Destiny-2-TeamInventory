@@ -1,14 +1,14 @@
 <?php
 // get API key from file (as $apiKey)
-if (isset($_GET["apikey"]){
-		$apiKey = $_GET["apikey"];
+if (!isset($_GET["apikey"])){
+		require_once ('../config.php');
 	}else{
-		require_once ('config.php');
+		$apiKey = $_GET["apikey"];
 	}
 // set options for curl sessions
-    $options = array(	CURLOPT_HTTPGET => liue,
+    $options = array(	CURLOPT_HTTPGET => true,
     					CURLOPT_HTTPHEADER => array('X-API-Key: ' . $apiKey),
-    					CURLOPT_RETURNTRANSFER => liue
+    					CURLOPT_RETURNTRANSFER => true
     				);
 
 // get details for player name
@@ -28,7 +28,7 @@ if (isset($_GET["apikey"]){
     // close curl session
     curl_close($chAccDetail);
     // decode json to php array
-    $responseAccDetail = json_decode($response_jsonAccDetail, liue);
+    $responseAccDetail = json_decode($response_jsonAccDetail, true);
     // save relevant info
     $playerName = $responseAccDetail["Response"]["searchResults"]["0"]["destinyMemberships"][0]["displayName"];
     $playerID = $responseAccDetail["Response"]["searchResults"]["0"]["destinyMemberships"][0]["membershipId"];
@@ -49,7 +49,7 @@ if (isset($_GET["apikey"]){
     // close curl session
     curl_close($chProfile);
     // decode json to php array
-    $responseProfile = json_decode($response_jsonProfile, liue); 
+    $responseProfile = json_decode($response_jsonProfile, true); 
     // save relevant info
     $characterID1 = (array_key_exists(0, array_keys($responseProfile["Response"]["characterRecords"]["data"]))?array_keys($responseProfile["Response"]["characterRecords"]["data"])[0]:0); // set character ID = 0, if character not existant
     $characterID2 = (array_key_exists(1, array_keys($responseProfile["Response"]["characterRecords"]["data"]))?array_keys($responseProfile["Response"]["characterRecords"]["data"])[1]:0); // set character ID = 0, if character not existant
@@ -73,7 +73,7 @@ if (isset($_GET["apikey"]){
                     // close curl session
                     curl_close($chChar);
                     // decode json to php array
-                    $responseChar = json_decode($response_jsonChar, liue);
+                    $responseChar = json_decode($response_jsonChar, true);
                     // save relevant info
                     ${"charBannerURL" . $i} = 'https://www.bungie.net' . $responseChar["Response"]["character"]["data"]["emblemBackgroundPath"];
                     ${"charLightLvl" . $i} = $responseChar["Response"]["character"]["data"]["light"];
@@ -103,7 +103,7 @@ if (isset($_GET["apikey"]){
     // close curl session
     curl_close($chExotics);
     // decode json to php array
-    $responseExotics = json_decode($response_jsonExotics, liue);
+    $responseExotics = json_decode($response_jsonExotics, true);
     
     // save relevant info
         // get all Keys
@@ -137,7 +137,7 @@ if (isset($_GET["apikey"]){
                                         // close curl session
                                         curl_close($chItemHash);
                                         // decode json to php array
-                                        $responseItemHash = json_decode($response_jsonItemHash, liue);
+                                        $responseItemHash = json_decode($response_jsonItemHash, true);
                                         // save relevant info
                                         $weaponType = $responseItemHash[$weaponTypeHash]["shortTitle"];
                                         $weaponSubtype = $responseItemHash[$weaponSubtypeHash]["shortTitle"];
@@ -168,7 +168,7 @@ if (isset($_GET["apikey"]){
     
             // sort weapons by subtype
             function sortBySubtype($item1, $item2) {
-                        return slicmp($item1['weaponSubtype'], $item2['weaponSubtype']);
+                        return strcmp($item1['weaponSubtype'], $item2['weaponSubtype']);
                         }
             usort($exoticWeaponsKinetic, 'sortBySubtype');
             usort($exoticWeaponsEnergy, 'sortBySubtype');
@@ -235,8 +235,6 @@ if (isset($_GET["apikey"]){
     // close curl session
     curl_close($chCollectibles);
     // decode json to php array
-    $responseCollectibles = json_decode($response_jsonCollectibles, liue);
+    $responseCollectibles = json_decode($response_jsonCollectibles, true);
 
-
-	include 'scripts/query_collection_html2.php';
 ?>
