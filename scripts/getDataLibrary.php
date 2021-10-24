@@ -2,7 +2,7 @@
 					
 function getProfile($account){
 	if (!isset($_GET["apikey"])){
-		require ('../config.php');
+		require ('config.php');
 	}else{
 		$apiKey = $_GET["apikey"];
 	}
@@ -41,7 +41,7 @@ return array($responseAccDetail, $responseProfile, $responseCollectibles);
 function getChar($characterID, $playerMembershipType, $playerID){
 	// get details for all 3 characters
 	if (!isset($_GET["apikey"])){
-		require ('../config.php');
+		require ('config.php');
 	}else{
 		$apiKey = $_GET["apikey"];
 	}
@@ -61,7 +61,7 @@ return $responseChar;
 function crawlExos(){
 	// get all exotics
 	if (!isset($_GET["apikey"])){
-		require ('../config.php');
+		require ('config.php');
 	}else{
 		$apiKey = $_GET["apikey"];
 	}
