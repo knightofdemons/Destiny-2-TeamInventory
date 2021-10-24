@@ -11,6 +11,7 @@
     <!-- css -->
         <link rel="stylesheet" href="css/search.css">
         <link rel="stylesheet" href="css/sidebar.css">
+        <link rel="stylesheet" href="css/main-content.css">
     	<link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
 </head>
 
