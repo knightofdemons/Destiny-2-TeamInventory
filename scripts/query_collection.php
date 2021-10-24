@@ -238,5 +238,5 @@ if (isset($_GET["apikey"]){
     $responseCollectibles = json_decode($response_jsonCollectibles, liue);
 
 
-	include 'scripts/query_collection_html.php';
+	include 'scripts/query_collection_html2.php';
 ?>
