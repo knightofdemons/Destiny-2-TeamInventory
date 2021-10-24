@@ -75,18 +75,20 @@ $exoticArmorArray[] = $exoticArmorWarlock["Beinschutz"];
 
 
 
-echo "<ul>";
+echo "<ul class='list-header'>";
 echo "<li class='list-header-playername'>" . $playerName . "</li>";
-echo "<li class='list-char'>";
+echo "<li class='list-header-char'>";
         // character emblems
         echo ($characterID1!=0? "<div class='list-char-img'><img src='" . $charBannerURL[1] . "'><div class='list-char-cls'>" . $charClass[1] . "</div><div class='list-char-pwr'> &#10023; " . $charLightLvl[1] . "</div></div>":"");
         echo ($characterID2!=0? "<div class='list-char-img'><img src='" . $charBannerURL[2] . "'><div class='list-char-cls'>" . $charClass[2] . "</div><div class='list-char-pwr'> &#10023; " . $charLightLvl[2] . "</div></div>":"");
         echo ($characterID3!=0? "<div class='list-char-img'><img src='" . $charBannerURL[3] . "'><div class='list-char-cls'>" . $charClass[3] . "</div><div class='list-char-pwr'> &#10023; " . $charLightLvl[3] . "</div></div>":"");
 echo "</li>";
+echo "</ul>";
 
 //Weapons
+echo "<ul class='list-weapons'>";
 foreach ($exoticWeaponArray as $i => $value) {
-	echo "<li class='list-header-catergory'>" . $i . "</li>";
+	echo "<li class='list-header-catergory'>" . var_dump($exoticWeaponArray[$i]["weaponType"]) . "</li>";
 	echo "<li>";
 		foreach ($exoticWeaponArray[$i] as $exoticWeapon) {
 					echo "<div class='itemFrame'><img class='itemImage' src='" . $exoticWeapon["iconURL"] . "'  title='" . $exoticWeapon["name"] . " (" . $exoticWeapon["weaponSubtype"] . ")'></img>";
@@ -103,11 +105,12 @@ foreach ($exoticWeaponArray as $i => $value) {
 		unset($exoticWeapon); // delete reference to last item
 	echo "</li>";
 }
+echo "</ul>";
 
 //Armor
+echo "<ul class='list-armor'>";
 foreach ($exoticArmorArray as $i => $value) {
 	echo "<li class='list-header-catergory'>" . $i . "</li>";
-	echo "<li class='list-header-catergory'>KLASSE</li>";
 		echo "<li>";
 			foreach ($exoticArmorArray[$i] as $exoticArmorItems) {
 						echo "<div class='itemFrame'><img class='itemImage' src='" . $exoticArmorItems["iconURL"] . "'  title='" . $exoticArmorItems["name"] . "'>";
@@ -124,6 +127,6 @@ foreach ($exoticArmorArray as $i => $value) {
 							}
 				}
 			unset($exoticArmorItems); // delete reference to last item
-}
-echo "</ul>";
+	}
+	echo "</ul>";
 ?>

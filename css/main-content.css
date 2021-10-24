@@ -4,7 +4,11 @@
 	text-shadow: 0.05rem 0.05rem #11101d;
 }
 
-.list-char {
+.list-header {
+	
+}
+
+.list-header-char, .list-weapons, .list-armor {
     display: flex;
 	float: left;
 }
