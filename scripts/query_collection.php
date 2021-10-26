@@ -57,21 +57,9 @@ $exoticWeaponArray[] = $exoticWeaponsEnergy;
 $exoticWeaponArray[] = $exoticWeaponsPower;
 	
 $exoticArmorArray = array();
-$exoticArmorArray[] = $exoticArmorHunter["Helm"];
-$exoticArmorArray[] = $exoticArmorTitan["Helm"];
-$exoticArmorArray[] = $exoticArmorWarlock["Helm"];
-	
-$exoticArmorArray[] = $exoticArmorHunter["Panzerhandschuhe"];
-$exoticArmorArray[] = $exoticArmorTitan["Panzerhandschuhe"];
-$exoticArmorArray[] = $exoticArmorWarlock["Panzerhandschuhe"];
-	
-$exoticArmorArray[] = $exoticArmorHunter["Brustschutz"];
-$exoticArmorArray[] = $exoticArmorTitan["Brustschutz"];
-$exoticArmorArray[] = $exoticArmorWarlock["Brustschutz"];
-	
-$exoticArmorArray[] = $exoticArmorHunter["Beinschutz"];
-$exoticArmorArray[] = $exoticArmorTitan["Beinschutz"];
-$exoticArmorArray[] = $exoticArmorWarlock["Beinschutz"];
+$exoticArmorArray[] = $exoticArmorHunter;
+$exoticArmorArray[] = $exoticArmorTitan;
+$exoticArmorArray[] = $exoticArmorWarlock;
 
 
 
@@ -88,7 +76,7 @@ echo "</ul>";
 //Weapons
 echo "<ul class='list-weapons'>";
 foreach ($exoticWeaponArray as $i => $value) {
-	echo "<li class='list-header-catergory'>" . var_dump($exoticWeaponArray[$i]["weaponType"]) . "</li>";
+	echo "<li class='list-header-catergory'>" . $exoticWeaponArray[$i][0]["weaponType"] . "</li>";
 	echo "<li>";
 		foreach ($exoticWeaponArray[$i] as $exoticWeapon) {
 					echo "<div class='itemFrame'><img class='itemImage' src='" . $exoticWeapon["iconURL"] . "'  title='" . $exoticWeapon["name"] . " (" . $exoticWeapon["weaponSubtype"] . ")'></img>";
@@ -106,27 +94,31 @@ foreach ($exoticWeaponArray as $i => $value) {
 	echo "</li>";
 }
 echo "</ul>";
+unset($i); // delete reference to last item
 
 //Armor
 echo "<ul class='list-armor'>";
-foreach ($exoticArmorArray as $i => $value) {
-	echo "<li class='list-header-catergory'>" . $i . "</li>";
-		echo "<li>";
-			foreach ($exoticArmorArray[$i] as $exoticArmorItems) {
-						echo "<div class='itemFrame'><img class='itemImage' src='" . $exoticArmorItems["iconURL"] . "'  title='" . $exoticArmorItems["name"] . "'>";
-						// check if armor is achieved and overlay a check mark or cross over the image
-							$checkState1 = ($characterID1!=0?$profileData[2]["Response"]["characterCollectibles"]["data"][$characterID1]["collectibles"][$exoticArmorItems["collectionID"]]["state"]:1); // if character doesn't exist: checkState=1 (= not achieved)
-							$checkState2 = ($characterID2!=0?$profileData[2]["Response"]["characterCollectibles"]["data"][$characterID2]["collectibles"][$exoticArmorItems["collectionID"]]["state"]:1); // if character doesn't exist: checkState=1 (= not achieved)
-							$checkState3 = ($characterID3!=0?$profileData[2]["Response"]["characterCollectibles"]["data"][$characterID3]["collectibles"][$exoticArmorItems["collectionID"]]["state"]:1); // if character doesn't exist: checkState=1 (= not achieved)
-							// state 0 = none, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
-							if (array_key_exists($exoticArmorItems["collectionID"], $profileData[2]["Response"]["characterCollectibles"]["data"][$characterID1]["collectibles"]) && ($checkState1==0 || $checkState1 == 16 || $checkState1 == 32 || $checkState1 == 64 || $checkState2==0 || $checkState2 == 16 || $checkState2 == 32 || $checkState2 == 64 || $checkState3==0 || $checkState3 == 16 || $checkState3 == 32 || $checkState3 == 64)) {
-								echo "<img class='chk_img' src='../img/check.png'></img></div>";
-							}
-							else {
-								echo "<img class='chk_img' src='../img/cross.png'></img></div>";
-							}
-				}
-			unset($exoticArmorItems); // delete reference to last item
-	}
-	echo "</ul>";
+foreach ($exoticArmorArray as $exoticArmorArrayClass) {
+		foreach ($exoticArmorArray[$exoticArmorArrayClass] as $exoticArmorArrayClassType => $value) {
+			echo "<li class='list-header-catergory'>" . var_dump($exoticArmorArrayClassType) . "</li>";
+				echo "<li>";
+					foreach ($exoticArmorArray[$exoticArmorArrayClass][$exoticArmorArrayClassType] as $exoticArmorItems) {
+								echo "<div class='itemFrame'><img class='itemImage' src='" . $exoticArmorItems["iconURL"] . "'  title='" . $exoticArmorItems["name"] . "'>";
+								// check if armor is achieved and overlay a check mark or cross over the image
+									$checkState1 = ($characterID1!=0?$profileData[2]["Response"]["characterCollectibles"]["data"][$characterID1]["collectibles"][$exoticArmorItems["collectionID"]]["state"]:1); // if character doesn't exist: checkState=1 (= not achieved)
+									$checkState2 = ($characterID2!=0?$profileData[2]["Response"]["characterCollectibles"]["data"][$characterID2]["collectibles"][$exoticArmorItems["collectionID"]]["state"]:1); // if character doesn't exist: checkState=1 (= not achieved)
+									$checkState3 = ($characterID3!=0?$profileData[2]["Response"]["characterCollectibles"]["data"][$characterID3]["collectibles"][$exoticArmorItems["collectionID"]]["state"]:1); // if character doesn't exist: checkState=1 (= not achieved)
+									// state 0 = none, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
+									if (array_key_exists($exoticArmorItems["collectionID"], $profileData[2]["Response"]["characterCollectibles"]["data"][$characterID1]["collectibles"]) && ($checkState1==0 || $checkState1 == 16 || $checkState1 == 32 || $checkState1 == 64 || $checkState2==0 || $checkState2 == 16 || $checkState2 == 32 || $checkState2 == 64 || $checkState3==0 || $checkState3 == 16 || $checkState3 == 32 || $checkState3 == 64)) {
+										echo "<img class='chk_img' src='../img/check.png'></img></div>";
+									}
+									else {
+										echo "<img class='chk_img' src='../img/cross.png'></img></div>";
+									}
+						}
+					unset($exoticArmorItems); // delete reference to last item
+			}
+			echo "</li>";
+}
+echo "</ul>";
 ?>
