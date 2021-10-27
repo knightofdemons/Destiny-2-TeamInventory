@@ -32,9 +32,11 @@
           <i class="bx bx-search"></i>
           <input id="search" type="text" placeholder="Search...">
           <span class="tooltip">Search</span>
+		  <ul>
           <div class="autocom-box">
-            <!-- here list are inserted from javascript -->
+            <!-- searchresults will be inserted here -->
           </div>
+		  </ul>
         </div>
       </li>
       <div class="savedPlayers">

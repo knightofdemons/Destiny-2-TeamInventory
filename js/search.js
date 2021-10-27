@@ -7,28 +7,13 @@ let linkTag = searchWrapper.querySelector("a");
 let webLink;
 let rqURL;
 let suggestions;
-//let platt = findGet(plt);
-let platt = "0";
+let emptyArray = [];
 // if user press any key and release
 inputBox.onkeyup = (e)=>{
     let userData = e.target.value; //user enetered data
-    let emptyArray = [];
     if(userData){
-      rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + userData + "/" + platt + "/";
-      var client = new HttpClient();
-      suggestions = client.get(rqURL, akey, function(response) {return response;});
-        
-		for (let index = 0; index < suggestions.length; ++index) {
-			const element = suggestions[index];
-            console.log("element: " + element);
-		}
-        searchWrapper.classList.add("active"); //show autocomplete box
-        showSuggestions(emptyArray);
-        let allList = suggBox.querySelectorAll("li");
-        for (let i = 0; i < allList.length; i++) {
-            //adding onclick attribute in all li tag
-            allList[i].setAttribute("onclick", "select(this)");
-        }
+		rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + userData + "/0/";
+		temp = getSearchResults(rqURL);
     }else{
         searchWrapper.classList.remove("active"); //hide autocomplete box
     }
@@ -36,9 +21,9 @@ inputBox.onkeyup = (e)=>{
 function select(element){
     let selectData = element.textContent;
     inputBox.value = selectData;
-    icon.onclick = ()=>{
-        // click 
-    }
+		console.log(element);
+		newAccount = selectData.split('#');
+        window.open("index.php?account=" + newAccount[0],"_self");
     searchWrapper.classList.remove("active");
 }
 function showSuggestions(list){
@@ -51,26 +36,30 @@ function showSuggestions(list){
     }
     suggBox.innerHTML = listData;
 }
-var HttpClient = function() {
-    this.get = function(aUrl, apikey, aCallback) {
-        var anHttpRequest = new XMLHttpRequest();
-        anHttpRequest.onreadystatechange = function() { 
-            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
-                aCallback(anHttpRequest.responseText);
-        }
+function getSearchResults(URL) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", URL);
+	xhr.setRequestHeader("X-API-Key",akey);
 
-        anHttpRequest.open( "GET", aUrl, true );
-        anHttpRequest.setRequestHeader("X-API-Key",apikey);
-        anHttpRequest.send( null );
-    }
-   }
-function findGet(parameterName) {
-    var result = null,
-        tmp = [];
-    var items = location.search.substr(1).split("&");
-    for (var index = 0; index < items.length; index++) {
-        tmp = items[index].split("=");
-        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-    }
-    return result;
+	xhr.onreadystatechange = function () {
+	   if (xhr.readyState === 4) {
+		  //console.log(xhr.status);
+		  xh = JSON.parse(xhr.responseText);
+		  tmp = xh.Response.searchResults;
+		  var tmpR = [];
+		  tmp.forEach(function(item, index, array) {
+			  imgp = 'https://www.bungie.net' + item.destinyMemberships[0].iconPath;
+			  data = item.destinyMemberships[0].membershipId + item.destinyMemberships[0].membershipType;
+			  t = "<li><div class='sresult'><img src='"+imgp+"'>" + item.bungieGlobalDisplayName + "#" + item.bungieGlobalDisplayNameCode + "</div></li>";
+			  tmpR.push(t);
+			});
+			searchWrapper.classList.add("active");
+			showSuggestions(tmpR);
+				let allList = suggBox.querySelectorAll("li");
+				for (let i = 0; i < allList.length; i++) {
+					//adding onclick attribute in all li tag
+					allList[i].setAttribute("onclick", "select(this)");
+				}
+	   }};
+	xhr.send();
 }
