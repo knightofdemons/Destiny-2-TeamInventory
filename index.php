@@ -78,7 +78,7 @@
     <div class="main-header">
     </div>
     <div class="main-inv_rec">
-		<div class="main-inv" w3-include-html="inv_query.php">INVENTORY</div>  
+		<div class="main-inv" w3-include-html="inv_query.php">1</div>  
 		<div class="main"><?php require_once ("./scripts/query_collection.php");?></div>
     </div>
   </section>
