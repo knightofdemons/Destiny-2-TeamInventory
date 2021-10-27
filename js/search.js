@@ -16,19 +16,12 @@ inputBox.onkeyup = (e)=>{
     if(userData){
       rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + userData + "/" + platt + "/";
       var client = new HttpClient();
-      suggestions = client.get(rqURL, akey, function(response) {
-            console.log("suggestions: " + response);
-          return response;
-      });
+      suggestions = client.get(rqURL, akey, function(response) {return response;});
         
-        emptyArray = suggestions.filter((data)=>{
-            //filtering array value and user characters to lowercase and return only those words which are start with user entered chars
-            return data.toLocaleLowerCase().startsWith(userData.toLocaleLowerCase());
-        });
-        emptyArray = emptyArray.map((data)=>{
-            // passing return data inside li tag
-            return data = '<li>${data}</li>';
-        });
+		for (let index = 0; index < suggestions.length; ++index) {
+			const element = suggestions[index];
+            console.log("element: " + element);
+		}
         searchWrapper.classList.add("active"); //show autocomplete box
         showSuggestions(emptyArray);
         let allList = suggBox.querySelectorAll("li");
