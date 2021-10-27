@@ -7,7 +7,6 @@ let linkTag = searchWrapper.querySelector("a");
 let webLink;
 let rqURL;
 let suggestions;
-let akey = findGet("apikey");
 //let platt = findGet(plt);
 let platt = "0";
 // if user press any key and release
@@ -17,9 +16,9 @@ inputBox.onkeyup = (e)=>{
     if(userData){
       rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + userData + "/" + platt + "/";
       var client = new HttpClient();
-      client.get(rqURL, akey, function(response) {
-            console.log("suggestions: " + suggestions);
-          return suggestions;
+      suggestions = client.get(rqURL, akey, function(response) {
+            console.log("suggestions: " + response);
+          return response;
       });
         
         emptyArray = suggestions.filter((data)=>{
@@ -28,7 +27,7 @@ inputBox.onkeyup = (e)=>{
         });
         emptyArray = emptyArray.map((data)=>{
             // passing return data inside li tag
-            return data = `<li>${data}</li>`;
+            return data = '<li>${data}</li>';
         });
         searchWrapper.classList.add("active"); //show autocomplete box
         showSuggestions(emptyArray);
@@ -53,7 +52,7 @@ function showSuggestions(list){
     let listData;
     if(!list.length){
         userValue = inputBox.value;
-        listData = `<li>${userValue}</li>`;
+        listData = '<li>${userValue}</li>';
     }else{
       listData = list.join('');
     }
@@ -71,7 +70,7 @@ var HttpClient = function() {
         anHttpRequest.setRequestHeader("X-API-Key",apikey);
         anHttpRequest.send( null );
     }
-}
+   }
 function findGet(parameterName) {
     var result = null,
         tmp = [];

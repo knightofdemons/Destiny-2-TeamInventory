@@ -16,6 +16,9 @@
 </head>
 
 <body>
+<script type="text/javascript">
+    var akey = "<?php require ('config.php'); echo $apiKey; ?>";
+</script>
 <div class="profile"><include src="scripts/loginheader.php"></include></div>
 <div class="sidebar">
  <div class="sidebar-logo-details">
