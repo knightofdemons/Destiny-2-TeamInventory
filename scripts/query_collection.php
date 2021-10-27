@@ -98,9 +98,17 @@ unset($i); // delete reference to last item
 
 //Armor
 echo "<ul class='list-armor'>";
-foreach ($exoticArmorArray as $exoticArmorArrayClass) {
+foreach ($exoticArmorArray as $exoticArmorArrayClass => $value) {
+	if ($exoticArmorArrayClass == 0){
+		$exoticArmorArrayClassName = "Hunter";
+	}elseif($exoticArmorArrayClass == 1){
+		$exoticArmorArrayClassName = "Titan";
+	}elseif($exoticArmorArrayClass == 2){
+		$exoticArmorArrayClassName = "Warlock";
+	}
+	echo "<li class='list-header-catergory'>" . $exoticArmorArrayClassName . "</li>";
 		foreach ($exoticArmorArray[$exoticArmorArrayClass] as $exoticArmorArrayClassType => $value) {
-			echo "<li class='list-header-catergory'>" . var_dump($exoticArmorArrayClassType) . "</li>";
+			echo "<li class='list-header-catergory'>" . $exoticArmorArrayClassType . "</li>";
 				echo "<li>";
 					foreach ($exoticArmorArray[$exoticArmorArrayClass][$exoticArmorArrayClassType] as $exoticArmorItems) {
 								echo "<div class='itemFrame'><img class='itemImage' src='" . $exoticArmorItems["iconURL"] . "'  title='" . $exoticArmorItems["name"] . "'>";
