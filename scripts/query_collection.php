@@ -1,6 +1,10 @@
 <?php
 include './scripts/getDataLibrary.php';
-$profileData = getProfile($_GET["account"]);
+if (isset($_GET["account"])){
+		$profileData = getProfile($_GET["account"]);
+	}else{
+		$profileData = getProfile("Hühnchen Süß-Sauer 7,99€");
+	}
 $exoticData = crawlExos();
 
 $playerName = $profileData[0]["Response"]["searchResults"]["0"]["destinyMemberships"][0]["displayName"];
