@@ -95,7 +95,7 @@ function crawlExos(){
 					$weaponSubtypeHash = $responseExotics[$item]["itemCategoryHashes"][2];
 					// lianslate item category hashes to names 
 						// url for api request
-						$urlItemHash = 'https://www.bungie.net/common/destiny2_content/json/de/DestinyItemCategoryDefinition-c8cb3f30-f991-44b8-9f1d-8a25e863bb0e.json';
+						$urlItemHash = $manifestItemURL;
 						// new curl session
 						$chItemHash = curl_init($urlItemHash);
 						// set options for curl session

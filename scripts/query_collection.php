@@ -27,10 +27,14 @@ for ($i = 1; $i <= 3; $i++) {
 			}
 	}
 }
-
+//
+//
+// WEAPONTYPES NEED TO BE INDEPENDENT FROM LANGUAGE
+//
+//
 	// split weapons by type
-	$exoticWeaponsKinetic = array_filter($exoticData[0], function ($value) { return ($value["weaponType"] == "Kinetik"); });
-	$exoticWeaponsEnergy = array_filter($exoticData[0], function ($value) { return ($value["weaponType"] == "Energie"); });
+	$exoticWeaponsKinetic = array_filter($exoticData[0], function ($value) { return ($value["weaponType"] == "Kinetic"); });
+	$exoticWeaponsEnergy = array_filter($exoticData[0], function ($value) { return ($value["weaponType"] == "Energy"); });
 	$exoticWeaponsPower = array_filter($exoticData[0], function ($value) { return ($value["weaponType"] == "Power"); });
 	// sort weapons by subtype
 	function sortBySubtype($item1, $item2) { return strcmp($item1['weaponSubtype'], $item2['weaponSubtype']); }
