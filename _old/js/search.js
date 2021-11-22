@@ -36,36 +36,30 @@ function showSuggestions(list){
     }
     suggBox.innerHTML = listData;
 }
-function getManifestToArray(URL) {
+function getSearchResults(URL) {
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", URL);
 	xhr.setRequestHeader("X-API-Key",akey);
 
 	xhr.onreadystatechange = function () {
 	   if (xhr.readyState === 4) {
+		  //console.log(xhr.status);
 		  xh = JSON.parse(xhr.responseText);
-	console.log(xh);
-		  return xh;
-	   }
-	};
+		  tmp = xh.Response.searchResults;
+		  var tmpR = [];
+		  tmp.forEach(function(item, index, array) {
+			  imgp = 'https://www.bungie.net' + item.destinyMemberships[0].iconPath;
+			  data = item.destinyMemberships[0].membershipId + item.destinyMemberships[0].membershipType;
+			  t = "<li><div class='sresult'><img src='"+imgp+"'>" + item.bungieGlobalDisplayName + "#" + item.bungieGlobalDisplayNameCode + "</div></li>";
+			  tmpR.push(t);
+			});
+			searchWrapper.classList.add("active");
+			showSuggestions(tmpR);
+				let allList = suggBox.querySelectorAll("li");
+				for (let i = 0; i < allList.length; i++) {
+					//adding onclick attribute in all li tag
+					allList[i].setAttribute("onclick", "select(this)");
+				}
+	   }};
 	xhr.send();
-}
-function getSearchResults(URL) {
-	xh = getManifestToArray(URL);
-	console.log(xh);
-	tmp = xh.Response.searchResults;
-	var tmpR = [];
-	tmp.forEach(function(item, index, array) {
-	  imgp = 'https://www.bungie.net' + item.destinyMemberships[0].iconPath;
-	  data = item.destinyMemberships[0].membershipId + item.destinyMemberships[0].membershipType;
-	  t = "<li><div class='sresult'><img src='"+imgp+"'>" + item.bungieGlobalDisplayName + "#" + item.bungieGlobalDisplayNameCode + "</div></li>";
-	  tmpR.push(t);
-	});
-	searchWrapper.classList.add("active");
-	showSuggestions(tmpR);
-		let allList = suggBox.querySelectorAll("li");
-		for (let i = 0; i < allList.length; i++) {
-			//adding onclick attribute in all li tag
-			allList[i].setAttribute("onclick", "select(this)");
-		}
 }

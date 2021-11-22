@@ -18,6 +18,8 @@
 <body>
 <script type="text/javascript">
     var akey = "<?php require ('config.php'); echo $apiKey; ?>";
+    var manifestURL = "<?php require ('config.php'); echo $manifestURL; ?>";
+    var manifestItemURL = "<?php require ('config.php'); echo $manifestItemURL; ?>";
 </script>
 <div class="profile"><include src="scripts/loginheader.php"></include></div>
 <div class="sidebar">
@@ -45,24 +47,6 @@
           <span class="links_name">Spieler1</span>
         </a>
         <span class="tooltip">Spieler1</span>
-      </li>
-      <li>
-        <a href="#">
-          <span class="links_name">Spieler2</span>
-        </a>
-        <span class="tooltip">Spieler2</span>
-      </li>
-      <li>
-        <a href="#">
-          <span class="links_name">Spieler3</span>
-        </a>
-        <span class="tooltip">Spieler3</span>
-      </li>
-      <li>
-        <a href="#">
-          <span class="links_name">Spieler4</span>
-        </a>
-        <span class="tooltip">Spieler4</span>
       </li>
       </div>
       <div class="nav-settings">
