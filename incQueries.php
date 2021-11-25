@@ -30,31 +30,14 @@
             
 // get details for player name
     $acc = $_GET["account"];
-    if ($_GET["platform"]=="Xbox") {
-            $platform = 1;
-        } elseif ($_GET["platform"]=="Playstation") {
-            $platform = 2;
-        } elseif ($_GET["platform"]=="Stadia") {
-            $platform = 5;
-        } else {
-            $platform = 3; // Steam
-        }
+    $platform = $_GET["platform"];
+	
     $responseAccDetail = getCurlResponse($apiKey,'https://www.bungie.net/Platform/User/Search/Prefix/' . $acc . '/0/');
-    
-    // check if multiple accounts
-    $noAccounts = count($responseAccDetail["Response"]["searchResults"]["0"]["destinyMemberships"]);
-    for ($i = 1; $i <= $noAccounts; $i++) {
-        if ($responseAccDetail["Response"]["searchResults"]["0"]["destinyMemberships"][$i-1]["membershipType"] == $platform) {
-                $membershipNo = $i-1;
-            } else {
-                $membershipNo = 0;
-            }
-    }
-    
+	
     // save relevant info
-    $playerName = $responseAccDetail["Response"]["searchResults"]["0"]["destinyMemberships"][$membershipNo]["displayName"];
-    $playerID = $responseAccDetail["Response"]["searchResults"]["0"]["destinyMemberships"][$membershipNo]["membershipId"];
-    $playerMembershipType = $responseAccDetail["Response"]["searchResults"]["0"]["destinyMemberships"][$membershipNo]["membershipType"];
+    $playerName = $responseAccDetail["Response"]["searchResults"]["0"]["destinyMemberships"][0]["displayName"];
+    $playerID = $responseAccDetail["Response"]["searchResults"]["0"]["destinyMemberships"][0]["membershipId"];
+    $playerMembershipType = $platform;
 
 // get details for collectibles
     $responseProfile = getCurlResponse($apiKey,'https://www.bungie.net/Platform/Destiny2/' . $playerMembershipType . '/Profile/' . $playerID . '/?components=900'); // 900 = records (triumphs)

@@ -6,29 +6,17 @@
   </div>
   <ul class="nav-list">
     <li>
-      <i class='bx bx-search' id="searchIcon" onclick="searchAcc()"></i>
-      <input type="search" id="searchAcc" placeholder="Suche bungie-Account...">
-      <span class="tooltip">Search</span>
+		<div class="search-input">
+			<i class='bx bx-search' id="searchIcon"></i>
+			<input type="search" id="searchAcc" placeholder="Suche bungie-Account...">
+			<span class="tooltip">Search</span>
+			<ul>
+				<div class="autocom-box">
+					<!-- searchresults will be inserted here -->
+				</div>
+			</ul>
+		</div>
     </li>
-    <span class="radio">
-        <input type="radio" name="platform" value="Steam" id="Steam" checked>
-            <label for="Steam">
-                <img src="img/logoSteam.svg" alt="Steam">
-            </label>
-        <input type="radio" name="platform" value="Playstation" id="Playstation">
-            <label for="Playstation">
-                <img src="img/logoPlaystation.svg" alt="PlayStation">
-            </label>
-        <input type="radio" name="platform" value="Xbox" id="Xbox">
-            <label for="Xbox">
-                <img src="img/logoXbox.svg" alt="Xbox">
-            </label>
-        <input type="radio" name="platform" value="Stadia" id="Stadia">
-            <label for="Stadia">
-                <img src="img/logoStadia.svg" alt="Stadia">
-            </label>
-      <script src="js/search.js"></script>
-    </span>
     <li><h3>Favoriten-Liste</h3></li>
     <li id="playerBucket">
     </li>
@@ -57,3 +45,4 @@
     </ul>
   </div>
 </div>
+    <script src="./js/search.js"></script>

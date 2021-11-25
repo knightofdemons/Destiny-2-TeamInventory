@@ -15,6 +15,7 @@
     	<link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css"/>
     <!-- js -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script type="text/javascript">var akey = "<?php require ('config.php'); echo $apiKey; ?>"</script>;
 </head>
 
 <body>
