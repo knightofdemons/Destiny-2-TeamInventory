@@ -29,6 +29,8 @@ async function addPlayer(memberID, memberType){
 		var language = 'de'; // hier kann man sich überlegen, dass man die Sprache auch hinterher umstellbar macht, daher schon mal als variable
 		rqURL = 'https://www.bungie.net/Platform/Destiny2/Manifest/';
 		const resManifest = await getData(rqURL);
+		console.log(resManifest);
+		
 		// store .json-paths in object manifestData
 		var manifestData = {
 			'statDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyStatDefinition'], // like [567] -> resilience
