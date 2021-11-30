@@ -1,7 +1,8 @@
+
+
 <meta charset="UTF-8">
 <body>
 	<div align="m">
-		<button onclick="addPlayer('4611686018471653494', '3')">Click me</button> 
 	</div>
 </body>
 
@@ -15,9 +16,20 @@ async function getData(url = '') {
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
     credentials: 'same-origin', // include, *same-origin, omit
-    headers: {
-      "X-API-Key": akey
-    },
+    headers: { 'X-API-Key': akey },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+  });
+  return response.json();
+}
+
+async function getManifest(url = '') {
+    const response = await fetch(url, {
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    //headers: { 'X-API-Key': akey },
     redirect: 'follow', // manual, *follow, error
     referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
   });
@@ -28,8 +40,7 @@ async function addPlayer(memberID, memberType){
 	// get manifest details
 		var language = 'de'; // hier kann man sich überlegen, dass man die Sprache auch hinterher umstellbar macht, daher schon mal als variable
 		rqURL = 'https://www.bungie.net/Platform/Destiny2/Manifest/';
-		const resManifest = await getData(rqURL);
-		console.log(resManifest);
+		const resManifest = await getManifest(rqURL);
 		
 		// store .json-paths in object manifestData
 		var manifestData = {
@@ -39,24 +50,19 @@ async function addPlayer(memberID, memberType){
 			'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'] // like [345] -> leg armor
 		};
 
-console.log(manifestData);
+//console.log(manifestData);
 
-// ################# dieser Block funktioniert noch nicht ########################
-//	
-//	// get details for stats from manifest
-//		const resStatDefinitions = await getData(manifestData.statDefinitions);
-//		// for every item
-//		for (let i = 0; i < resStatDefinitions.length; i++) {
-//			if (!('icon' in resStatDefinitions[Object.keys(resStatDefinitions)[i]]['displayProperties'])) {
-//				(statDefinitions.name = statDefinitions.name || []).push(resStatDefinitions[Object.keys(resStatDefinitions)[i]]['displayProperties']['name']);
-//				(statDefinitions.hash = statDefinitions.hash || []).push(resStatDefinitions[Object.keys(resStatDefinitions)[i]]['hash']);
-//				(statDefinitions.iconURL = statDefinitions.iconURL || []).push('https://www.bungie.net' + resStatDefinitions[Object.keys(resStatDefinitions)[i]]['displayProperties']['icon']);
-//			}
-//		}
-//		
-//console.log(statDefinitions);
-//
-// ################################################################################
+
+	// get details for stats from manifest
+		const resStatDefinitions = await getManifest(manifestData.statDefinitions);
+		// for every item
+console.log(manifestData.statDefinitions);
+		
+		for (var resStatDef in resStatDefinitions) {
+				statDefinitions.name += resStatDef['displayProperties']['name'];
+				statDefinitions.hash += resStatDef['hash'];
+				statDefinitions.iconURL += 'https://www.bungie.net' + resStatDef['displayProperties']['icon'];
+		}
 	
 	// get player details from memberID & memberType (platform)
 		rqURL = 'https://www.bungie.net/Platform/User/GetMembershipsById/' + memberID + '/' + memberType + '/';
@@ -103,8 +109,10 @@ console.log(manifestData);
 		}
 		
 console.log(playerDetails);
-
 }
+
+
+addPlayer('4611686018471653494', '3');
 
 // test ids:
 // Hühnchen: 4611686018471653494 (für Umlaute)
