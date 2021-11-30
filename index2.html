@@ -1,0 +1,112 @@
+<meta charset="UTF-8">
+<body>
+	<div align="m">
+		<button onclick="addPlayer('4611686018471653494', '3')">Click me</button> 
+	</div>
+</body>
+
+<script type="text/javascript">
+
+const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
+
+async function getData(url = '') {
+    const response = await fetch(url, {
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      "X-API-Key": akey
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+  });
+  return response.json();
+}
+
+async function addPlayer(memberID, memberType){
+	// get manifest details
+		var language = 'de'; // hier kann man sich überlegen, dass man die Sprache auch hinterher umstellbar macht, daher schon mal als variable
+		rqURL = 'https://www.bungie.net/Platform/Destiny2/Manifest/';
+		const resManifest = await getData(rqURL);
+		// store .json-paths in object manifestData
+		var manifestData = {
+			'statDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyStatDefinition'], // like [567] -> resilience
+			'itemDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryItemLiteDefinition'], // like [123] -> xenophage
+			'itemCategoryDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyItemCategoryDefinition'], // like [234] -> kinetic weapon
+			'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'] // like [345] -> leg armor
+		};
+
+console.log(manifestData);
+
+// ################# dieser Block funktioniert noch nicht ########################
+//	
+//	// get details for stats from manifest
+//		const resStatDefinitions = await getData(manifestData.statDefinitions);
+//		// for every item
+//		for (let i = 0; i < resStatDefinitions.length; i++) {
+//			if (!('icon' in resStatDefinitions[Object.keys(resStatDefinitions)[i]]['displayProperties'])) {
+//				(statDefinitions.name = statDefinitions.name || []).push(resStatDefinitions[Object.keys(resStatDefinitions)[i]]['displayProperties']['name']);
+//				(statDefinitions.hash = statDefinitions.hash || []).push(resStatDefinitions[Object.keys(resStatDefinitions)[i]]['hash']);
+//				(statDefinitions.iconURL = statDefinitions.iconURL || []).push('https://www.bungie.net' + resStatDefinitions[Object.keys(resStatDefinitions)[i]]['displayProperties']['icon']);
+//			}
+//		}
+//		
+//console.log(statDefinitions);
+//
+// ################################################################################
+	
+	// get player details from memberID & memberType (platform)
+		rqURL = 'https://www.bungie.net/Platform/User/GetMembershipsById/' + memberID + '/' + memberType + '/';
+		const resPlayerDetails = await getData(rqURL);
+		// store displayName & nameCode in object playerDetails (displayName != bungie name)
+		var playerDetails = {
+			'name':resPlayerDetails['Response']['destinyMemberships'][0]['displayName'],  // statt der 0 alleine muss man jeweils noch den loop aus der php einbinden für mehrere platforms (vgl mit id für BlackBlotch)
+			'nameCode':resPlayerDetails['Response']['destinyMemberships'][0]['bungieGlobalDisplayNameCode'] // s.o.
+		};
+		
+	// get details for collectibles
+		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=900';  // 900 = records (triumphs)
+		const resTriumphs = await getData(rqURL);
+		// character ids are keys in 'data'
+		playerDetails.charIDs = Object.keys(resTriumphs['Response']['characterRecords']['data']);
+	
+	// get details for character equipment
+		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=205'; // 205 = character equipment
+		const resCharEq = await getData(rqURL);
+		// for every character
+		for (let i = 0; i < playerDetails.charIDs.length; i++) { 
+			(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resCharEq['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
+		}
+			
+	// get details for character inventory
+		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=201'; // 201 = character inventory
+		const resCharInv = await getData(rqURL);
+		// for every character
+		for (let i = 0; i < playerDetails.charIDs.length; i++) { 
+			(playerDetails.charInventory = playerDetails.charInventory || []).push(resCharInv['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
+		}
+	
+	// get character details for every character
+		for (let i = 0; i < playerDetails.charIDs.length; i++) { 
+			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/Character/' + playerDetails.charIDs[i] + '/?components=200';
+			const resCharDetails = await getData(rqURL);
+			(playerDetails.charLight = playerDetails.charLight || []).push(resCharDetails['Response']['character']['data']['light']);
+			(playerDetails.charClass = playerDetails.charClass || []).push(resCharDetails['Response']['character']['data']['classType']);
+			(playerDetails.charRace = playerDetails.charRace || []).push(resCharDetails['Response']['character']['data']['raceType']);
+			(playerDetails.charGender = playerDetails.charGender || []).push(resCharDetails['Response']['character']['data']['genderType']);
+			(playerDetails.charEmblem = playerDetails.charEmblem || []).push("https://www.bungie.net" + resCharDetails['Response']['character']['data']['emblemBackgroundPath']);
+			(playerDetails.charStats = playerDetails.charStats || []).push(resCharDetails['Response']['character']['data']['stats']); // 7 stats: [hash] -> value
+			(playerDetails.charLastPlayed = playerDetails.charLastPlayed || []).push(resCharDetails['Response']['character']['data']['dateLastPlayed']); // wollte ich vllt später gebrauchen
+		}
+		
+console.log(playerDetails);
+
+}
+
+// test ids:
+// Hühnchen: 4611686018471653494 (für Umlaute)
+// BlackBlotch: 4611686018471477303 (für mehrere Platformen)
+// quaithemerald: 4611686018489703844 (für nur zwei character) 
+
+</script>
