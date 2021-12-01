@@ -135,7 +135,8 @@ function addPlayer(cP){
 			HTML = "<div id='acc-" + cP.membershipId + "'><ul class='list-header'><li class='list-header-playername'><img src='" + cP.profilePicturePath + "'>" + cP.platformName + "</li><li class='list-header-char'>";
 					for (index in cP.charIDs) {
 						const cChar = cP.charIDs[index];
-						HTML += "<div class='list-char-img'><img src='" + cP.charEmblem[index] + "'><div class='list-char-cls'>" + cP.charClass[index] + "</div><div class='list-char-pwr'> &#10023;" + cP.charLight[index] + "</div></div>";
+						HTML += "<div class='list-char-img'><img src='" + cP.charEmblem[index] + "'><div class='list-char-cls'>" + cP.charClass[index] + "</div><div class='list-char-pwr'> &#10023;" + cP.charLight[index] + "</div><div class='list-char-sts'> " + cP.charStats[index] + "</div></div>";
+			console.log('charStats: ', cP.charStats[index]);
 					}
 					HTML += "</li></ul></div>";
 					document.getElementById("main").innerHTML += HTML;
