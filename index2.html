@@ -27,13 +27,13 @@ async function getManifest(url = '') {
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
     credentials: 'same-origin', // include, *same-origin, omit
-//headers: { 'X-API-Key': akey },
     redirect: 'follow', // manual, *follow, error
     referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
   });
   return response.json();
 }
 
+// ################# die ganzen Abrufe mit getManifest kann man evtl nur 1x pro session ausführen? statt 1x pro addPlayer() ####################
 async function addPlayer(memberID, memberType){
 	// get manifest details
 		var language = 'de'; // hier kann man sich überlegen, dass man die Sprache auch hinterher umstellbar macht, daher schon mal als variable
@@ -47,8 +47,7 @@ async function addPlayer(memberID, memberType){
 				'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'] // like [345] -> leg armor
 			};
 
-console.log('manifestData: ',manifestData); // funktioniert
-
+console.log('manifestData: ', manifestData);
 
 	// get details for stats from manifest
 		const resStatDefinitions = await getManifest(manifestData.statDefinitions);
@@ -59,9 +58,30 @@ console.log('manifestData: ',manifestData); // funktioniert
 				(statDefinitions.hash = statDefinitions.hash || []).push(resStatDefinitions[resStatDef]['hash']);
 				(statDefinitions.iconURL = statDefinitions.iconURL || []).push('https://www.bungie.net' + resStatDefinitions[resStatDef]['displayProperties']['icon']);
 			};
-			
-console.log('statDefinitions: ', statDefinitions);
 
+console.log('statDefinitions: ', statDefinitions);
+	
+	// get details for items from manifest
+		const resItemDetails = await getManifest(manifestData.itemDetails);
+		const resItemCategoryDetails = await getManifest(manifestData.itemCategoryDetails);
+		// for every item
+			var itemDetails = {};
+			for (var resItem in resItemDetails) {
+				// filter only exotic weapons & every item once; otherwise, resItemDetails[resItem].itemCategoryHashes can be undefined
+				if (resItemDetails[resItem]['equippingBlock'] !== undefined && resItemDetails[resItem]['equippingBlock']['uniqueLabel'] !== undefined && resItemDetails[resItem]['collectibleHash'] !== undefined && (resItemDetails[resItem]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDetails[resItem]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
+					(itemDetails.name = itemDetails.name || []).push(resItemDetails[resItem]['displayProperties']['name']);
+					(itemDetails.id = itemDetails.id || []).push(resItem);
+					(itemDetails.iconURL = itemDetails.iconURL || []).push('https://www.bungie.net' + resItemDetails[resItem]['displayProperties']['icon']);
+					(itemDetails.collectibleID = itemDetails.collectibleID || []).push(resItemDetails[resItem]['collectibleHash']);
+					(itemDetails.type = itemDetails.type || []).push(resItemDetails[resItem]['itemTypeDisplayName']);
+					(itemDetails.categoryHash = itemDetails.categoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][0]);
+					(itemDetails.category = itemDetails.category || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][0]]['shortTitle']);
+					(itemDetails.subcategoryHash = itemDetails.subcategoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][2]);
+					(itemDetails.subcategory = itemDetails.subcategory || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][2]]['shortTitle']);
+				}
+			};
+	
+console.log('itemDetails: ', itemDetails);	
 	
 	// get player details from memberID & memberType (platform)
 		rqURL = 'https://www.bungie.net/Platform/User/GetMembershipsById/' + memberID + '/All/';
