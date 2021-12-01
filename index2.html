@@ -1,6 +1,6 @@
 <meta charset="UTF-8">
 <body>
-	<button onclick="buttonClick()">Click me</button> 
+	<button onclick="buttonClick('4611686018471653494', '3')">Add Player</button> 
 	<div id="main">
 	</div>
 </body>
@@ -8,38 +8,40 @@
 <script type="text/javascript">
 
 
+
 const language = 'de';
-let LoadedAccs = 0;
 const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
 getInitData();
 
-async function buttonClick(){
-		//temporäre funktion zum hinzufügen eines neuen spielers, wird durch suchleiste ersetzt
-		currentPlayer = await getPlayer('4611686018471653494', '3');
-		addPlayer(currentPlayer);
-		addPlayerToStorage(currentPlayer);
+async function buttonClick(membershipId, platformType){
+		//temporary function to add a player | will be replaced by searchbar-submit
+		currentPlayer = await getPlayer(membershipId, platformType);
+		//checks if div-container is already existing for current player
+		if(!document.getElementById("acc-" + currentPlayer.membershipId).innerHTML){
+			addPlayer(currentPlayer);
+			addPlayerToStorage(currentPlayer);
+		}else{
+			console.log("already existing player");
+		}
 }
 
-async function getData(url = '') {
-    const response = await fetch(url, {
-    method: 'GET', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, *cors, same-origin
-    cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
-    headers: { 'X-API-Key': akey },
-    redirect: 'follow', // manual, *follow, error
-    referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-  });
-  return response.json();
+async function getData(url, useApiKey = true) {
+		//fetch json response for getRequests | use false as option to generate a request without using the apikey
+		let tmpHead = new Headers();
+		if(useApiKey){tmpHead.set('X-API-Key', akey);}
+		const fetchOptions = {
+			method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer', headers:tmpHead,
+		};
+		const response = await fetch(url, fetchOptions);
+		return response.json();
 }
 
 // ################# die ganzen Abrufe mit getManifest kann man evtl nur 1x pro session ausführen? statt 1x pro addPlayer() ####################
 // - richtig und wichtig
 async function getInitData(){
 	// get manifest details
-
 		rqURL = 'https://www.bungie.net/Platform/Destiny2/Manifest/';
-		const resManifest = await getManifest(rqURL);
+		const resManifest = await getData(rqURL, false);
 		// store .json-paths in object manifestData
 			var manifestData = {
 				'statDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyStatDefinition'], // like [567] -> resilience
@@ -48,10 +50,8 @@ async function getInitData(){
 				'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'] // like [345] -> leg armor
 			};
 
-		//console.log('manifestData: ', manifestData);
-
 	// get details for stats from manifest
-		const resStatDefinitions = await getManifest(manifestData.statDefinitions);
+		const resStatDefinitions = await getData(manifestData.statDefinitions, false);
 		// for every item
 			var statDefinitions = {};
 			for (var resStatDef in resStatDefinitions) {
@@ -59,12 +59,10 @@ async function getInitData(){
 				(statDefinitions.hash = statDefinitions.hash || []).push(resStatDefinitions[resStatDef]['hash']);
 				(statDefinitions.iconURL = statDefinitions.iconURL || []).push('https://www.bungie.net' + resStatDefinitions[resStatDef]['displayProperties']['icon']);
 			};
-
-		//console.log('statDefinitions: ', statDefinitions);
 	
 	// get details for items from manifest
-		const resItemDetails = await getManifest(manifestData.itemDetails);
-		const resItemCategoryDetails = await getManifest(manifestData.itemCategoryDetails);
+		const resItemDetails = await getData(manifestData.itemDetails, false);
+		const resItemCategoryDetails = await getData(manifestData.itemCategoryDetails, false);
 		// for every item
 			var itemDetails = {};
 			for (var resItem in resItemDetails) {
@@ -81,8 +79,6 @@ async function getInitData(){
 					(itemDetails.subcategory = itemDetails.subcategory || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][2]]['shortTitle']);
 				}
 			};
-	
-		//console.log('itemDetails: ', itemDetails);
 
 	// load recent players from browserstorage
 		var storageInit = JSON.parse(localStorage.getItem("LoadedPlayers"));
@@ -90,19 +86,10 @@ async function getInitData(){
 			currentPlayer = await getPlayer(storageInit[i].membershipId[0], storageInit[i].platformType[0]);
 			addPlayer(currentPlayer);
 		}
-					
-}
-
-async function getManifest(url = '') {
-    const response = await fetch(url, {
-    method: 'GET', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, *cors, same-origin
-    cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
-    redirect: 'follow', // manual, *follow, error
-    referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-  });
-  return response.json();
+			
+		//console.log('itemDetails: ', itemDetails);
+		//console.log('statDefinitions: ', statDefinitions);
+		//console.log('manifestData: ', manifestData);		
 }
 
 async function getPlayer(memberID, memberType){
@@ -145,25 +132,34 @@ async function getPlayer(memberID, memberType){
 }
 
 function addPlayer(cP){
-			HTML = "<div id='acc-" + LoadedAccs + "'><ul class='list-header'><li class='list-header-playername'><img src='" + cP.profilePicturePath + "'>" + cP.platformName + "</li><li class='list-header-char'>";
+			HTML = "<div id='acc-" + cP.membershipId + "'><ul class='list-header'><li class='list-header-playername'><img src='" + cP.profilePicturePath + "'>" + cP.platformName + "</li><li class='list-header-char'>";
 					for (index in cP.charIDs) {
 						const cChar = cP.charIDs[index];
 						HTML += "<div class='list-char-img'><img src='" + cP.charEmblem[index] + "'><div class='list-char-cls'>" + cP.charClass[index] + "</div><div class='list-char-pwr'> &#10023;" + cP.charLight[index] + "</div></div>";
 					}
 					HTML += "</li></ul></div>";
-					LoadedAccs ++;
 					document.getElementById("main").innerHTML += HTML;
 }
 
 function addPlayerToStorage(cP){
 			var storageTmp = JSON.parse(localStorage.getItem("LoadedPlayers"));
 			(storageTmp = storageTmp || []).push(cP);
+			console.log("saving to local storage");
 			localStorage.setItem("LoadedPlayers", JSON.stringify(storageTmp));
 			}
 
-// test ids:
-// Hühnchen: 4611686018471653494 (für Umlaute)
-// BlackBlotch: 4611686018471477303 (für mehrere Platformen)
-// quaithemerald: 4611686018489703844 (für nur zwei character) 
+/*
+test ids:
+Hühnchen: 4611686018471653494 (für Umlaute)
+BlackBlotch: 4611686018471477303 (für mehrere Platformen)
+quaithemerald: 4611686018489703844 (für nur zwei character) 
 
+method: 'GET', // *GET, POST, PUT, DELETE, etc.
+mode: 'cors', // no-cors, *cors, same-origin
+cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
+credentials: 'same-origin', // include, *same-origin, omit
+headers: { 'X-API-Key': akey },
+redirect: 'follow', // manual, *follow, error
+referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+*/
 </script>
