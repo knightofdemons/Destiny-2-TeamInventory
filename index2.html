@@ -1,12 +1,16 @@
 <meta charset="UTF-8">
 <body>
-	<div align="m">
+	<div id="main">
 	</div>
 </body>
 
 <script type="text/javascript">
 
+
+const language = 'de';
+let LoadedAccs = 0;
 const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
+getInitData();
 
 async function getData(url = '') {
     const response = await fetch(url, {
@@ -21,22 +25,11 @@ async function getData(url = '') {
   return response.json();
 }
 
-async function getManifest(url = '') {
-    const response = await fetch(url, {
-    method: 'GET', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, *cors, same-origin
-    cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
-    redirect: 'follow', // manual, *follow, error
-    referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-  });
-  return response.json();
-}
-
 // ################# die ganzen Abrufe mit getManifest kann man evtl nur 1x pro session ausführen? statt 1x pro addPlayer() ####################
-async function addPlayer(memberID, memberType){
+// - richtig und wichtig
+async function getInitData(){
 	// get manifest details
-		var language = 'de'; // hier kann man sich überlegen, dass man die Sprache auch hinterher umstellbar macht, daher schon mal als variable
+
 		rqURL = 'https://www.bungie.net/Platform/Destiny2/Manifest/';
 		const resManifest = await getManifest(rqURL);
 		// store .json-paths in object manifestData
@@ -47,7 +40,7 @@ async function addPlayer(memberID, memberType){
 				'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'] // like [345] -> leg armor
 			};
 
-console.log('manifestData: ', manifestData);
+		//console.log('manifestData: ', manifestData);
 
 	// get details for stats from manifest
 		const resStatDefinitions = await getManifest(manifestData.statDefinitions);
@@ -59,7 +52,7 @@ console.log('manifestData: ', manifestData);
 				(statDefinitions.iconURL = statDefinitions.iconURL || []).push('https://www.bungie.net' + resStatDefinitions[resStatDef]['displayProperties']['icon']);
 			};
 
-console.log('statDefinitions: ', statDefinitions);
+		//console.log('statDefinitions: ', statDefinitions);
 	
 	// get details for items from manifest
 		const resItemDetails = await getManifest(manifestData.itemDetails);
@@ -81,8 +74,25 @@ console.log('statDefinitions: ', statDefinitions);
 				}
 			};
 	
-console.log('itemDetails: ', itemDetails);	
-	
+		//console.log('itemDetails: ', itemDetails);
+
+		currentPlayer = await getPlayer('4611686018471653494', '3');
+		addPlayer(currentPlayer);		
+}
+
+async function getManifest(url = '') {
+    const response = await fetch(url, {
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+  });
+  return response.json();
+}
+
+async function getPlayer(memberID, memberType){
 	// get player details from memberID & memberType (platform)
 		rqURL = 'https://www.bungie.net/Platform/User/GetMembershipsById/' + memberID + '/All/';
 		const resPlayerDetails = await getData(rqURL);
@@ -90,6 +100,7 @@ console.log('itemDetails: ', itemDetails);
 			var playerDetails = {
 				'nameCode':resPlayerDetails['Response']['destinyMemberships'][0]['bungieGlobalDisplayNameCode']
 			};
+			playerDetails.profilePicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['bungieNetUser']['profilePicturePath'];
 			for (let i = 0; i < resPlayerDetails['Response']['destinyMemberships'].length; i++){
 				(playerDetails.platformName = playerDetails.platformName || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['displayName']); // (displayName != bungie name)
 				(playerDetails.platformID = playerDetails.platformID || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['membershipId']);
@@ -116,11 +127,21 @@ console.log('itemDetails: ', itemDetails);
 				(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
 				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
 			}
-		
-console.log('playerDetails: ', playerDetails);
+			console.log('playerDetails: ', playerDetails);
+			return playerDetails;
 }
 
-addPlayer('4611686018471653494', '3');
+function addPlayer(cP){
+			HTML = "<div id='acc-" + LoadedAccs + "'><ul class='list-header'><li class='list-header-playername'><img src='" + cP.profilePicturePath + "'>" + cP.platformName + "</li><li class='list-header-char'>";
+					for (index in cP.charIDs) {
+						const cChar = cP.charIDs[index];
+						HTML += "<div class='list-char-img'><img src='" + cP.charEmblem[index] + "'><div class='list-char-cls'>" + cP.charClass[index] + "</div><div class='list-char-pwr'> &#10023;" + cP.charLight[index] + "</div></div>";
+					}
+					HTML += "</li></ul></div>";
+					LoadedAccs ++;
+					console.log(HTML);
+					document.getElementById("main").innerHTML += HTML;
+}
 
 // test ids:
 // Hühnchen: 4611686018471653494 (für Umlaute)
