@@ -1,5 +1,6 @@
 <meta charset="UTF-8">
 <body>
+	<button onclick="buttonClick()">Click me</button> 
 	<div id="main">
 	</div>
 </body>
@@ -11,6 +12,13 @@ const language = 'de';
 let LoadedAccs = 0;
 const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
 getInitData();
+
+async function buttonClick(){
+		//temporäre funktion zum hinzufügen eines neuen spielers, wird durch suchleiste ersetzt
+		currentPlayer = await getPlayer('4611686018471653494', '3');
+		addPlayer(currentPlayer);
+		addPlayerToStorage(currentPlayer);
+}
 
 async function getData(url = '') {
     const response = await fetch(url, {
@@ -76,8 +84,13 @@ async function getInitData(){
 	
 		//console.log('itemDetails: ', itemDetails);
 
-		currentPlayer = await getPlayer('4611686018471653494', '3');
-		addPlayer(currentPlayer);		
+	// load recent players from browserstorage
+		var storageInit = JSON.parse(localStorage.getItem("LoadedPlayers"));
+		for (var i in storageInit){
+			currentPlayer = await getPlayer(storageInit[i].membershipId[0], storageInit[i].platformType[0]);
+			addPlayer(currentPlayer);
+		}
+					
 }
 
 async function getManifest(url = '') {
@@ -103,7 +116,7 @@ async function getPlayer(memberID, memberType){
 			playerDetails.profilePicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['bungieNetUser']['profilePicturePath'];
 			for (let i = 0; i < resPlayerDetails['Response']['destinyMemberships'].length; i++){
 				(playerDetails.platformName = playerDetails.platformName || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['displayName']); // (displayName != bungie name)
-				(playerDetails.platformID = playerDetails.platformID || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['membershipId']);
+				(playerDetails.membershipId = playerDetails.membershipId || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['membershipId']);
 				(playerDetails.platformType = playerDetails.platformType || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['membershipType']);
 			};
 		
@@ -127,7 +140,7 @@ async function getPlayer(memberID, memberType){
 				(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
 				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
 			}
-			console.log('playerDetails: ', playerDetails);
+			//console.log('playerDetails: ', playerDetails);
 			return playerDetails;
 }
 
@@ -139,9 +152,14 @@ function addPlayer(cP){
 					}
 					HTML += "</li></ul></div>";
 					LoadedAccs ++;
-					console.log(HTML);
 					document.getElementById("main").innerHTML += HTML;
 }
+
+function addPlayerToStorage(cP){
+			var storageTmp = JSON.parse(localStorage.getItem("LoadedPlayers"));
+			(storageTmp = storageTmp || []).push(cP);
+			localStorage.setItem("LoadedPlayers", JSON.stringify(storageTmp));
+			}
 
 // test ids:
 // Hühnchen: 4611686018471653494 (für Umlaute)
