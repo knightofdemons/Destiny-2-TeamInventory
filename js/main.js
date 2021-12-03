@@ -2,6 +2,7 @@ const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
 let statDefinitions = {};
 let itemDetails = {};
 let lang = '';
+let playerlist = {};
 
 InitData();
 
@@ -118,6 +119,7 @@ async function getPlayer(memberID, memberType){
 				'nameCode':resPlayerDetails['Response']['destinyMemberships'][0]['bungieGlobalDisplayNameCode']
 			};
 			playerDetails.profilePicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['bungieNetUser']['profilePicturePath'];
+			playerDetails.platformPicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['destinyMemberships'][0]['iconPath'];
 			playerDetails.bungieName = resPlayerDetails['Response']['bungieNetUser']['uniqueName'];
 			for (let i = 0; i < resPlayerDetails['Response']['destinyMemberships'].length; i++){
 				(playerDetails.platformName = playerDetails.platformName || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['displayName']);
@@ -168,6 +170,7 @@ function addPlayer(cP){
 			}
 			HTML += "</div></div></li></ul></div>";
 			document.getElementById("main").innerHTML += HTML;
+			document.getElementById("playerBucket").innerHTML += "<li id='playerElement'><img src='" + cP.platformPicturePath + "'>" + cP.bungieName + "<i class='bx bx-bookmark-minus' ></i></li>";
 }
 
 function addPlayerToStorage(data){
