@@ -1,25 +1,21 @@
 <meta charset="UTF-8">
-<body>
+<body style="background-color: #2B2B2B;">
 	<button onclick="buttonClick('4611686018471653494', '3')">Add Player</button> 
 	<div id="main">
 	</div>
 </body>
 
 <script type="text/javascript">
-
-
-
 const language = 'de';
 const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
 getInitData();
 
 async function buttonClick(membershipId, platformType){
-		//temporary function to add a player | will be replaced by searchbar-submit
-		currentPlayer = await getPlayer(membershipId, platformType);
-		//checks if div-container is already existing for current player
-		if(!document.getElementById("acc-" + currentPlayer.membershipId).innerHTML){
+		//checks if div-container is already existing for current player & add player if not
+		if(!document.getElementById("acc-" + membershipId)){
+			currentPlayer = await getPlayer(membershipId, platformType); //temporary function to add a player | will be replaced by searchbar-submit
 			addPlayer(currentPlayer);
-			addPlayerToStorage(currentPlayer);
+			addDataToStorage(currentPlayer,"LoadedPlayers");
 		}else{
 			console.log("already existing player");
 		}
@@ -86,10 +82,14 @@ async function getInitData(){
 			currentPlayer = await getPlayer(storageInit[i].membershipId[0], storageInit[i].platformType[0]);
 			addPlayer(currentPlayer);
 		}
-			
-		//console.log('itemDetails: ', itemDetails);
-		//console.log('statDefinitions: ', statDefinitions);
-		//console.log('manifestData: ', manifestData);		
+		
+	// save all initData to browserstorage
+	const initData = {itemDetails,statDefinitions};
+		addDataToStorage(initData,"initData");
+
+//console.log('itemDetails: ', itemDetails);
+//console.log('statDefinitions: ', statDefinitions);
+//console.log('manifestData: ', manifestData);		
 }
 
 async function getPlayer(memberID, memberType){
@@ -127,27 +127,40 @@ async function getPlayer(memberID, memberType){
 				(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
 				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
 			}
-			//console.log('playerDetails: ', playerDetails);
+//console.log('playerDetails: ', playerDetails);
 			return playerDetails;
 }
 
 function addPlayer(cP){
-			HTML = "<div id='acc-" + cP.membershipId + "'><ul class='list-header'><li class='list-header-playername'><img src='" + cP.profilePicturePath + "'>" + cP.platformName + "</li><li class='list-header-char'>";
-					for (index in cP.charIDs) {
-						const cChar = cP.charIDs[index];
-						HTML += "<div class='list-char-img'><img src='" + cP.charEmblem[index] + "'><div class='list-char-cls'>" + cP.charClass[index] + "</div><div class='list-char-pwr'> &#10023;" + cP.charLight[index] + "</div><div class='list-char-sts'> " + cP.charStats[index] + "</div></div>";
-			console.log('charStats: ', cP.charStats[index]);
-					}
-					HTML += "</li></ul></div>";
-					document.getElementById("main").innerHTML += HTML;
+	// load initData from browserstorage
+		var initData = JSON.parse(localStorage.getItem("initData"))[0];
+	
+	// add HTML
+	HTML = "<div id='acc-" + cP.membershipId + "'><ul class='list-header'><li class='list-header-playername'><img src='" + cP.profilePicturePath + "'>" + cP.platformName + "</li><li class='list-header-char'>";
+			for (index in cP.charIDs) {
+				const cChar = cP.charIDs[index];
+				HTML += "<div class='list-char-img'>" +
+							"<img src='" + cP.charEmblem[index] + "'>" +
+							"<div class='list-char-cls'>" + cP.charClass[index] + "</div>" +
+							"<div class='list-char-pwr'> &#10023;" + cP.charLight[index] + "</div>" +
+						"</div>" +	
+						"<div class='list-char-sts'>";	
+							for (var stat in cP.charStats[index]) {
+				HTML +=			"<img src='" + initData.statDefinitions.iconURL[initData.statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
+								cP.charStats[index][stat] + "&emsp;&emsp;";
+							}
+				HTML +=	"</div>";
+			}
+			HTML += "</li></ul></div>";
+			document.getElementById("main").innerHTML += HTML;
 }
 
-function addPlayerToStorage(cP){
-			var storageTmp = JSON.parse(localStorage.getItem("LoadedPlayers"));
-			(storageTmp = storageTmp || []).push(cP);
-			console.log("saving to local storage");
-			localStorage.setItem("LoadedPlayers", JSON.stringify(storageTmp));
-			}
+function addDataToStorage(data,name){
+	var storageTmp = JSON.parse(localStorage.getItem(name));
+	(storageTmp = storageTmp || []).push(data);
+	console.log("saving " + name + " to local storage");
+	localStorage.setItem(name, JSON.stringify(storageTmp));
+}
 
 /*
 test ids:
