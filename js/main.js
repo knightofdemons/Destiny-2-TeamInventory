@@ -153,7 +153,7 @@ function addPlayer(cP){
 				"<h4>" +
 				"<img src='" + cP.profilePicturePath + "' width='40' height='40'>"	+
 				cP.bungieName +
-				"<img src='css/img/logo" + cP.platformType + ".svg' width='20' height='20'>" +
+				"<img src='css/images/logo" + cP.platformType + ".svg' width='20' height='20'>" +
 				"</h4>" +
 				"<div class='charList'>";
 				for (index in cP.charIDs) {
