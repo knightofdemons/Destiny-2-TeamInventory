@@ -104,10 +104,7 @@ async function InitData(){
 			currentPlayer = await getPlayer(loadedPlayers[i].membershipId[0], loadedPlayers[i].platformType[0]);
 			addPlayer(currentPlayer);
 		}
-	}
-//console.log('itemDetails: ', itemDetails);
-//console.log('statDefinitions: ', statDefinitions);
-//console.log('manifestPaths: ', manifestPaths);		
+	}		
 }
 
 async function getPlayer(memberID, memberType){
@@ -148,7 +145,6 @@ async function getPlayer(memberID, memberType){
 				(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
 				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
 			}
-//console.log('playerDetails: ', playerDetails);
 			return playerDetails;
 }
 
