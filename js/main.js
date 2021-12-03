@@ -2,6 +2,7 @@ const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
 let statDefinitions = {};
 let itemDetails = {};
 let lang = '';
+let playerlist = {};
 
 InitData();
 
@@ -115,6 +116,7 @@ async function getPlayer(memberID, memberType){
 				'nameCode':resPlayerDetails['Response']['destinyMemberships'][0]['bungieGlobalDisplayNameCode']
 			};
 			playerDetails.profilePicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['bungieNetUser']['profilePicturePath'];
+			playerDetails.platformPicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['destinyMemberships'][0]['iconPath'];
 			playerDetails.bungieName = resPlayerDetails['Response']['bungieNetUser']['uniqueName'];
 			for (let i = 0; i < resPlayerDetails['Response']['destinyMemberships'].length; i++){
 				(playerDetails.platformName = playerDetails.platformName || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['displayName']);
@@ -149,29 +151,22 @@ async function getPlayer(memberID, memberType){
 function addPlayer(cP){
 	
 	// add HTML
-	HTML = "<div id='acc-" + cP.membershipId + "'>" +
-				"<h4><img class='avatar' src='" + cP.profilePicturePath + "'>"	+ cP.bungieName + "</h4>" +
-				"<div class='charList'>";
-				for (index in cP.charIDs) {
-	HTML += 		"<div class='charEmblemImg'>" +
-						"<img src='" + cP.charEmblem[index] + "'>" +
-						"<div class='charEmblemClass'>" + cP.charClass[index] + "</div>" +
-						"<div class='charEmblemLvl'> &#10023;" + cP.charLight[index] + "</div>" +
-					"</div>";
-				}
-	HTML +=		"</div>" +
-				"<div class='charList'>";
-				for (index in cP.charIDs) {
-	HTML +=			"<div class='charStats'>";
-					for (let stat in cP.charStats[index]) {
-	HTML +=				"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
-						cP.charStats[index][stat] + "&emsp;&emsp;";
-					}
-	HTML +=			"</div>";				
-					}
-	HTML +=		"</div>" +
-			"</div>";
-	document.getElementById("main").innerHTML += HTML;
+	HTML = "<div id='acc-" + cP.membershipId + "'><ul class='headerList'><li class='charPlayerName'><img src='" + cP.profilePicturePath + "'>" + cP.bungieName + "</li><li class='charList'>";
+			for (index in cP.charIDs) {
+				const cChar = cP.charIDs[index];
+				HTML += "<div class='charEmblemImg'>" +
+							"<img src='" + cP.charEmblem[index] + "'>" +
+							"<div class='charEmblemClass'>" + cP.charClass[index] + "</div>" +
+							"<div class='charEmblemLvl'> &#10023;" + cP.charLight[index] + "</div>" +
+							"<div class='charStats'>";	
+							for (let stat in cP.charStats[index]) {
+				HTML +=			"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
+								cP.charStats[index][stat] + "&emsp;&emsp;";
+							}
+			}
+			HTML += "</div></div></li></ul></div>";
+			document.getElementById("main").innerHTML += HTML;
+			document.getElementById("playerBucket").innerHTML += "<li id='playerElement'><img src='" + cP.platformPicturePath + "'>" + cP.bungieName + "<i class='bx bx-bookmark-minus' ></i></li>";
 }
 
 function addPlayerToStorage(data){
