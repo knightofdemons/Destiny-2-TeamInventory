@@ -153,7 +153,7 @@ function addPlayer(cP){
 				"<h4>" +
 				"<img src='" + cP.profilePicturePath + "' width='40' height='40'>"	+
 				cP.bungieName +
-				"<img class='platformLogo' src='css/images/logo" + cP.platformType + ".svg'>" +
+				"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" + // hier muss man noch schauen, platformtype ist nicht immer 0, zb. bei drasuk ist es [3,5], da muss man das jeweilige gesuchte nehmen
 				"</h4>" +
 				"<div class='charList'>";
 				for (index in cP.charIDs) {
@@ -176,7 +176,13 @@ function addPlayer(cP){
 	HTML +=		"</div>" +
 			"</div>";
 	document.getElementById("main").innerHTML += HTML;
-	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'><img class='platformLogo' src='css/images/logo" + cP.platformType + ".svg'>" + cP.bungieName + "<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i></li>";
+	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
+																"<a>" +
+																	"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
+																	cP.platformName[0] +
+																	"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
+																"</a>";
+															"</li>";
 }
 
 function deletePlayer(membershipId){
