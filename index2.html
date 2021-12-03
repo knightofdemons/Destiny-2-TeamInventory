@@ -6,16 +6,19 @@
 </body>
 
 <script type="text/javascript">
-const language = 'de';
 const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
-getInitData();
+let statDefinitions = {};
+let itemDetails = {};
+let lang = '';
+
+InitData();
 
 async function buttonClick(membershipId, platformType){
 		//checks if div-container is already existing for current player & add player if not
 		if(!document.getElementById("acc-" + membershipId)){
 			currentPlayer = await getPlayer(membershipId, platformType); //temporary function to add a player | will be replaced by searchbar-submit
 			addPlayer(currentPlayer);
-			addDataToStorage(currentPlayer,"LoadedPlayers");
+			addPlayerToStorage(currentPlayer);
 		}else{
 			console.log("already existing player");
 		}
@@ -25,71 +28,93 @@ async function getData(url, useApiKey = true) {
 		//fetch json response for getRequests | use false as option to generate a request without using the apikey
 		let tmpHead = new Headers();
 		if(useApiKey){tmpHead.set('X-API-Key', akey);}
-		const fetchOptions = {
-			method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer', headers:tmpHead,
-		};
+		const fetchOptions = {method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer', headers:tmpHead,};
 		const response = await fetch(url, fetchOptions);
 		return response.json();
 }
 
-// ################# die ganzen Abrufe mit getManifest kann man evtl nur 1x pro session ausführen? statt 1x pro addPlayer() ####################
-// - richtig und wichtig
-async function getInitData(){
+async function checkManifestVersion(language) {
+	if(localStorage.getItem("manifestPaths")){
+		var manifestPaths = JSON.parse(localStorage.getItem("manifestPaths"));
+	}else{
+		var manifestPaths = {'statDefinitions':'/oops'};
+	}
+	const check = await fetch(manifestPaths.statDefinitions, {method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer',});
+	if (check.status == 404) {
 	// get manifest details
 		rqURL = 'https://www.bungie.net/Platform/Destiny2/Manifest/';
 		const resManifest = await getData(rqURL, false);
-		// store .json-paths in object manifestData
-			var manifestData = {
+		// store .json-paths in object manifestPaths
+			manifestPaths = {
 				'statDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyStatDefinition'], // like [567] -> resilience
 				'itemDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryItemLiteDefinition'], // like [123] -> xenophage
 				'itemCategoryDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyItemCategoryDefinition'], // like [234] -> kinetic weapon
 				'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'] // like [345] -> leg armor
 			};
+			localStorage.setItem("manifestPaths", JSON.stringify(manifestPaths));
+	}
+	return manifestPaths;
+}
 
-	// get details for stats from manifest
-		const resStatDefinitions = await getData(manifestData.statDefinitions, false);
-		// for every item
-			var statDefinitions = {};
-			for (var resStatDef in resStatDefinitions) {
-				(statDefinitions.name = statDefinitions.name || []).push(resStatDefinitions[resStatDef]['displayProperties']['name']);
-				(statDefinitions.hash = statDefinitions.hash || []).push(resStatDefinitions[resStatDef]['hash']);
-				(statDefinitions.iconURL = statDefinitions.iconURL || []).push('https://www.bungie.net' + resStatDefinitions[resStatDef]['displayProperties']['icon']);
-			};
-	
-	// get details for items from manifest
-		const resItemDetails = await getData(manifestData.itemDetails, false);
-		const resItemCategoryDetails = await getData(manifestData.itemCategoryDetails, false);
-		// for every item
-			var itemDetails = {};
-			for (var resItem in resItemDetails) {
-				// filter only exotic weapons & every item once; otherwise, resItemDetails[resItem].itemCategoryHashes can be undefined
-				if (resItemDetails[resItem]['equippingBlock'] !== undefined && resItemDetails[resItem]['equippingBlock']['uniqueLabel'] !== undefined && resItemDetails[resItem]['collectibleHash'] !== undefined && (resItemDetails[resItem]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDetails[resItem]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
-					(itemDetails.name = itemDetails.name || []).push(resItemDetails[resItem]['displayProperties']['name']);
-					(itemDetails.id = itemDetails.id || []).push(resItem);
-					(itemDetails.iconURL = itemDetails.iconURL || []).push('https://www.bungie.net' + resItemDetails[resItem]['displayProperties']['icon']);
-					(itemDetails.collectibleID = itemDetails.collectibleID || []).push(resItemDetails[resItem]['collectibleHash']);
-					(itemDetails.type = itemDetails.type || []).push(resItemDetails[resItem]['itemTypeDisplayName']);
-					(itemDetails.categoryHash = itemDetails.categoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][0]);
-					(itemDetails.category = itemDetails.category || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][0]]['shortTitle']);
-					(itemDetails.subcategoryHash = itemDetails.subcategoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][2]);
-					(itemDetails.subcategory = itemDetails.subcategory || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][2]]['shortTitle']);
-				}
-			};
+async function InitData(){
+	if(localStorage.getItem("lang")){
+		lang = JSON.parse(localStorage.getItem("lang"));
+	}else{
+		lang = 'en';
+		localStorage.setItem("lang", JSON.stringify(lang));
+	}
+	let maniPaths = await checkManifestVersion(lang);
 
-	// load recent players from browserstorage
-		var storageInit = JSON.parse(localStorage.getItem("LoadedPlayers"));
-		for (var i in storageInit){
-			currentPlayer = await getPlayer(storageInit[i].membershipId[0], storageInit[i].platformType[0]);
+			
+	// load initData from browserstorage
+	if(localStorage.getItem("statDefinitions")){
+		statDefinitions = JSON.parse(localStorage.getItem("statDefinitions"));
+		itemDetails = JSON.parse(localStorage.getItem("itemDetails"));
+	}else{
+		// get details for stats from manifest
+			const resStatDefinitions = await getData(maniPaths.statDefinitions, false);
+			// for every item
+				for (let resStatDef in resStatDefinitions) {
+					(statDefinitions.name = statDefinitions.name || []).push(resStatDefinitions[resStatDef]['displayProperties']['name']);
+					(statDefinitions.hash = statDefinitions.hash || []).push(resStatDefinitions[resStatDef]['hash']);
+					(statDefinitions.iconURL = statDefinitions.iconURL || []).push('https://www.bungie.net' + resStatDefinitions[resStatDef]['displayProperties']['icon']);
+				};
+		
+		// get details for items from manifest
+			const resItemDetails = await getData(maniPaths.itemDetails, false);
+			const resItemCategoryDetails = await getData(maniPaths.itemCategoryDetails, false);
+			// for every item
+				for (let resItem in resItemDetails) {
+					// filter only exotic weapons & every item once; otherwise, resItemDetails[resItem].itemCategoryHashes can be undefined
+					if (resItemDetails[resItem]['equippingBlock'] !== undefined && resItemDetails[resItem]['equippingBlock']['uniqueLabel'] !== undefined && resItemDetails[resItem]['collectibleHash'] !== undefined && (resItemDetails[resItem]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDetails[resItem]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
+						(itemDetails.name = itemDetails.name || []).push(resItemDetails[resItem]['displayProperties']['name']);
+						(itemDetails.id = itemDetails.id || []).push(resItem);
+						(itemDetails.iconURL = itemDetails.iconURL || []).push('https://www.bungie.net' + resItemDetails[resItem]['displayProperties']['icon']);
+						(itemDetails.collectibleID = itemDetails.collectibleID || []).push(resItemDetails[resItem]['collectibleHash']);
+						(itemDetails.type = itemDetails.type || []).push(resItemDetails[resItem]['itemTypeDisplayName']);
+						(itemDetails.categoryHash = itemDetails.categoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][0]);
+						(itemDetails.category = itemDetails.category || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][0]]['shortTitle']);
+						(itemDetails.subcategoryHash = itemDetails.subcategoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][2]);
+						(itemDetails.subcategory = itemDetails.subcategory || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][2]]['shortTitle']);
+					}
+				};
+			
+		// save all initData to browserstorage
+		localStorage.setItem("statDefinitions", JSON.stringify(statDefinitions));
+		localStorage.setItem("itemDetails", JSON.stringify(itemDetails));
+	}
+
+// load recent players from browserstorage
+	if(localStorage.getItem("loadedPlayers")){
+		const loadedPlayers = JSON.parse(localStorage.getItem("loadedPlayers"));
+		for (let i in loadedPlayers){
+			currentPlayer = await getPlayer(loadedPlayers[i].membershipId[0], loadedPlayers[i].platformType[0]);
 			addPlayer(currentPlayer);
 		}
-		
-	// save all initData to browserstorage
-	const initData = {itemDetails,statDefinitions};
-		addDataToStorage(initData,"initData");
-
+	}
 //console.log('itemDetails: ', itemDetails);
 //console.log('statDefinitions: ', statDefinitions);
-//console.log('manifestData: ', manifestData);		
+//console.log('manifestPaths: ', manifestPaths);		
 }
 
 async function getPlayer(memberID, memberType){
@@ -97,7 +122,7 @@ async function getPlayer(memberID, memberType){
 		rqURL = 'https://www.bungie.net/Platform/User/GetMembershipsById/' + memberID + '/All/';
 		const resPlayerDetails = await getData(rqURL);
 		// store info in obj playerDetails 
-			var playerDetails = {
+			let playerDetails = {
 				'nameCode':resPlayerDetails['Response']['destinyMemberships'][0]['bungieGlobalDisplayNameCode']
 			};
 			playerDetails.profilePicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['bungieNetUser']['profilePicturePath'];
@@ -132,8 +157,6 @@ async function getPlayer(memberID, memberType){
 }
 
 function addPlayer(cP){
-	// load initData from browserstorage
-		var initData = JSON.parse(localStorage.getItem("initData"))[0];
 	
 	// add HTML
 	HTML = "<div id='acc-" + cP.membershipId + "'><ul class='list-header'><li class='list-header-playername'><img src='" + cP.profilePicturePath + "'>" + cP.platformName + "</li><li class='list-header-char'>";
@@ -143,23 +166,21 @@ function addPlayer(cP){
 							"<img src='" + cP.charEmblem[index] + "'>" +
 							"<div class='list-char-cls'>" + cP.charClass[index] + "</div>" +
 							"<div class='list-char-pwr'> &#10023;" + cP.charLight[index] + "</div>" +
-						"</div>" +	
-						"<div class='list-char-sts'>";	
-							for (var stat in cP.charStats[index]) {
-				HTML +=			"<img src='" + initData.statDefinitions.iconURL[initData.statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
+							"<div class='list-char-sts'>";	
+							for (let stat in cP.charStats[index]) {
+				HTML +=			"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
 								cP.charStats[index][stat] + "&emsp;&emsp;";
 							}
-				HTML +=	"</div>";
 			}
-			HTML += "</li></ul></div>";
+			HTML += "</div></div></li></ul></div>";
 			document.getElementById("main").innerHTML += HTML;
 }
 
-function addDataToStorage(data,name){
-	var storageTmp = JSON.parse(localStorage.getItem(name));
+function addPlayerToStorage(data){
+	let storageTmp = JSON.parse(localStorage.getItem("loadedPlayers"));
 	(storageTmp = storageTmp || []).push(data);
-	console.log("saving " + name + " to local storage");
-	localStorage.setItem(name, JSON.stringify(storageTmp));
+	console.log("saving " + data.platformName + " to local player storage");
+	localStorage.setItem("loadedPlayers", JSON.stringify(storageTmp));
 }
 
 /*
