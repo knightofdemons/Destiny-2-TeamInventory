@@ -103,10 +103,7 @@ async function InitData(){
 			currentPlayer = await getPlayer(loadedPlayers[i].membershipId[0], loadedPlayers[i].platformType[0]);
 			addPlayer(currentPlayer);
 		}
-	}
-//console.log('itemDetails: ', itemDetails);
-//console.log('statDefinitions: ', statDefinitions);
-//console.log('manifestPaths: ', manifestPaths);		
+	}		
 }
 
 async function getPlayer(memberID, memberType){
@@ -146,28 +143,35 @@ async function getPlayer(memberID, memberType){
 				(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
 				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
 			}
-//console.log('playerDetails: ', playerDetails);
 			return playerDetails;
 }
 
 function addPlayer(cP){
 	
 	// add HTML
-	HTML = "<div id='acc-" + cP.membershipId + "'><ul class='headerList'><li class='charPlayerName'><img src='" + cP.profilePicturePath + "'>" + cP.bungieName + "</li><li class='charList'>";
-			for (index in cP.charIDs) {
-				const cChar = cP.charIDs[index];
-				HTML += "<div class='charEmblemImg'>" +
-							"<img src='" + cP.charEmblem[index] + "'>" +
-							"<div class='charEmblemClass'>" + cP.charClass[index] + "</div>" +
-							"<div class='charEmblemLvl'> &#10023;" + cP.charLight[index] + "</div>" +
-							"<div class='charStats'>";	
-							for (let stat in cP.charStats[index]) {
-				HTML +=			"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
-								cP.charStats[index][stat] + "&emsp;&emsp;";
-							}
-			}
-			HTML += "</div></div></li></ul></div>";
-			document.getElementById("main").innerHTML += HTML;
+	HTML = "<div id='acc-" + cP.membershipId + "'>" +
+				"<h4><img class='avatar' src='" + cP.profilePicturePath + "'>"	+ cP.bungieName + "</h4>" +
+				"<div class='charList'>";
+				for (index in cP.charIDs) {
+	HTML += 		"<div class='charEmblemImg'>" +
+						"<img src='" + cP.charEmblem[index] + "'>" +
+						"<div class='charEmblemClass'>" + cP.charClass[index] + "</div>" +
+						"<div class='charEmblemLvl'> &#10023;" + cP.charLight[index] + "</div>" +
+					"</div>";
+				}
+	HTML +=		"</div>" +
+				"<div class='charList'>";
+				for (index in cP.charIDs) {
+	HTML +=			"<div class='charStats'>";
+					for (let stat in cP.charStats[index]) {
+	HTML +=				"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
+						cP.charStats[index][stat] + "&emsp;&emsp;";
+					}
+	HTML +=			"</div>";				
+					}
+	HTML +=		"</div>" +
+			"</div>";
+	document.getElementById("main").innerHTML += HTML;
 }
 
 function addPlayerToStorage(data){
