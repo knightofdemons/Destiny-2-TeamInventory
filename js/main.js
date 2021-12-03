@@ -179,7 +179,7 @@ function addPlayer(cP){
 	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
 																"<a>" +
 																	"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
-																	cP.platformName[0] +
+																	"<span class='links_name'>" + cP.platformName[0] + "</span>" +
 																	"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
 																"</a>";
 															"</li>";
