@@ -159,20 +159,20 @@ function addPlayer(cP){
 				"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" + // hier muss man noch schauen, platformtype ist nicht immer 0, zb. bei drasuk ist es [3,5], da muss man das jeweilige gesuchte nehmen
 				"</h4>" +
 				"<div class='charList'>";
-				for (index in cP.charIDs) {
+				for (index in cP.charOrder) {
 	HTML += 		"<div class='charEmblemImg'>" +
-						"<img src='" + cP.charEmblem[index] + "'>" +
-						"<div class='charEmblemClass'>" + cP.charClass[index] + "</div>" +
-						"<div class='charEmblemLvl'> &#10023;" + cP.charLight[index] + "</div>" +
+						"<img src='" + cP.charEmblem[cP.charOrder[index]] + "'>" +
+						"<div class='charEmblemClass'>" + cP.charClass[cP.charOrder[index]] + "</div>" +
+						"<div class='charEmblemLvl'> &#10023;" + cP.charLight[cP.charOrder[index]] + "</div>" +
 					"</div>";
 				}
 	HTML +=		"</div>" +
 				"<div class='charList'>";
-				for (index in cP.charIDs) {
+				for (index in cP.charOrder) {
 	HTML +=			"<div class='charStats'>";
-					for (let stat in cP.charStats[index]) {
+					for (let stat in cP.charStats[cP.charOrder[index]]) {
 	HTML +=				"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
-						cP.charStats[index][stat] + "&emsp;&emsp;";
+						cP.charStats[cP.charOrder[index]][stat] + "&emsp;&emsp;";
 					}
 	HTML +=			"</div>";				
 					}
