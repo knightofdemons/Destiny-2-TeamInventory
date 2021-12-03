@@ -8,6 +8,8 @@ let sidebar = document.querySelector(".sidebar");
 let closeBtn = document.querySelector("#sidebar-btn");
 let searchBtn = document.querySelector(".bx-search");
 let searchBar = document.querySelector("#searchAcc");
+let langBtn = document.querySelector("#lang-btn");
+let langOpt = document.querySelector(".language-options");
 let emptyArray = [];
 
 // if user press any key and release
@@ -76,6 +78,11 @@ function showSuggestions(list){
       sidebar.classList.toggle("open");
       menuBtnChange();
     });
+	
+// toggle language when clicking on icon
+    langBtn.addEventListener("click", () => {
+      langOpt.classList.toggle("open");
+    });
 
 // change sidebar button appearance
 function menuBtnChange() {
@@ -83,5 +90,8 @@ function menuBtnChange() {
     closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");
   } else {
     closeBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+  }
+  if (langOpt.classList.contains("open")) {
+    langOpt.classList.toggle("open");
   }
 }
