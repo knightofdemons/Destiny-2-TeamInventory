@@ -1,5 +1,6 @@
 const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
 let statDefinitions = {};
+let classDefinitions = {};
 let itemDetails = {};
 let lang = '';
 let playerlist = {};
@@ -42,7 +43,8 @@ async function checkManifestVersion(language) {
 				'statDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyStatDefinition'], // like [567] -> resilience
 				'itemDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryItemLiteDefinition'], // like [123] -> xenophage
 				'itemCategoryDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyItemCategoryDefinition'], // like [234] -> kinetic weapon
-				'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'] // like [345] -> leg armor
+				'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'], // like [345] -> leg armor
+				'classDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyClassDefinition'] // like [2] -> warlock 
 			};
 			localStorage.setItem("manifestPaths", JSON.stringify(manifestPaths));
 	}
@@ -63,6 +65,7 @@ async function InitData(){
 	if(localStorage.getItem("statDefinitions")){
 		statDefinitions = JSON.parse(localStorage.getItem("statDefinitions"));
 		itemDetails = JSON.parse(localStorage.getItem("itemDetails"));
+		classDefinitions = JSON.parse(localStorage.getItem("classDefinitions"));
 	}else{
 		// get details for stats from manifest
 			const resStatDefinitions = await getData(maniPaths.statDefinitions, false);
@@ -71,6 +74,14 @@ async function InitData(){
 					(statDefinitions.name = statDefinitions.name || []).push(resStatDefinitions[resStatDef]['displayProperties']['name']);
 					(statDefinitions.hash = statDefinitions.hash || []).push(resStatDefinitions[resStatDef]['hash']);
 					(statDefinitions.iconURL = statDefinitions.iconURL || []).push('https://www.bungie.net' + resStatDefinitions[resStatDef]['displayProperties']['icon']);
+				};
+		
+		// get details for classes from manifest
+			const resClassDefinitions = await getData(maniPaths.classDefinitions, false);
+			// for every item
+				for (let resClassDef in resClassDefinitions) {
+					(classDefinitions.name = classDefinitions.name || []).push(resClassDefinitions[resClassDef]['displayProperties']['name']);
+					(classDefinitions.no = classDefinitions.no || []).push(resClassDefinitions[resClassDef]['classType']);
 				};
 		
 		// get details for items from manifest
@@ -91,10 +102,11 @@ async function InitData(){
 						(itemDetails.subcategory = itemDetails.subcategory || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][2]]['shortTitle']);
 					}
 				};
-			
+							
 		// save all initData to browserstorage
 		localStorage.setItem("statDefinitions", JSON.stringify(statDefinitions));
 		localStorage.setItem("itemDetails", JSON.stringify(itemDetails));
+		localStorage.setItem("classDefinitions", JSON.stringify(classDefinitions));
 	}
 
 // load recent players from browserstorage
@@ -149,8 +161,7 @@ async function getPlayer(memberID, memberType){
 			return playerDetails;
 }
 
-function addPlayer(cP){
-	
+function addPlayer(cP){	
 	// add HTML
 	HTML = "<div id='acc-" + cP.membershipId + "'>" +
 				"<h4>" +
@@ -162,7 +173,7 @@ function addPlayer(cP){
 				for (index in cP.charOrder) {
 	HTML += 		"<div class='charEmblemImg'>" +
 						"<img src='" + cP.charEmblem[cP.charOrder[index]] + "'>" +
-						"<div class='charEmblemClass'>" + cP.charClass[cP.charOrder[index]] + "</div>" +
+						"<div class='charEmblemClass'>" + classDefinitions.name[classDefinitions.no.indexOf(cP.charClass[cP.charOrder[index]])] + "</div>" +
 						"<div class='charEmblemLvl'> &#10023;" + cP.charLight[cP.charOrder[index]] + "</div>" +
 					"</div>";
 				}
