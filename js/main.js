@@ -153,7 +153,7 @@ function addPlayer(cP){
 				"<h4>" +
 				"<img src='" + cP.profilePicturePath + "' width='40' height='40'>"	+
 				cP.bungieName +
-				"<img src='css/images/logo" + cP.platformType + ".svg' width='20' height='20'>" +
+				"<img class='platformLogo' src='css/images/logo" + cP.platformType + ".svg'>" +
 				"</h4>" +
 				"<div class='charList'>";
 				for (index in cP.charIDs) {
@@ -176,7 +176,7 @@ function addPlayer(cP){
 	HTML +=		"</div>" +
 			"</div>";
 	document.getElementById("main").innerHTML += HTML;
-	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'><img src='" + cP.platformPicturePath + "'>" + cP.bungieName + "<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i></li>";
+	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'><img class='platformLogo' src='css/images/logo" + cP.platformType + ".svg'>" + cP.bungieName + "<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i></li>";
 }
 
 function deletePlayer(membershipId){
