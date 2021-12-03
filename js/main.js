@@ -129,7 +129,6 @@ async function getPlayer(memberID, memberType){
 		// 205 = characterEquipment, 800 = profileCollectibles & characterCollectibles, 900 = profileRecords & characterRecords
 		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=100,102,200,201,205,800,900';
 		const resProfile = await getData(rqURL);
-		console.log(resProfile);
 		// store info in obj playerDetails 
 			playerDetails.charIDs = resProfile['Response']['profile']['data']['characterIds'];
 			playerDetails.profileInventory = resProfile['Response']['profileInventory']['data']['items'];
@@ -151,7 +150,7 @@ async function getPlayer(memberID, memberType){
 function addPlayer(cP){
 	
 	// add HTML
-	HTML = "<div id='acc-" + cP.membershipId + "'><ul class='headerList'><li class='charPlayerName'><img src='" + cP.profilePicturePath + "'>" + cP.bungieName + "</li><li class='charList'>";
+	HTML = "<div class='acc-" + cP.membershipId[0] + "'><ul class='headerList'><li class='charPlayerName'><img src='" + cP.profilePicturePath + "'>" + cP.bungieName + "</li><li class='charList'>";
 			for (index in cP.charIDs) {
 				const cChar = cP.charIDs[index];
 				HTML += "<div class='charEmblemImg'>" +
@@ -166,7 +165,22 @@ function addPlayer(cP){
 			}
 			HTML += "</div></div></li></ul></div>";
 			document.getElementById("main").innerHTML += HTML;
-			document.getElementById("playerBucket").innerHTML += "<li id='playerElement'><img src='" + cP.platformPicturePath + "'>" + cP.bungieName + "<i class='bx bx-bookmark-minus' ></i></li>";
+			document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'><img src='" + cP.platformPicturePath + "'>" + cP.bungieName + "<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i></li>";
+}
+
+function deletePlayer(membershipId){
+	HTML = document.getElementsByClassName("acc-" + membershipId);
+	while (HTML[0]){
+		HTML[0].remove(); //has to be index0 because element also gets deleted from array for whatever reason
+	}
+	let storageTmp = JSON.parse(localStorage.getItem("loadedPlayers"));
+	let index = storageTmp.findIndex(function(toBeDeleted) {
+		return toBeDeleted.membershipId[0] == membershipId
+	});
+	storageTmp.splice(index, 1);
+	console.log(storageTmp);
+	console.log("deleting " + membershipId + " from local player storage");
+	localStorage.setItem("loadedPlayers", JSON.stringify(storageTmp));
 }
 
 function addPlayerToStorage(data){
