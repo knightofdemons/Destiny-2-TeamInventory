@@ -1,0 +1,64 @@
+<meta charset="UTF-8">
+<body>
+	<div align="m">
+		<button onclick="addPlayer('4611686018471653494', '3')">Click me</button> 
+	</div>
+</body>
+
+<script type="text/javascript">
+
+const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
+function addPlayer(memberID, memberType){
+	rqURL = 'https://www.bungie.net/Platform/User/GetMembershipsById/' + memberID + '/' + memberType + '/';
+	getData(rqURL)
+		.then(dataProfile => {
+			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + dataProfile['Response']['destinyMemberships'][0]['membershipType'] + '/Profile/' + dataProfile['Response']['destinyMemberships'][0]['membershipId'] + '/?components=200';
+			charsHTML = getData(rqURL)
+				.then(dataRecords => {
+					HTML = "<ul class='list-header'><li class='list-header-playername'><img src='https://www.bungie.net" + dataProfile['Response']['bungieNetUser']['profilePicturePath'] + "'>" + dataProfile['Response']['bungieNetUser']['uniqueName'] + "</li><li class='list-header-char'>";
+					chars = dataRecords['Response']['characters']['data'];
+					for (index in chars) {
+						const dRec = chars[index];
+						HTML += "<div class='list-char-img'><img src='https://www.bungie.net" + dRec['emblemBackgroundPath'] + "'><div class='list-char-cls'>" + dRec['classType'] + "</div><div class='list-char-pwr'> &#10023;" + dRec['light'] + "</div></div>";
+					}
+					HTML += "</li></ul>";
+					return HTML; 
+			});
+			
+			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + dataProfile['Response']['destinyMemberships'][0]['membershipType'] + '/Profile/' + dataProfile['Response']['destinyMemberships'][0]['membershipId'] + '/?components=800';
+			getData(rqURL)
+				.then(dataCollectibles => {
+					for (let index = 0; index < dataCollectibles.length; ++index) {
+						const element = dataCollectibles[index];
+							//console.log(element);
+					}
+			});
+		})
+		.finally((info) => console.log(charsHTML));
+}
+
+async function getData(url = '') {
+    response = await fetch(url, {
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      "X-API-Key": akey
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+
+
+
+//rqURL = 'https://www.bungie.net/Platform/Destiny2/3/Profile/4611686018471653494/?components=900';
+//playerName = data['Response']['searchResults']['0']['destinyMemberships'][0]['displayName'];
+//playerID = data['Response']['searchResults']['0']['destinyMemberships'][0]['membershipId'];
+//playerMembershipType = data['Response']['searchResults']['0']['destinyMemberships'][0]['membershipType'];
+//characterID1 = (array_key_exists(0, array_keys(data[1]["Response"]["characterRecords"]["data"]))?array_keys(data[1]["Response"]["characterRecords"]["data"])[0]:0);
+//characterID2 = (array_key_exists(1, array_keys(data[1]["Response"]["characterRecords"]["data"]))?array_keys(data[1]["Response"]["characterRecords"]["data"])[1]:0);
+//characterID3 = (array_key_exists(2, array_keys(data[1]["Response"]["characterRecords"]["data"]))?array_keys(data[1]["Response"]["characterRecords"]["data"])[2]:0);
+</script>

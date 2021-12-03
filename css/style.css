@@ -112,6 +112,15 @@
         position: relative;
         width: 474px;
     }
+	
+	.charPlayerName img
+    {
+        display: inline-flex;
+        height: 40px;
+        justify-content: end;
+        position: relative;
+        width: 40px;
+    }
     
     .charEmblemClass
     {
