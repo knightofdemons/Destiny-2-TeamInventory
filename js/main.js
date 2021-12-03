@@ -143,6 +143,9 @@ async function getPlayer(memberID, memberType){
 				(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
 				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
 			}
+			// charOrder gets index of titan, hunter, warlock (0,1,2)
+			playerDetails.charOrder = [playerDetails.charClass.indexOf(0),playerDetails.charClass.indexOf(1),playerDetails.charClass.indexOf(2)];
+			playerDetails.charOrder = playerDetails.charOrder.filter(no => no >= 0);
 			return playerDetails;
 }
 
