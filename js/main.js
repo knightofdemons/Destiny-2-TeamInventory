@@ -168,11 +168,11 @@ async function getPlayer(memberID, memberType){
 function addPlayer(cP){	
 	// add HTML
 	HTML = "<div id='acc-" + cP.membershipId[0] + "'>" +
-				"<h4>" +
-				"<img src='" + cP.profilePicturePath + "' width='40' height='40'>"	+
+				"<div class='playerHeaderFrame'><div class='playerHeader'>" +
+				"<img src='" + cP.profilePicturePath + "'>"	+
 				cP.bungieName +
 				"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" + // hier muss man noch schauen, platformtype ist nicht immer 0, zb. bei drasuk ist es [3,5], da muss man das jeweilige gesuchte nehmen
-				"</h4>" +
+				"</div></div><br>" +
 				"<div class='charList'>";
 				for (index in cP.charOrder) {
 	HTML += 		"<div class='charEmblemImg'>" +
@@ -194,7 +194,7 @@ function addPlayer(cP){
 	HTML +=			"</div>";				
 					}
 	HTML +=		"</div>" +
-			"</div>";
+			"</div>" + "<br><br><br>";
 	document.getElementById("main").innerHTML += HTML;
 	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
 																"<a>" +
