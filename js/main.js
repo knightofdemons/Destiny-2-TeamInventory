@@ -238,6 +238,31 @@ function addPlayerToStorage(data){
 }
 
 /*
+        if (!playerDetails.profileInventory) {
+        HTML =	"<div class='acc-" + cP.membershipId + "'><br><h1>'" . $playerDetails.playerName . "_vaultItems'>Tresor Items (ohne Exotics)</h1>" +
+				"<h3>HINWEIS: Das sonstige Inventar des Spielers ist nicht öffentlich sichtbar (einstellbar <a href='https://www.bungie.net/7/de/User/Account/Privacy'" +
+				"style='text-decoration: underline;' target='_blank'>unter diesem Link</a><i class='bx bx-info-circle'></i>).</h3></div>";
+        } else {
+		HTML =	"<div class='acc-" + cP.membershipId + "'><br><h1>Tresor Items (ohne Exotics)</h1>" +
+				"<table>";
+                for (j = 0; j <= 7; j++) {
+        HTML +=		"<tr><td>";
+					let itemcounter = 1;
+					for (vaultitems in cP.["vaultItemsGrouped"][$j]) {
+						if ($itemcounter == 1){
+        HTML +=			   "<h2>" + vaultitems["bucketName"] + "</h2>";
+						}
+		HTML +=			"<div class='itemIconContainer'>" +
+						"<img src='" + vaultitems["iconURL"] + "'  title='" + vaultitems["name"] + " (" + vaultitems["category"] + ")' id='no" + firstitem + "'></div>";
+						itemcounter++;
+					}
+					unset($vaultitems); // delete reference to last item
+		HTML +=		"</td></tr>";
+				}
+		HTML +=	"</table></div>";
+        }
+*/
+/*
 test ids:
 Hühnchen: 4611686018471653494 (für Umlaute)
 BlackBlotch: 4611686018471477303 (für mehrere Platformen)

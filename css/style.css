@@ -213,7 +213,7 @@
 	.lang-opt:hover, .lang-opt.act
 	{
 		background-color: hsl(240, 20%, 48%);
-		border-radius: 12px;
+		border-radius: 24px;
 		color: black;
 	}
 	
