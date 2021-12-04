@@ -76,6 +76,7 @@ async function InitData(){
 			// for every item
 				for (let resStatDef in resStatDefinitions) {
 					(statDefinitions.name = statDefinitions.name || []).push(resStatDefinitions[resStatDef]['displayProperties']['name']);
+					(statDefinitions.info = statDefinitions.info || []).push(resStatDefinitions[resStatDef]['displayProperties']['description']);
 					(statDefinitions.hash = statDefinitions.hash || []).push(resStatDefinitions[resStatDef]['hash']);
 					(statDefinitions.iconURL = statDefinitions.iconURL || []).push('https://www.bungie.net' + resStatDefinitions[resStatDef]['displayProperties']['icon']);
 				};
@@ -90,6 +91,7 @@ async function InitData(){
 		
 		// get details for items from manifest
 			const resItemDetails = await getData(maniPaths.itemDetails, false);
+			const resItemBucketDetails = await getData(maniPaths.itemBucketDetails, false);
 			const resItemCategoryDetails = await getData(maniPaths.itemCategoryDetails, false);
 			// for every item
 				for (let resItem in resItemDetails) {
@@ -99,6 +101,9 @@ async function InitData(){
 						(itemDetails.id = itemDetails.id || []).push(resItem);
 						(itemDetails.iconURL = itemDetails.iconURL || []).push('https://www.bungie.net' + resItemDetails[resItem]['displayProperties']['icon']);
 						(itemDetails.collectibleID = itemDetails.collectibleID || []).push(resItemDetails[resItem]['collectibleHash']);
+						(itemDetails.bucketHash = itemDetails.bucketHash || []).push(resItemDetails[resItem]['inventory']['bucketTypeHash']);
+						(itemDetails.bucket = itemDetails.bucket ||[]).push(resItemBucketDetails[resItemDetails[resItem]['inventory']['bucketTypeHash']]['displayProperties']['name']);
+						(itemDetails.bucketOrder = itemDetails.bucketOrder ||[]).push(resItemBucketDetails[resItemDetails[resItem]['inventory']['bucketTypeHash']]['bucketOrder']/10);
 						(itemDetails.type = itemDetails.type || []).push(resItemDetails[resItem]['itemTypeDisplayName']);
 						(itemDetails.categoryHash = itemDetails.categoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][0]);
 						(itemDetails.category = itemDetails.category || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][0]]['shortTitle']);
@@ -177,12 +182,19 @@ async function getPlayer(memberID, memberType){
 function addPlayer(cP){	
 	// add HTML
 	HTML = "<div class='playerMain' id='acc-" + cP.membershipId[0] + "'>" +
-				"<div class='playerHeaderFrame'><div class='playerHeader'>" +
-				"<img src='" + cP.profilePicturePath + "'>"	+
-				cP.platformName[0] +
-				"<br><div class='playerHeaderSub'>" + cP.bungieName[0] +
-				"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" + // hier muss man noch schauen, platformtype ist nicht immer 0, zb. bei drasuk ist es [3,5], da muss man das jeweilige gesuchte nehmen
-				"</div></div></div><br>" +
+				// player header
+				"<div class='playerHeaderFrame'>" +
+					"<div class='playerHeader'>" +
+						"<img src='" + cP.profilePicturePath + "'>"	+
+						cP.platformName[0] +
+						"<br>" +
+						"<div class='playerHeaderSub'>" +
+							cP.bungieName[0] +
+							"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" + // hier muss man noch schauen, platformtype ist nicht immer 0, zb. bei drasuk ist es ja [0,1], da muss man das jeweilige gesuchte nehmen
+						"</div>" +
+					"</div>" +
+				"</div><br>" +
+				// emblems
 				"<div class='charList'>";
 				for (index in cP.charOrder) {
 	HTML += 		"<div class='charEmblemImg'>" +
@@ -192,19 +204,35 @@ function addPlayer(cP){
 					"</div>";
 				}
 	HTML +=		"</div>" +
+				// charstats
 				"<div class='charList'>";
 				for (index in cP.charOrder) {
 	HTML +=			"<div class='charStats'>";
 					for (let stat in cP.charStats[cP.charOrder[index]]) {
 						if(stat != 1935470627){
-	HTML +=				"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
+	HTML +=				"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "' title='" + statDefinitions.info[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
 						cP.charStats[cP.charOrder[index]][stat] + "&emsp;";
 						}
 					}
 	HTML +=			"</div>";				
 					}
+	HTML +=		"</div><br><br>" +
+				"<div>";
+				// exotic weapons
+				for (let j = 2; j<5; j++) {
+	HTML +=			"<div class'exo-weapons'>";
+					for (let i = 0; i < itemDetails.bucketOrder.length; i++) {
+						if(itemDetails.bucketOrder[i] === j) {
+	HTML +=				"<div class='itemIconContainer'>" +
+							"<img class='check' src='" + itemDetails.iconURL[i] + "' title='" + itemDetails.name[i] + " (" + itemDetails.type[i] + ")'>" +
+						"</div>";
+						}
+					}
+	HTML +=			"</div><br><br>";
+				}
 	HTML +=		"</div>" +
-			"<br></div>" + "<br><br>";
+				"<br>" +
+			"</div><br><br>";
 	document.getElementById("main").innerHTML += HTML;
 	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
 																"<a>" +
