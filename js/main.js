@@ -131,12 +131,13 @@ async function getPlayer(memberID, memberType){
 			let playerDetails = {
 				'nameCode':resPlayerDetails['Response']['destinyMemberships'][0]['bungieGlobalDisplayNameCode']
 			};
-			playerDetails.profilePicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['bungieNetUser']['profilePicturePath'];																														
-			playerDetails.bungieName = resPlayerDetails['Response']['bungieNetUser']['uniqueName'];
+			playerDetails.profilePicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['bungieNetUser']['profilePicturePath'];
 			for (let i = 0; i < resPlayerDetails['Response']['destinyMemberships'].length; i++){
 				(playerDetails.platformName = playerDetails.platformName || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['displayName']);
 				(playerDetails.membershipId = playerDetails.membershipId || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['membershipId']);
 				(playerDetails.platformType = playerDetails.platformType || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['membershipType']);
+				(playerDetails.bungieName = playerDetails.bungieName || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['bungieGlobalDisplayName'] + "#" +
+																				 resPlayerDetails['Response']['destinyMemberships'][i]['bungieGlobalDisplayNameCode']);
 			};
 		
 	// get all details for profile
@@ -146,7 +147,11 @@ async function getPlayer(memberID, memberType){
 		const resProfile = await getData(rqURL);
 		// store info in obj playerDetails 
 			playerDetails.charIDs = resProfile['Response']['profile']['data']['characterIds'];
-			playerDetails.profileInventory = resProfile['Response']['profileInventory']['data']['items'];
+			if(resProfile['Response']['profileInventory']['data']){
+				playerDetails.profileInventory = resProfile['Response']['profileInventory']['data']['items'];
+			}else{
+				playerDetails.profileInventory = false;
+			}
 			// for every character
 			for (let i = 0; i < playerDetails.charIDs.length; i++) {
 				(playerDetails.charLight = playerDetails.charLight || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['light']);
@@ -156,7 +161,11 @@ async function getPlayer(memberID, memberType){
 				(playerDetails.charEmblem = playerDetails.charEmblem || []).push("https://www.bungie.net" + resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['emblemBackgroundPath']);
 				(playerDetails.charStats = playerDetails.charStats || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['stats']); // 7 stats: [hash] -> value
 				(playerDetails.charLastPlayed = playerDetails.charLastPlayed || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['dateLastPlayed']); // wollte ich vllt später gebrauchen
-				(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
+				if(playerDetails.profileInventory){
+					(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
+				}else{
+					playerDetails.charInventory = false;
+				}
 				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
 			}
 			// charOrder gets index of titan, hunter, warlock (0,1,2)
@@ -167,12 +176,13 @@ async function getPlayer(memberID, memberType){
 
 function addPlayer(cP){	
 	// add HTML
-	HTML = "<div id='acc-" + cP.membershipId[0] + "'>" +
+	HTML = "<div class='playerMain' id='acc-" + cP.membershipId[0] + "'>" +
 				"<div class='playerHeaderFrame'><div class='playerHeader'>" +
 				"<img src='" + cP.profilePicturePath + "'>"	+
-				cP.bungieName +
+				cP.platformName[0] +
+				"<br><div class='playerHeaderSub'>" + cP.bungieName[0] +
 				"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" + // hier muss man noch schauen, platformtype ist nicht immer 0, zb. bei drasuk ist es [3,5], da muss man das jeweilige gesuchte nehmen
-				"</div></div><br>" +
+				"</div></div></div><br>" +
 				"<div class='charList'>";
 				for (index in cP.charOrder) {
 	HTML += 		"<div class='charEmblemImg'>" +
@@ -194,7 +204,7 @@ function addPlayer(cP){
 	HTML +=			"</div>";				
 					}
 	HTML +=		"</div>" +
-			"</div>" + "<br><br><br>";
+			"<br></div>" + "<br><br>";
 	document.getElementById("main").innerHTML += HTML;
 	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
 																"<a>" +
