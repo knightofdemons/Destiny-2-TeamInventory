@@ -2,6 +2,7 @@ const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
 let statDefinitions = {};
 let classDefinitions = {};
 let itemDetails = {};
+let itemDetailsTmp = {};
 let lang = '';
 let playerlist = {};
 
@@ -16,6 +17,26 @@ async function buttonClick(membershipId, platformType){
 		}else{
 			console.log("already existing player");
 		}
+}
+
+// https://gist.github.com/boukeversteegh/3219ffb912ac6ef7282b1f5ce7a379ad
+function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 0) {
+  let arrayKeys = Object.keys(arrays);
+  let sortableArray = Object.values(arrays)[0];
+  let indexes = Object.keys(sortableArray);
+  let sortedIndexes = indexes.sort((a, b) => comparator(sortableArray[a], sortableArray[b]));
+
+  let sortByIndexes = (array, sortedIndexes) => sortedIndexes.map(sortedIndex => array[sortedIndex]);
+
+  if (Array.isArray(arrays)) {
+    return arrayKeys.map(arrayIndex => sortByIndexes(arrays[arrayIndex], sortedIndexes));
+  } else {
+    let sortedArrays = {};
+    arrayKeys.forEach((arrayKey) => {
+      sortedArrays[arrayKey] = sortByIndexes(arrays[arrayKey], sortedIndexes);
+    });
+    return sortedArrays;
+  }
 }
 
 async function getData(url, useApiKey = true) {
@@ -97,21 +118,36 @@ async function InitData(){
 				for (let resItem in resItemDetails) {
 					// filter only exotic weapons & every item once; otherwise, resItemDetails[resItem].itemCategoryHashes can be undefined
 					if (resItemDetails[resItem]['equippingBlock'] !== undefined && resItemDetails[resItem]['equippingBlock']['uniqueLabel'] !== undefined && resItemDetails[resItem]['collectibleHash'] !== undefined && (resItemDetails[resItem]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDetails[resItem]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
-						(itemDetails.name = itemDetails.name || []).push(resItemDetails[resItem]['displayProperties']['name']);
-						(itemDetails.id = itemDetails.id || []).push(resItem);
-						(itemDetails.iconURL = itemDetails.iconURL || []).push('https://www.bungie.net' + resItemDetails[resItem]['displayProperties']['icon']);
-						(itemDetails.collectibleID = itemDetails.collectibleID || []).push(resItemDetails[resItem]['collectibleHash']);
-						(itemDetails.bucketHash = itemDetails.bucketHash || []).push(resItemDetails[resItem]['inventory']['bucketTypeHash']);
-						(itemDetails.bucket = itemDetails.bucket ||[]).push(resItemBucketDetails[resItemDetails[resItem]['inventory']['bucketTypeHash']]['displayProperties']['name']);
-						(itemDetails.bucketOrder = itemDetails.bucketOrder ||[]).push(resItemBucketDetails[resItemDetails[resItem]['inventory']['bucketTypeHash']]['bucketOrder']/10);
-						(itemDetails.type = itemDetails.type || []).push(resItemDetails[resItem]['itemTypeDisplayName']);
-						(itemDetails.categoryHash = itemDetails.categoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][0]);
-						(itemDetails.category = itemDetails.category || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][0]]['shortTitle']);
-						(itemDetails.subcategoryHash = itemDetails.subcategoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][2]);
-						(itemDetails.subcategory = itemDetails.subcategory || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][2]]['shortTitle']);
+						(itemDetailsTmp.name = itemDetailsTmp.name || []).push(resItemDetails[resItem]['displayProperties']['name']);
+						(itemDetailsTmp.id = itemDetailsTmp.id || []).push(resItem);
+						(itemDetailsTmp.iconURL = itemDetailsTmp.iconURL || []).push('https://www.bungie.net' + resItemDetails[resItem]['displayProperties']['icon']);
+						(itemDetailsTmp.collectibleID = itemDetailsTmp.collectibleID || []).push(resItemDetails[resItem]['collectibleHash']);
+						(itemDetailsTmp.bucketHash = itemDetailsTmp.bucketHash || []).push(resItemDetails[resItem]['inventory']['bucketTypeHash']);
+						(itemDetailsTmp.bucket = itemDetailsTmp.bucket ||[]).push(resItemBucketDetails[resItemDetails[resItem]['inventory']['bucketTypeHash']]['displayProperties']['name']);
+						(itemDetailsTmp.bucketOrder = itemDetailsTmp.bucketOrder ||[]).push(resItemBucketDetails[resItemDetails[resItem]['inventory']['bucketTypeHash']]['bucketOrder']/10);
+						(itemDetailsTmp.type = itemDetailsTmp.type || []).push(resItemDetails[resItem]['itemTypeDisplayName']);
+						(itemDetailsTmp.categoryHash = itemDetailsTmp.categoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][0]);
+						(itemDetailsTmp.category = itemDetailsTmp.category || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][0]]['shortTitle']);
+						(itemDetailsTmp.subcategoryHash = itemDetailsTmp.subcategoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][2]);
+						(itemDetailsTmp.subcategory = itemDetailsTmp.subcategory || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][2]]['shortTitle']);
 					}
 				};
-							
+		
+		// sort itemDetailsTmp by .type
+			let type = itemDetailsTmp.type;
+			let name = itemDetailsTmp.name;
+			let id = itemDetailsTmp.id;
+			let iconURL = itemDetailsTmp.iconURL;
+			let collectibleID = itemDetailsTmp.collectibleID;
+			let bucketHash = itemDetailsTmp.bucketHash;
+			let bucket = itemDetailsTmp.bucket;
+			let bucketOrder = itemDetailsTmp.bucketOrder;
+			let categoryHash = itemDetailsTmp.categoryHash;
+			let category = itemDetailsTmp.category;
+			let subcategoryHash = itemDetailsTmp.subcategoryHash;
+			let subcategory = itemDetailsTmp.subcategory;
+			itemDetails = sortArrays({type,name,id,iconURL,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory});
+		
 		// save all initData to browserstorage
 		localStorage.setItem("statDefinitions", JSON.stringify(statDefinitions));
 		localStorage.setItem("itemDetails", JSON.stringify(itemDetails));
@@ -221,7 +257,7 @@ function addPlayer(cP){
 				// exotic weapons
 				for (let j = 2; j<5; j++) {
 	HTML +=			"<div class='exo-weapons'>";
-					for (let i = 0; i < itemDetails.bucketOrder.length; i++) {
+					for (let i = 0; i < itemDetails.type.length; i++) {
 						if(itemDetails.bucketOrder[i] === j) {
 	HTML +=				"<div class='itemIconContainer'>" +
 							"<img class='check' src='" + itemDetails.iconURL[i] + "' title='" + itemDetails.name[i] + " (" + itemDetails.type[i] + ")'>" +
