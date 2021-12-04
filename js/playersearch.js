@@ -111,7 +111,9 @@ function setLang(lang) {
 		x[i].classList.toggle("act",false);
 	}
 	document.getElementById(lang).classList.toggle("act",true);
-	// remove local storage that depends on language (otherwise new values would be pushed to old)
+	// remove output & local storage that depends on language (otherwise new values would be pushed to old)
+	document.getElementById("main").innerHTML = "";
+	document.getElementById("playerBucket").innerHTML ="";
 	localStorage.removeItem("manifestPaths");
 	localStorage.removeItem("statDefinitions");
 	localStorage.removeItem("classDefinitions");

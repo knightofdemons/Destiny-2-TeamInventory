@@ -167,7 +167,7 @@ async function getPlayer(memberID, memberType){
 
 function addPlayer(cP){	
 	// add HTML
-	HTML = "<div id='acc-" + cP.membershipId + "'>" +
+	HTML = "<div id='acc-" + cP.membershipId[0] + "'>" +
 				"<h4>" +
 				"<img src='" + cP.profilePicturePath + "' width='40' height='40'>"	+
 				cP.bungieName +
@@ -204,13 +204,14 @@ function addPlayer(cP){
 }
 
 function deletePlayer(membershipId){
+	document.getElementById("acc-" + membershipId).parentNode.removeChild(document.getElementById("acc-" + membershipId));
 	HTML = document.getElementsByClassName("acc-" + membershipId);
 	while (HTML[0]){
 		HTML[0].remove(); //has to be index0 because element also gets deleted from array for whatever reason
 	}
 	let storageTmp = JSON.parse(localStorage.getItem("loadedPlayers"));
 	let index = storageTmp.findIndex(function(toBeDeleted) {
-		return toBeDeleted.membershipId[0] == membershipId
+		return toBeDeleted.membershipId[0] == membershipId;
 	});
 	storageTmp.splice(index, 1);
 	console.log(storageTmp);
