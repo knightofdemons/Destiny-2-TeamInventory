@@ -21,14 +21,16 @@ async function searchPlayer(inputData){
 	if(inputData){
 		let rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + inputData + "/0/";
 		let temp = await getData(rqURL);
+		console.log(temp);
+		if (temp['Response']['searchResults'].length > 0) {
 		let tmp = temp.Response.searchResults;
 			var tmpR = [];
 			tmp.forEach(function(item, index, array) {
-			  imgp = 'https://www.bungie.net' + item.destinyMemberships[0].iconPath;
 			  IDs = item.destinyMemberships[0].membershipId + "|" + item.destinyMemberships[0].membershipType;
-			  t = "<li><div class='sresult'><img alt='" + IDs + "' src='"+imgp+"'>" + item.bungieGlobalDisplayName + "#" + item.bungieGlobalDisplayNameCode + "</div></li>";
+			  t = "<li><div class='sresult'><img class='platformLogo' alt='" + IDs + "' src='css/images/logo" + item.destinyMemberships[0].membershipType + ".svg'>" + item.bungieGlobalDisplayName + "#" + item.bungieGlobalDisplayNameCode + "</div></li>";
 			  tmpR.push(t);
 			});
+		}
 			searchWrapper.classList.add("active");
 			showSuggestions(tmpR);
 			let allList = suggBox.querySelectorAll("li");
@@ -64,13 +66,15 @@ async function select(element){
 
 function showSuggestions(list){
     let listData;
-    if(!list.length){
-        userValue = inputBox.value;
-        listData = '<li>${userValue}</li>';
-    }else{
-      listData = list.join('');
-    }
-    suggBox.innerHTML = listData;
+    if (list !== undefined){
+		if(!list.length){
+			userValue = inputBox.value;
+			listData = '<li>${userValue}</li>';
+		}else{
+		  listData = list.join('');
+		}
+		suggBox.innerHTML = listData;
+	}
 }
 
 // close sidebar when clicking on menu icon
