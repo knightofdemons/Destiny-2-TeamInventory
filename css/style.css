@@ -300,13 +300,17 @@
 
 	#main
 	{
-	   display: grid;
-	   height: 100%;
-	   padding-left: 20rem;
-	   padding-top: 2rem;
-       	   position: relative;
-	   width: 100%;
-           z-index: 1;
+		display: grid;
+		height: 100%;
+		padding-top: 1rem;
+		position: relative;
+		width: 100%;
+		z-index: 1;
+	}
+	
+	.sidebar.open ~ #main{
+		left: var(--sidebar-width);
+		width: calc(100% - var(--sidebar-width));
 	}
 	
 /*********************************************************************************/
@@ -319,16 +323,17 @@
         left: 0%;
         top: 0%;
         height: 100%;
-        width: 0rem;
+        width: 0;
         background: var(--grad1);
-        padding: 2px 8px;
+        padding: 0px 0px;
         z-index: 99;
         transition: all 0.3s ease;
     }
     
     .sidebar.open
     {
-        width: 20rem;
+        width: var(--sidebar-width);
+        padding: 2px 8px;
     }
 
 	
@@ -361,9 +366,9 @@
     {
         position: absolute;
         top: 50%;
-        right: -2rem;
+        right: -3rem;
         transform: translateY(-50%);
-        font-size: 22px;
+        font-size: 44px;
         text-align: center;
         cursor: pointer;
     }
@@ -372,6 +377,7 @@
     {
         text-align: right;
         right: 0;
+        font-size: 22px;
     }
     
     .sidebar .sidebar-content i
