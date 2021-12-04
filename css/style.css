@@ -126,9 +126,9 @@
     {
         font-size: 1.5rem;
         font-weight: 400;
-        left: 30%;
         position: absolute;
         text-shadow: 0.05rem 0.05rem #11101d;
+        left: 20%;
         top: 10%;    
     }
     
@@ -138,25 +138,25 @@
         font-size: 2rem;
         font-weight: 400;
         position: absolute;
-        right: 10%;
+        right: 3%;
+        top: 3%;
         text-shadow: 0.05rem 0.05rem #11101d;
-        top: 10%;
     }
     
     .charStats
 	{
-		display: flex;
-		padding-left: 1rem;
+		background: rgba(200, 200, 200, .1);
+		text-align: center;
 		width:474px;
 	}
 	
 	.charStats img
     {
+		vertical-align: middle;
         cursor: help;
         height: 1.5rem;
-        margin-right: 0.5rem;
-        margin-left: -1rem;
         width: 1.5rem;
+        margin-right: 0.1rem;
     }
     
     .itemIconContainer

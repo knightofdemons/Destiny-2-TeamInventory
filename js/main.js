@@ -186,8 +186,10 @@ function addPlayer(cP){
 				for (index in cP.charOrder) {
 	HTML +=			"<div class='charStats'>";
 					for (let stat in cP.charStats[cP.charOrder[index]]) {
+						if(stat != 1935470627){
 	HTML +=				"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
-						cP.charStats[cP.charOrder[index]][stat] + "&emsp;&emsp;";
+						cP.charStats[cP.charOrder[index]][stat] + "&emsp;";
+						}
 					}
 	HTML +=			"</div>";				
 					}
