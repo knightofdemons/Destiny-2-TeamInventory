@@ -75,6 +75,7 @@ async function checkManifestVersion(language) {
 async function InitData(){
 	if(localStorage.getItem("lang")){
 		lang = JSON.parse(localStorage.getItem("lang"));
+		document.querySelector("#lang-btn").classList.replace(document.querySelector("#lang-btn").classList.item(1), "flag-icon-"+lang);
 	}else{
 		lang = 'en';
 		localStorage.setItem("lang", JSON.stringify(lang));
@@ -91,6 +92,7 @@ async function InitData(){
 		// delete (for language change)
 		statDefinitions = {};
 		itemDetails = {};
+		itemDetailsTmp = {};
 		classDefinitions = {};
 		// get details for stats from manifest
 			const resStatDefinitions = await getData(maniPaths.statDefinitions, false);
@@ -253,18 +255,44 @@ function addPlayer(cP){
 	HTML +=			"</div>";				
 					}
 	HTML +=		"</div><br><br>" +
-				"<div>";
+				"<div class='item-list'>";
 				// exotic weapons
-				for (let j = 2; j<5; j++) {
+				// for every bucket (2 = kinetic, 3 = energy, 4 = power)
+				for (let b = 2; b < 5; b++) {
 	HTML +=			"<div class='exo-weapons'>";
+					// every item...
 					for (let i = 0; i < itemDetails.type.length; i++) {
-						if(itemDetails.bucketOrder[i] === j) {
+						// ... that matches bucket
+						if(itemDetails.bucketOrder[i] === b) {
 	HTML +=				"<div class='itemIconContainer'>" +
 							"<img class='check' src='" + itemDetails.iconURL[i] + "' title='" + itemDetails.name[i] + " (" + itemDetails.type[i] + ")'>" +
 						"</div>";
 						}
 					}
 	HTML +=			"</div><br><br>";
+				}
+	HTML +=		"</div>" +
+				"<div class='item-list'>";
+				// exotic armor
+				// for every bucket (2 = kinetic, 3 = energy, 4 = power)
+				for (let b = 5; b < 9; b++) {
+		HTML +=		"<div class='exo-armor-bucket'>";
+					// for every class type (22 = titan, 23 = hunter, 21 = warlock)
+					catHsh = [22,23,21];
+					for (let c = 0; c < 3; c++) {
+		HTML +=			"<div class='exo-armor-class'>";
+						// every item...
+						for (let i = 0; i < itemDetails.type.length; i++) {
+							// ... that matches bucket & class
+							if(itemDetails.bucketOrder[i] === b && itemDetails.categoryHash[i] === catHsh[c]) {
+		HTML +=				"<div class='itemIconContainer'>" +
+								"<img class='check' src='" + itemDetails.iconURL[i] + "' title='" + itemDetails.name[i] + " (" + itemDetails.type[i] + ")'>" +
+							"</div>";
+							}
+						}
+		HTML +=			"</div>";
+					}
+		HTML +=		"</div>";
 				}
 	HTML +=		"</div>" +
 				"<br>" +
