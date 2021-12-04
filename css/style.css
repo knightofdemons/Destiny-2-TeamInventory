@@ -1,4 +1,5 @@
 @charset 'UTF-8';
+@import './conf.css';
 /*********************************************************************************/
 /* Basic                                                                         */
 /*********************************************************************************/
@@ -17,11 +18,7 @@
 	body
 	{
 		background-position: center top;
-		background: radial-gradient(
-		  circle at 50% 70px,
-		  hsl(240, 20%, 28%) 0%,
-		  hsl(240, 27%, 12%) 100%
-		);
+		background: var(--gradient);
 		background-size: cover;
 		color: #fff;
 		font-family: 'Poppins';
@@ -142,7 +139,12 @@
         width: 1.5rem;
         margin-right: 0.1rem;
     }
-    
+	
+    .exo-weapons
+    {
+        float: left;
+    }
+	
     .itemIconContainer
     {
         cursor: help;
@@ -188,7 +190,7 @@
 	
 	.language-options
 	{
-		background-color: hsl(240, 27%, 12%);
+		background-color: var(--grad1);;
 		border-radius: 12px;
 		color: white;
 		display: none;
@@ -212,7 +214,7 @@
 	
 	.lang-opt:hover, .lang-opt.act
 	{
-		background-color: hsl(240, 20%, 48%);
+		background-color: var(--grad2);
 		border-radius: 24px;
 		color: black;
 	}
@@ -243,7 +245,7 @@
 	.playerHeaderFrame
 	{
 		width: 100%;
-		border-bottom: 1px solid hsl(240, 27%, 12%);
+		border-bottom: 1px solid var(--grad1);
 		background: rgba(0, 0, 0, .2);
 	}
 	
@@ -286,7 +288,7 @@
 	
 	.playerMain
 	{
-		border: 2px solid hsl(240, 27%, 12%);
+		border: 2px solid var(--grad1);
 		border-radius: 10px;
 		background: rgba(0, 0, 0, .2);
 	}
@@ -401,8 +403,8 @@
         left: 0%;
         top: 0%;
         height: 100%;
-        width: 10rem;
-        background: hsl(240, 27%, 12%);
+        width: 2rem;
+        background: var(--grad1);
         padding: 2px 8px;
         z-index: 99;
         transition: all 0.3s ease;
@@ -413,21 +415,21 @@
         width: 20rem;
     }
     
-    .sidebar .sidebar-logo-details
+    .sidebar .sidebar-content .sidebar-logo-details
     {
         height: 60px;
 		display: flex;
 		align-items: center;
 		position: relative;
     }
-    
-    .sidebar .sidebar-logo-details .sidebar-icon
+
+	.sidebar .sidebar-content .*
     {
         opacity: 0;
         transition: all 0.3s ease;
     }
     
-    .sidebar .sidebar-logo-details .sidebar-logo_name
+    .sidebar .sidebar-content .sidebar-logo-details .sidebar-logo_name
     {
         color: #fff;
         font-size: 20px;
@@ -435,14 +437,13 @@
         opacity: 0;
         transition: all 0.3s ease;
     }
-    
-    .sidebar.open .sidebar-logo-details .sidebar-icon,
-    .sidebar.open .sidebar-logo-details .sidebar-logo_name
+
+    .sidebar.open .sidebar-content *
     {
         opacity: 1;
     }
     
-    .sidebar .sidebar-logo-details #sidebar-btn
+    .sidebar .sidebar-content .sidebar-logo-details #sidebar-btn
     {
         position: absolute;
         top: 50%;
@@ -452,6 +453,7 @@
         transition: all 0.4s ease;
         text-align: center;
         cursor: pointer;
+        opacity: 1;
     }
     
     .sidebar.open .sidebar-logo-details #sidebar-btn
@@ -459,7 +461,7 @@
         text-align: right;
     }
     
-    .sidebar i
+    .sidebar .sidebar-content i
     {
         color: #fff;
         height: 60px;
@@ -469,13 +471,13 @@
         line-height: 60px;
     }
     
-    .sidebar .nav-list .nav-settings
+    .sidebar .sidebar-content .nav-list .nav-settings
     {
         margin-top: 20px;
         height: 100%;
     }
     
-    .sidebar h3
+    .sidebar .sidebar-content h3
     {
         border-bottom-color: white;
         border-bottom-style: solid;
@@ -483,14 +485,14 @@
         text-align: center;
     }
     
-    .sidebar li
+    .sidebar .sidebar-content li
     {
         position: relative;
         margin: 8px 0;
         list-style: none;
     }
     
-    .sidebar li .tooltip
+    .sidebar .sidebar-content li .tooltip
     {
         position: absolute;
         top: -20px;
@@ -508,7 +510,7 @@
         transition: 0s;
     }
     
-    .sidebar li:hover .tooltip
+    .sidebar .sidebar-content li:hover .tooltip
     {
         opacity: 1;
         pointer-events: auto;
@@ -522,7 +524,7 @@
         display: none;
     }
     
-    .sidebar input
+    .sidebar .sidebar-content input
     {
         font-size: 15px;
         color: #fff;
@@ -561,7 +563,7 @@
         width: 20px;
     }
     
-    .sidebar .bx-search
+    .sidebar .sidebar-content .bx-search
     {
         position: absolute;
 		right: 0;
@@ -576,13 +578,13 @@
         color: #fff;
     }
     
-    .sidebar .bx-search:hover
+    .sidebar .sidebar-content .bx-search:hover
     {
         background: #fff;
         color: #11101d;
     }
     
-    .sidebar li a
+    .sidebar .sidebar-content li a
     {
         display: flex;
         height: 3rem;
@@ -595,12 +597,12 @@
         overflow: hidden;
     }
     
-    .sidebar li a:hover
+    .sidebar .sidebar-content li a:hover
     {
-        background: hsl(240, 20%, 48%);
+        background: var(--grad2);
     }
     
-    .sidebar li a .links_name
+    .sidebar .sidebar-content li a .links_name
     {
         color: #fff;
         font-size: 15px;
@@ -617,14 +619,14 @@
         pointer-events: auto;
     }
     
-    .sidebar li a:hover .links_name,
-    .sidebar li a:hover i
+    .sidebar .sidebar-content li a:hover .links_name,
+    .sidebar .sidebar-content li a:hover i
     {
         transition: all 0.5s ease;
         color: #11101d;
     }
     
-    .sidebar li i
+    .sidebar .sidebar-content li i
     {
         height: 50px;
         line-height: 50px;
@@ -632,7 +634,7 @@
         border-radius: 12px;
     }
     
-    .sidebar li img
+    .sidebar .sidebar-content li img
     {
         object-fit: cover;
         border-radius: 6px;
