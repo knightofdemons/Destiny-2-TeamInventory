@@ -214,7 +214,6 @@ function deletePlayer(membershipId){
 		return toBeDeleted.membershipId[0] == membershipId;
 	});
 	storageTmp.splice(index, 1);
-	console.log(storageTmp);
 	console.log("deleting " + membershipId + " from local player storage");
 	localStorage.setItem("loadedPlayers", JSON.stringify(storageTmp));
 }
