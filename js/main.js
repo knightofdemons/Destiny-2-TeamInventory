@@ -67,6 +67,10 @@ async function InitData(){
 		itemDetails = JSON.parse(localStorage.getItem("itemDetails"));
 		classDefinitions = JSON.parse(localStorage.getItem("classDefinitions"));
 	}else{
+		// delete (for language change)
+		statDefinitions = {};
+		itemDetails = {};
+		classDefinitions = {};
 		// get details for stats from manifest
 			const resStatDefinitions = await getData(maniPaths.statDefinitions, false);
 			// for every item

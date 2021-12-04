@@ -82,11 +82,6 @@ function showSuggestions(list){
       sidebar.classList.toggle("open");
       menuBtnChange();
     });
-	
-// toggle language when clicking on icon
-    langBtn.addEventListener("click", () => {
-      langOpt.classList.toggle("open");
-    });
 
 // change sidebar button appearance
 function menuBtnChange() {
@@ -98,4 +93,33 @@ function menuBtnChange() {
   if (langOpt.classList.contains("open")) {
     langOpt.classList.toggle("open");
   }
+}
+
+// Language
+// toggle language when clicking on icon
+    langBtn.addEventListener("click", () => {
+      langOpt.classList.toggle("open");
+    });
+
+
+function setLang(lang) {
+	// close language-window
+	langOpt.classList.toggle("open");
+	// show active language
+	var x = document.getElementsByClassName("lang-opt");
+	for (let i = 0; i<x.length; i++){
+		x[i].classList.toggle("act",false);
+	}
+	document.getElementById(lang).classList.toggle("act",true);
+	// remove local storage that depends on language (otherwise new values would be pushed to old)
+	localStorage.removeItem("manifestPaths");
+	localStorage.removeItem("statDefinitions");
+	localStorage.removeItem("classDefinitions");
+	localStorage.removeItem("itemDetails");
+	localStorage.removeItem("itemCategoryDetails");
+	localStorage.removeItem("itemBucketDetails");
+	// save lang
+	localStorage.setItem("lang", JSON.stringify(lang));
+	// reload manifest
+	InitData();
 }
