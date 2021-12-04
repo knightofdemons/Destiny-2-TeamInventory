@@ -220,7 +220,7 @@ function addPlayer(cP){
 				"<div>";
 				// exotic weapons
 				for (let j = 2; j<5; j++) {
-	HTML +=			"<div class'exo-weapons'>";
+	HTML +=			"<div class='exo-weapons'>";
 					for (let i = 0; i < itemDetails.bucketOrder.length; i++) {
 						if(itemDetails.bucketOrder[i] === j) {
 	HTML +=				"<div class='itemIconContainer'>" +
