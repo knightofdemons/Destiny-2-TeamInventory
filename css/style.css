@@ -291,6 +291,7 @@
 		border: 2px solid var(--grad1);
 		border-radius: 10px;
 		background: rgba(0, 0, 0, .2);
+		height: max-content;
 	}
 
 /*********************************************************************************/
@@ -321,11 +322,13 @@
 
 	#main
 	{
+	   display:flex;
+	   height: 100%;
 	   padding-left: 20rem;
 	   padding-top: 2rem;
-       position: relative;
+       	   position: relative;
 	   width: 100%;
-       z-index: 1;
+           z-index: 1;
 	}
 	
 /*********************************************************************************/
