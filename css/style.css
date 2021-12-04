@@ -140,7 +140,18 @@
         margin-right: 0.1rem;
     }
 	
-    .exo-weapons
+    .exo-armor-bucket
+	{
+		display: flex;
+		justify-content: space-evenly;
+	}
+	
+	.exo-armor-class
+	{
+		width: 33%;
+	}
+	
+	.exo-weapons
     {
         float: left;
     }
@@ -187,6 +198,11 @@
          height: 20px;
          width: 20px;
     }
+	
+	.item-list
+	{
+		float: left;
+	}
 	
 	.language-options
 	{
