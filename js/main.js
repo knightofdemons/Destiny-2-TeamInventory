@@ -279,7 +279,7 @@ function addPlayer(cP){
                                 marker="cross";
                             }
 	HTML +=				"<div class='itemIconContainer'>" +
-							'<img class="check" src="' + itemDetails.iconURL[i] + '" title="' + itemDetails.name[i] + ' (' + itemDetails.type[i] + ')">' +
+							'<img class="' + marker + '" src="' + itemDetails.iconURL[i] + '" title="' + itemDetails.name[i] + ' (' + itemDetails.type[i] + ')">' +
 							"<div class='itemIconStatus'>" + 
                                     "<img src='css/images/" + marker + ".png'>" +
                             "</div>" +
