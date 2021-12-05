@@ -190,6 +190,7 @@ async function getPlayer(memberID, memberType){
 		const resProfile = await getData(rqURL);
 		// store info in obj playerDetails 
 			playerDetails.charIDs = resProfile['Response']['profile']['data']['characterIds'];
+			playerDetails.collectibles = resProfile['Response']['profileCollectibles']['data']['collectibles'];
 			if(resProfile['Response']['profileInventory']['data']){
 				playerDetails.profileInventory = resProfile['Response']['profileInventory']['data']['items'];
 			}else{
@@ -204,6 +205,7 @@ async function getPlayer(memberID, memberType){
 				(playerDetails.charEmblem = playerDetails.charEmblem || []).push("https://www.bungie.net" + resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['emblemBackgroundPath']);
 				(playerDetails.charStats = playerDetails.charStats || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['stats']); // 7 stats: [hash] -> value
 				(playerDetails.charLastPlayed = playerDetails.charLastPlayed || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['dateLastPlayed']); // wollte ich vllt später gebrauchen
+				playerDetails.collectibles = {...playerDetails.collectibles,...resProfile['Response']['characterCollectibles']['data'][playerDetails.charIDs[i]]['collectibles']};
 				if(playerDetails.profileInventory){
 					(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
 				}else{
@@ -264,8 +266,23 @@ function addPlayer(cP){
 					for (let i = 0; i < itemDetails.type.length; i++) {
 						// ... that matches bucket
 						if(itemDetails.bucketOrder[i] === b) {
+						// check if weapon is achieved and overlay a check mark or cross over the image
+							var checkState = cP.collectibles[itemDetails.collectibleID[i]].state;
+							var marker = "";
+                            // states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
+                            // 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
+                            // states can be added! --> all odd numbers = not obtained, all even numbers = obtained
+                            if (checkState % 2 == 0) {
+                                marker="check";
+                                }
+                            else {
+                                marker="cross";
+                            }
 	HTML +=				"<div class='itemIconContainer'>" +
 							'<img class="check" src="' + itemDetails.iconURL[i] + '" title="' + itemDetails.name[i] + ' (' + itemDetails.type[i] + ')">' +
+							"<div class='itemIconStatus'>" + 
+                                    "<img src='css/images/" + marker + ".png'>" +
+                            "</div>" +
 						"</div>";
 						}
 					}
@@ -276,23 +293,23 @@ function addPlayer(cP){
 				// exotic armor
 				// for every bucket (2 = kinetic, 3 = energy, 4 = power)
 				for (let b = 5; b < 9; b++) {
-		HTML +=		"<div class='exo-armor-bucket'>";
+	HTML +=			"<div class='exo-armor-bucket'>";
 					// for every class type (22 = titan, 23 = hunter, 21 = warlock)
 					catHsh = [22,23,21];
 					for (let c = 0; c < 3; c++) {
-		HTML +=			"<div class='exo-armor-class'>";
+	HTML +=				"<div class='exo-armor-class'>";
 						// every item...
 						for (let i = 0; i < itemDetails.type.length; i++) {
 							// ... that matches bucket & class
 							if(itemDetails.bucketOrder[i] === b && itemDetails.categoryHash[i] === catHsh[c]) {
-		HTML +=				"<div class='itemIconContainer'>" +
-								"<img class='check' src='" + itemDetails.iconURL[i] + "' title='" + itemDetails.name[i] + " (" + itemDetails.type[i] + ")'>" +
+	HTML +=					"<div class='itemIconContainer'>" +
+								'<img class="check" src="' + itemDetails.iconURL[i] + '" title="' + itemDetails.name[i] + ' (' + itemDetails.type[i] + ')">' +
 							"</div>";
 							}
 						}
-		HTML +=			"</div>";
+	HTML +=				"</div>";
 					}
-		HTML +=		"</div>";
+	HTML +=			"</div>";
 				}
 	HTML +=		"</div>" +
 				"<br>" +
