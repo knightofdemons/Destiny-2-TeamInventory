@@ -330,6 +330,7 @@
 	.loginFrame
 	{
 		position: fixed;
+		top:0px;
 		/* background: black;  */
 		background: var(--gradient);
 		height: 100%;
