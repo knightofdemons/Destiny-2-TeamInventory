@@ -7,20 +7,15 @@ function openOauthPopup() {
 	popOauth.addEventListener('storage', function(e) {
 		if(localStorage.getItem('oauthWatcher') && localStorage.getItem('oauthCode')) {
 			// Reload authorization code from LocalStorage
-			console.log("call");
 			localStorage.removeItem('oauthWatcher');
 		}
 	});
 
 	// Authorize/Redirect Window
 	if (localStorage.getItem('oauthWatcher')) {
-			console.log(popOauth);
-		// Save authorization code to LocalStorage and close the tab
-		// popOauth.close();
+		loginFr = document.getElementById("loginFrame");
+		loginFr.parentNode.removeChild(loginFr);
+		popOauth.close();
 	}
-}
-
-async function searchPlayer(inputData){
-
 }
 
