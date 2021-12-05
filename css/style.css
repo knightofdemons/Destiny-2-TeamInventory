@@ -316,7 +316,7 @@
 		display: grid;
 		height: 100%;
 		padding-top: 1rem;
-		position: relative;
+		position: absolute;
 		width: 100%;
 		z-index: 1;
 	}
