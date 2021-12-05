@@ -259,11 +259,17 @@ function addPlayer(cP){
 				// exotic weapons
 				// for every bucket (2 = kinetic, 3 = energy, 4 = power)
 				for (let b = 2; b < 5; b++) {
+					var hb = 0; // counter for bucket headline
 	HTML +=			"<div class='exo-weapons'>";
 					// every item...
 					for (let i = 0; i < itemDetails.type.length; i++) {
 						// ... that matches bucket
 						if(itemDetails.bucketOrder[i] === b) {
+						// make headline for first found item
+						if (hb < 1) {
+	HTML +=					"<div class='headline-weapon-bucket'>" + itemDetails.bucket[i] + "</div>";
+							hb++;
+						}
 						// check if weapon is achieved and overlay a check mark or cross over the image
 							var checkState = cP.collectibles[itemDetails.collectibleID[i]].state;
 							var marker = "";
@@ -289,19 +295,49 @@ function addPlayer(cP){
 	HTML +=		"</div>" +
 				"<div class='item-list'>";
 				// exotic armor
-				// for every bucket (2 = kinetic, 3 = energy, 4 = power)
+				// for every bucket (5 = head, 6 = arm, 7 = chest, 8 = leg)
 				for (let b = 5; b < 9; b++) {
 	HTML +=			"<div class='exo-armor-bucket'>";
 					// for every class type (22 = titan, 23 = hunter, 21 = warlock)
 					catHsh = [22,23,21];
 					for (let c = 0; c < 3; c++) {
+						var hb = 0; // counter for bucket headline
+						var hc = 0; // counter for class headline
 	HTML +=				"<div class='exo-armor-class'>";
 						// every item...
 						for (let i = 0; i < itemDetails.type.length; i++) {
 							// ... that matches bucket & class
 							if(itemDetails.bucketOrder[i] === b && itemDetails.categoryHash[i] === catHsh[c]) {
+							// make headline for first found item	
+								if (hc < 1 && b === 5) {
+	HTML +=							"<div class='headline-armor-class'>" + itemDetails.category[i] + "</div>";
+									hc++;
+								}
+								if (hb < 1) {
+									if (c === 0) {
+	HTML +=							"<div class='headline-armor-bucket'>" + itemDetails.bucket[i] + "</div>";
+									} else {
+	HTML +=								"<div class='headline-armor-bucket'>&emsp;</div>";	
+									}
+									hb++;
+								}
+							// check if weapon is achieved and overlay a check mark or cross over the image
+								var checkState = cP.collectibles[itemDetails.collectibleID[i]].state;
+								var marker = "";
+								// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
+								// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
+								// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
+								if (checkState % 2 == 0) {
+									marker="check";
+									}
+								else {
+									marker="cross";
+								}
 	HTML +=					"<div class='itemIconContainer'>" +
-								'<img class="check" src="' + itemDetails.iconURL[i] + '" title="' + itemDetails.name[i] + ' (' + itemDetails.type[i] + ')">' +
+								'<img class=' + marker + ' src="' + itemDetails.iconURL[i] + '" title="' + itemDetails.name[i] + ' (' + itemDetails.type[i] + ')">' +
+								"<div class='itemIconStatus'>" + 
+                                    "<img src='css/images/" + marker + ".png'>" +
+								"</div>" +
 							"</div>";
 							}
 						}
