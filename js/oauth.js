@@ -16,6 +16,7 @@ function openOauthPopup() {
 		loginFr = document.getElementById("loginFrame");
 		loginFr.parentNode.removeChild(loginFr);
 		localStorage.removeItem('oauthWatcher');
+		InitData();
 		popOauth.close();
 	}
 }

@@ -6,8 +6,6 @@ let itemDetailsTmp = {};
 let lang = '';
 let playerlist = {};
 
-InitData();
-
 async function buttonClick(membershipId, platformType){
 		//checks if div-container is already existing for current player & add player if not
 		if(!document.getElementById("acc-" + membershipId)){
@@ -42,7 +40,7 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
 async function getData(url, useApiKey = true) {
 		//fetch json response for getRequests | use false as option to generate a request without using the apikey
 		let tmpHead = new Headers();
-		if(useApiKey){tmpHead.set('X-API-Key', akey);}
+		if(useApiKey){tmpHead.set('X-API-Key', akey); tmpHead.set('Authorization', "Bearer " + localStorage.getItem("oauthCode"));}
 		const fetchOptions = {method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer', headers:tmpHead,};
 		const response = await fetch(url, fetchOptions);
 		return response.json();
