@@ -265,7 +265,7 @@ function addPlayer(cP){
 						// ... that matches bucket
 						if(itemDetails.bucketOrder[i] === b) {
 	HTML +=				"<div class='itemIconContainer'>" +
-							"<img class='check' src='" + itemDetails.iconURL[i] + "' title='" + itemDetails.name[i] + " (" + itemDetails.type[i] + ")'>" +
+							'<img class="check" src="' + itemDetails.iconURL[i] + '" title="' + itemDetails.name[i] + ' (' + itemDetails.type[i] + ')">' +
 						"</div>";
 						}
 					}
