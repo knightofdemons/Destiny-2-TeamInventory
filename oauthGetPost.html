@@ -6,4 +6,5 @@
 	const urlParams = new URLSearchParams(queryString);
 	const code = urlParams.get('code');
 	localStorage.setItem('oauthCode', code);
+	window.close();
 </script>
