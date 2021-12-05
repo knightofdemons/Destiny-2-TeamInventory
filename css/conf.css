@@ -6,6 +6,7 @@ DIM orange and blue, accent colors */
 	--sidebar-width: 20rem;
 	
 	--orange: #e8a534;
+	--orange2: #00cc68;
 	--blue: #68a0b7;
 	--red: #ff3232; /* For warnings/errors */
 	--grad0:hsl(240, 20%, 28%);
@@ -15,7 +16,7 @@ DIM orange and blue, accent colors */
 	  circle at 50% 70px,
 	  var(--grad0) 0%,
 	  var(--grad1) 100%
-	); /* new background gradient
+	); /* new background gradient */
 
 	/* Elemental damage types */
 	--arc: #85c5ec;
