@@ -12,7 +12,7 @@ function openOauthPopup() {
 	});
 
 	// Authorize/Redirect Window
-	if (localStorage.getItem('oauthWatcher')) {
+	if (localStorage.getItem('oauthWatcher') && localStorage.getItem('oauthCode')) {
 		loginFr = document.getElementById("loginFrame");
 		loginFr.parentNode.removeChild(loginFr);
 		localStorage.removeItem('oauthWatcher');
