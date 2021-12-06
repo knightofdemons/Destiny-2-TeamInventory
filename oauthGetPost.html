@@ -6,7 +6,7 @@
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const code = urlParams.get('code');
-		window.opener.postMessage(code, window.opener);
+		window.opener.postMessage(code, "*");
 	}
 
 </script>
