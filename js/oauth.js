@@ -30,6 +30,10 @@ function callOauthPopup(){
 			console.log(popOauth);
 		}
 	});
+	popOauth.addEventListener("message", (event) => {
+			console.log(event);
+			return;
+	}, false);
 }
 
 function cleanOauthPopup() {
