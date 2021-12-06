@@ -5,19 +5,13 @@ function openOauthPopup() {
 	openOauthPopupSub();
 }
 
-function cleanOauthPopup(popOauth) {
-	loginFr = document.getElementById("loginFrame");
-	loginFr.parentNode.removeChild(loginFr);
-	localStorage.removeItem('oauthWatcher');
-	InitData();
-	popOauth.close();
-}
+
 
 async function openOauthPopupSub(){
 	localStorage.setItem('oauthWatcher', false);
 	let prom = await callOauthPopup();
-	console.log(popOauth);
-	cleanOauthPopup(popOauth);
+	console.log(prom);
+	cleanOauthPopup();
 }
 
 function callOauthPopup(){
@@ -33,14 +27,17 @@ function callOauthPopup(){
 			const urlParams = new URLSearchParams(queryString);
 			const code = urlParams.get('code');
 			console.log("code: " + queryString);
-		}
 			console.log(popOauth);
-	return popOauth;
-});
+		}
+	});
+}
 
-	// Authorize/Redirect Window
-	while (localStorage.getItem('oauthCode') !== null) {
-	}
+function cleanOauthPopup() {
+	loginFr = document.getElementById("loginFrame");
+	loginFr.parentNode.removeChild(loginFr);
+	localStorage.removeItem('oauthWatcher');
+	InitData();
+	//popOauth.close();
 }
 
 if(localStorage.getItem('oauthCode')){

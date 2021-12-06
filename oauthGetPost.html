@@ -8,7 +8,7 @@
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const code = urlParams.get('code');
-		localStorage.setItem('oauthCode', code);
+		window.opener.localStorage.setItem('oauthCode', code);
 	}
 
 </script>
