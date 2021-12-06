@@ -26,7 +26,7 @@ function callOauthPopup(){
 			const queryString = popOauth.location.search;
 			const urlParams = new URLSearchParams(queryString);
 			const code = urlParams.get('code');
-			console.log("code: " + queryString);
+			console.log(e);
 			console.log(popOauth);
 		}
 	});
