@@ -8,7 +8,6 @@ function openOauthPopup(){
 		loginFr = document.getElementById("loginFrame");
 		loginFr.parentNode.removeChild(loginFr);
 		InitData();
-		cleanOauthPopup();
 	}, false);
 }
 
