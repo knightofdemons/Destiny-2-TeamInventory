@@ -5,6 +5,7 @@
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
 	const code = urlParams.get('code');
+	console.log(code);
 	localStorage.setItem('oauthCode', code);
 	localStorage.setItem('oauthWatcher', true);
 </script>
