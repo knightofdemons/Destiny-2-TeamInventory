@@ -1,23 +1,42 @@
 var popOauth;
 
+
 function openOauthPopup() {
+	openOauthPopupSub();
+}
+
+function cleanOauthPopup(popOauth) {
+	loginFr = document.getElementById("loginFrame");
+	loginFr.parentNode.removeChild(loginFr);
+	localStorage.removeItem('oauthWatcher');
+	InitData();
+	popOauth.close();
+}
+
+async function openOauthPopupSub(){
 	localStorage.setItem('oauthWatcher', false);
-	rqURL = "https://www.bungie.net/en/OAuth/Authorize?client_id=38180&response_type=code";
-	popOauth = window.open(rqURL, "winOauth", "popup, left=200px,top=200px,width=580px,height=700px");
+	const prom = await callOauthPopup();
+}
+
+async function callOauthPopup(){
+	const apiclientid = '38180';
+	rqURL = "https://www.bungie.net/en/OAuth/Authorize?client_id=" + apiclientid + "&response_type=code";
+	popOauth = window.open(rqURL, "TeamInv: Bungie App-Authorization", "popup, left=200px,top=200px,width=580px,height=700px");
 	popOauth.addEventListener('storage', function(e) {
-		if(localStorage.getItem('oauthWatcher') && localStorage.getItem('oauthCode')) {
+		if(popOauth.localStorage.getItem('oauthCode') && popOauth.localStorage.getItem('oauthCode')) {
+		localStorage.setItem('oauthCode', popOauth.localStorage.getItem('oauthCode'));
 			// Reload authorization code from LocalStorage
-			localStorage.removeItem('oauthWatcher');
+		localStorage.removeItem('oauthWatcher');
+		console.log(popOauth.localStorage.getItem('oauthCode'));
 		}
 	});
 
 	// Authorize/Redirect Window
-	if (localStorage.getItem('oauthWatcher') && localStorage.getItem('oauthCode')) {
-		loginFr = document.getElementById("loginFrame");
-		loginFr.parentNode.removeChild(loginFr);
-		localStorage.removeItem('oauthWatcher');
-		InitData();
-		popOauth.close();
+	while (localStorage.getItem('oauthCode') !== null) {
+		cleanOauthPopup(popOauth);
 	}
 }
 
+if(localStorage.getItem('oauthCode')){
+	openOauthPopupSub();
+	}
