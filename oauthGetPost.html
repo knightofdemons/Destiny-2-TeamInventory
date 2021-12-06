@@ -2,12 +2,11 @@
 	<meta charset="UTF-8">
 </head>
 <script>
-	// Authorize/Redirect Window
 	if (localStorage.getItem('oauthWatcher')) {
-		// Save authorization code to LocalStorage and close the tab
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const code = urlParams.get('code');
+		console.log(window.opener);
 		window.opener.localStorage.setItem('oauthCode', code);
 	}
 
