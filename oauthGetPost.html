@@ -2,10 +2,13 @@
 	<meta charset="UTF-8">
 </head>
 <script>
-	const queryString = window.location.search;
-	const urlParams = new URLSearchParams(queryString);
-	const code = urlParams.get('code');
-	console.log(code);
-	localStorage.setItem('oauthCode', code);
-	localStorage.setItem('oauthWatcher', true);
+	// Authorize/Redirect Window
+	if (localStorage.getItem('oauthWatcher')) {
+		// Save authorization code to LocalStorage and close the tab
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		const code = urlParams.get('code');
+		localStorage.setItem('oauthCode', code);
+	}
+
 </script>

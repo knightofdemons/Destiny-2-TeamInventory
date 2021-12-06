@@ -15,25 +15,31 @@ function cleanOauthPopup(popOauth) {
 
 async function openOauthPopupSub(){
 	localStorage.setItem('oauthWatcher', false);
-	const prom = await callOauthPopup();
+	let prom = await callOauthPopup();
+	console.log(popOauth);
+	cleanOauthPopup(popOauth);
 }
 
-async function callOauthPopup(){
+function callOauthPopup(){
 	const apiclientid = '38180';
 	rqURL = "https://www.bungie.net/en/OAuth/Authorize?client_id=" + apiclientid + "&response_type=code";
 	popOauth = window.open(rqURL, "TeamInv: Bungie App-Authorization", "popup, left=200px,top=200px,width=580px,height=700px");
 	popOauth.addEventListener('storage', function(e) {
-		if(popOauth.localStorage.getItem('oauthCode') && popOauth.localStorage.getItem('oauthCode')) {
-		localStorage.setItem('oauthCode', popOauth.localStorage.getItem('oauthCode'));
+		if(localStorage.getItem('oauthWatcher') && localStorage.getItem('oauthCode')) {
 			// Reload authorization code from LocalStorage
-		localStorage.removeItem('oauthWatcher');
-		console.log(popOauth.localStorage.getItem('oauthCode'));
+			localStorage.removeItem('oauthWatcher');
+		}else{
+			const queryString = popOauth.location.search;
+			const urlParams = new URLSearchParams(queryString);
+			const code = urlParams.get('code');
+			console.log("code: " + queryString);
 		}
-	});
+			console.log(popOauth);
+	return popOauth;
+});
 
 	// Authorize/Redirect Window
 	while (localStorage.getItem('oauthCode') !== null) {
-		cleanOauthPopup(popOauth);
 	}
 }
 
