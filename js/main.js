@@ -6,6 +6,7 @@ let itemDefinitionsTmp = {};
 let itemDetails = {};
 let lang = '';
 let playerlist = {};
+let charStatOrder = [2996146975,392767087,1943323491,1735777505,144602215,4244567218];
 
 async function buttonClick(membershipId, platformType){
 		//checks if div-container is already existing for current player & add player if not
@@ -270,11 +271,9 @@ function addPlayer(cP){
 				"<div class='charList'>";
 				for (index in cP.charOrder) {
 	HTML +=			"<div class='charStats'>";
-					for (let stat in cP.charStats[cP.charOrder[index]]) {
-						if(stat != 1935470627){
-	HTML +=				"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "' title='" + statDefinitions.info[statDefinitions.hash.indexOf(parseInt(stat, 10))] + "'>" +
-						cP.charStats[cP.charOrder[index]][stat] + "&emsp;";
-						}
+					for (let i = 0; i < 6; i++) {
+	HTML +=				"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(charStatOrder[i])] + "' title='" + statDefinitions.info[statDefinitions.hash.indexOf(charStatOrder[i])] + "'>" +
+						cP.charStats[cP.charOrder[index]][charStatOrder[i]] + "&emsp;";
 					}
 	HTML +=			"</div>";				
 					}
