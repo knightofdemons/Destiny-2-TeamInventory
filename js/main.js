@@ -3,7 +3,6 @@ let statDefinitions = {};
 let classDefinitions = {};
 let itemDefinitions = {};
 let itemDefinitionsTmp = {};
-let itemDetails = {};
 let lang = '';
 let playerlist = {};
 let charStatOrder = [2996146975,392767087,1943323491,1735777505,144602215,4244567218];
@@ -209,7 +208,6 @@ async function getPlayer(memberID, memberType){
 		// 205 = characterEquipment, 800 = profileCollectibles & characterCollectibles, 900 = profileRecords & characterRecords
 		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=100,102,200,201,205,300,302,304,307,800,900';
 		const resProfile = await getData(rqURL);
-// console.log(resProfile);
 		// store info in obj playerDetails 
 			playerDetails.charIDs = resProfile['Response']['profile']['data']['characterIds'];
 			playerDetails.collectibles = resProfile['Response']['profileCollectibles']['data']['collectibles'];
@@ -218,6 +216,22 @@ async function getPlayer(memberID, memberType){
 			}else{
 				playerDetails.profileInventory = false;
 			}
+			// check which of the three itemComponents-parts has most hashes & merge together (with the one with most hashes at first)
+				playerDetails.itemDetails = {};
+				m = Math.max(Object.keys(resProfile['Response'].itemComponents.instances.data).length, Object.keys(resProfile['Response'].itemComponents.stats.data).length, Object.keys(resProfile['Response'].itemComponents.perks.data).length);
+				if (Object.keys(resProfile['Response'].itemComponents.instances.data).length === m) {
+					for (stat in resProfile['Response'].itemComponents.instances.data) {
+					playerDetails.itemDetails[stat]={... resProfile['Response'].itemComponents.instances.data[stat], ... resProfile['Response'].itemComponents.stats.data[stat], ... resProfile['Response'].itemComponents.perks.data[stat]};
+					}
+				} else if (Object.keys(resProfile['Response'].itemComponents.stats.data).length === m) {
+					for (stat in resProfile['Response'].itemComponents.stats.data) {
+					playerDetails.itemDetails[stat]={... resProfile['Response'].itemComponents.stats.data[stat], ... resProfile['Response'].itemComponents.instances.data[stat], ... resProfile['Response'].itemComponents.perks.data[stat]};
+					}
+				} else {
+				  for (stat in resProfile['Response'].itemComponents.perks.data) {
+					playerDetails.itemDetails[stat]={... resProfile['Response'].itemComponents.perks.data[stat], ... resProfile['Response'].itemComponents.instances.data[stat], ... resProfile['Response'].itemComponents.stats.data[stat]};
+					}
+				}
 			// for every character
 			for (let i = 0; i < playerDetails.charIDs.length; i++) {
 				(playerDetails.charLight = playerDetails.charLight || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['light']);
@@ -234,13 +248,14 @@ async function getPlayer(memberID, memberType){
 					playerDetails.charInventory = false;
 				}
 				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
-				(playerDetails.itemDetails = playerDetails.itemDetails || []).push(resProfile['Response'].itemComponents);
 			}
+	
 			// charOrder gets index of titan, hunter, warlock (0,1,2)
 			playerDetails.charOrder = [playerDetails.charClass.indexOf(0),playerDetails.charClass.indexOf(1),playerDetails.charClass.indexOf(2)];
 			playerDetails.charOrder = playerDetails.charOrder.filter(no => no >= 0);
 			return playerDetails;
 }
+
 
 function addPlayer(cP){	
 	// add HTML
@@ -274,7 +289,7 @@ function addPlayer(cP){
 					for (let i = 0; i < 6; i++) {
 	HTML +=				"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(charStatOrder[i])] + "' title='" + statDefinitions.info[statDefinitions.hash.indexOf(charStatOrder[i])] + "'>" +
 						cP.charStats[cP.charOrder[index]][charStatOrder[i]] + "&emsp;";
-					}
+						}
 	HTML +=			"</div>";				
 					}
 	HTML +=		"</div><br><br>" +
