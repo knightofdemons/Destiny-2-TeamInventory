@@ -1,8 +1,9 @@
 const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
 let statDefinitions = {};
 let classDefinitions = {};
+let itemDefinitions = {};
+let itemDefinitionsTmp = {};
 let itemDetails = {};
-let itemDetailsTmp = {};
 let lang = '';
 let playerlist = {};
 
@@ -17,8 +18,9 @@ async function buttonClick(membershipId, platformType){
 		}
 }
 
-// https://gist.github.com/boukeversteegh/3219ffb912ac6ef7282b1f5ce7a379ad
 function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 0) {
+// sorts object with different arrays at the same time
+// https://gist.github.com/boukeversteegh/3219ffb912ac6ef7282b1f5ce7a379ad
   let arrayKeys = Object.keys(arrays);
   let sortableArray = Object.values(arrays)[0];
   let indexes = Object.keys(sortableArray);
@@ -60,7 +62,7 @@ async function checkManifestVersion(language) {
 		// store .json-paths in object manifestPaths
 			manifestPaths = {
 				'statDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyStatDefinition'], // like [567] -> resilience
-				'itemDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryItemLiteDefinition'], // like [123] -> xenophage
+				'itemDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryItemLiteDefinition'], // like [123] -> xenophage
 				'itemCategoryDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyItemCategoryDefinition'], // like [234] -> kinetic weapon
 				'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'], // like [345] -> leg armor
 				'classDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyClassDefinition'] // like [2] -> warlock 
@@ -84,13 +86,13 @@ async function InitData(){
 	// load initData from browserstorage
 	if(localStorage.getItem("statDefinitions")){
 		statDefinitions = JSON.parse(localStorage.getItem("statDefinitions"));
-		itemDetails = JSON.parse(localStorage.getItem("itemDetails"));
+		itemDefinitions = JSON.parse(localStorage.getItem("itemDefinitions"));
 		classDefinitions = JSON.parse(localStorage.getItem("classDefinitions"));
 	}else{
 		// delete (for language change)
 		statDefinitions = {};
-		itemDetails = {};
-		itemDetailsTmp = {};
+		itemDefinitions = {};
+		itemDefinitionsTmp = {};
 		classDefinitions = {};
 		// get details for stats from manifest
 			const resStatDefinitions = await getData(maniPaths.statDefinitions, false);
@@ -111,46 +113,66 @@ async function InitData(){
 				};
 		
 		// get details for items from manifest
-			const resItemDetails = await getData(maniPaths.itemDetails, false);
+			const resItemDefinitions = await getData(maniPaths.itemDefinitions, false);
 			const resItemBucketDetails = await getData(maniPaths.itemBucketDetails, false);
 			const resItemCategoryDetails = await getData(maniPaths.itemCategoryDetails, false);
 			// for every item
-				for (let resItem in resItemDetails) {
-					// filter only exotic weapons & every item once; otherwise, resItemDetails[resItem].itemCategoryHashes can be undefined
-					if (resItemDetails[resItem]['equippingBlock'] !== undefined && resItemDetails[resItem]['equippingBlock']['uniqueLabel'] !== undefined && resItemDetails[resItem]['collectibleHash'] !== undefined && (resItemDetails[resItem]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDetails[resItem]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
-						(itemDetailsTmp.name = itemDetailsTmp.name || []).push(resItemDetails[resItem]['displayProperties']['name']);
-						(itemDetailsTmp.id = itemDetailsTmp.id || []).push(resItem);
-						(itemDetailsTmp.iconURL = itemDetailsTmp.iconURL || []).push('https://www.bungie.net' + resItemDetails[resItem]['displayProperties']['icon']);
-						(itemDetailsTmp.collectibleID = itemDetailsTmp.collectibleID || []).push(resItemDetails[resItem]['collectibleHash']);
-						(itemDetailsTmp.bucketHash = itemDetailsTmp.bucketHash || []).push(resItemDetails[resItem]['inventory']['bucketTypeHash']);
-						(itemDetailsTmp.bucket = itemDetailsTmp.bucket ||[]).push(resItemBucketDetails[resItemDetails[resItem]['inventory']['bucketTypeHash']]['displayProperties']['name']);
-						(itemDetailsTmp.bucketOrder = itemDetailsTmp.bucketOrder ||[]).push(resItemBucketDetails[resItemDetails[resItem]['inventory']['bucketTypeHash']]['bucketOrder']/10);
-						(itemDetailsTmp.type = itemDetailsTmp.type || []).push(resItemDetails[resItem]['itemTypeDisplayName']);
-						(itemDetailsTmp.categoryHash = itemDetailsTmp.categoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][0]);
-						(itemDetailsTmp.category = itemDetailsTmp.category || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][0]]['shortTitle']);
-						(itemDetailsTmp.subcategoryHash = itemDetailsTmp.subcategoryHash || []).push(resItemDetails[resItem]['itemCategoryHashes'][2]);
-						(itemDetailsTmp.subcategory = itemDetailsTmp.subcategory || []).push(resItemCategoryDetails[resItemDetails[resItem]['itemCategoryHashes'][2]]['shortTitle']);
+				for (let resItemDef in resItemDefinitions) {
+					// filter only exotic weapons & every item once; otherwise, resItemDefinitions[resItemDef].itemCategoryHashes can be undefined
+					if (resItemDefinitions[resItemDef]['equippingBlock'] !== undefined) {
+						(itemDefinitionsTmp.name = itemDefinitionsTmp.name || []).push(resItemDefinitions[resItemDef]['displayProperties']['name']);
+						(itemDefinitionsTmp.id = itemDefinitionsTmp.id || []).push(resItemDef);
+						(itemDefinitionsTmp.iconURL = itemDefinitionsTmp.iconURL || []).push('https://www.bungie.net' + resItemDefinitions[resItemDef]['displayProperties']['icon']);
+						if (resItemDefinitions[resItemDef]['collectibleHash'] !== undefined) {
+							(itemDefinitionsTmp.collectibleID = itemDefinitionsTmp.collectibleID || []).push(resItemDefinitions[resItemDef]['collectibleHash']);
+						} else {
+							(itemDefinitionsTmp.collectibleID = itemDefinitionsTmp.collectibleID || []).push(0);
+						}
+						(itemDefinitionsTmp.bucketHash = itemDefinitionsTmp.bucketHash || []).push(resItemDefinitions[resItemDef]['inventory']['bucketTypeHash']);
+						(itemDefinitionsTmp.bucket = itemDefinitionsTmp.bucket ||[]).push(resItemBucketDetails[resItemDefinitions[resItemDef]['inventory']['bucketTypeHash']]['displayProperties']['name']);
+						(itemDefinitionsTmp.bucketOrder = itemDefinitionsTmp.bucketOrder ||[]).push(resItemBucketDetails[resItemDefinitions[resItemDef]['inventory']['bucketTypeHash']]['bucketOrder']/10);
+						(itemDefinitionsTmp.type = itemDefinitionsTmp.type || []).push(resItemDefinitions[resItemDef]['itemTypeDisplayName']);
+						if (resItemCategoryDetails[resItemDefinitions[resItemDef]['itemCategoryHashes'][0]] !== undefined) {
+							(itemDefinitionsTmp.categoryHash = itemDefinitionsTmp.categoryHash || []).push(resItemDefinitions[resItemDef]['itemCategoryHashes'][0]);
+							(itemDefinitionsTmp.category = itemDefinitionsTmp.category || []).push(resItemCategoryDetails[resItemDefinitions[resItemDef]['itemCategoryHashes'][0]]['shortTitle']);
+						} else {
+							(itemDefinitionsTmp.categoryHash = itemDefinitionsTmp.categoryHash || []).push(0);
+							(itemDefinitionsTmp.category = itemDefinitionsTmp.category || []).push("");
+						}
+						if (resItemCategoryDetails[resItemDefinitions[resItemDef]['itemCategoryHashes'][2]] !== undefined) {
+							(itemDefinitionsTmp.subcategoryHash = itemDefinitionsTmp.subcategoryHash || []).push(resItemDefinitions[resItemDef]['itemCategoryHashes'][2]);
+							(itemDefinitionsTmp.subcategory = itemDefinitionsTmp.subcategory || []).push(resItemCategoryDetails[resItemDefinitions[resItemDef]['itemCategoryHashes'][2]]['shortTitle']);
+						} else {
+							(itemDefinitionsTmp.subcategoryHash = itemDefinitionsTmp.subcategoryHash || []).push(0);
+							(itemDefinitionsTmp.subcategory = itemDefinitionsTmp.subcategory || []).push("");
+						}
+						if (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] !== undefined && resItemDefinitions[resItemDef]['collectibleHash'] !== undefined && (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
+							(itemDefinitionsTmp.exo = itemDefinitionsTmp.exo || []).push(1);
+						} else {
+							(itemDefinitionsTmp.exo = itemDefinitionsTmp.exo || []).push(0);
+						}
 					}
 				};
 		
-		// sort itemDetailsTmp by .type
-			let type = itemDetailsTmp.type;
-			let name = itemDetailsTmp.name;
-			let id = itemDetailsTmp.id;
-			let iconURL = itemDetailsTmp.iconURL;
-			let collectibleID = itemDetailsTmp.collectibleID;
-			let bucketHash = itemDetailsTmp.bucketHash;
-			let bucket = itemDetailsTmp.bucket;
-			let bucketOrder = itemDetailsTmp.bucketOrder;
-			let categoryHash = itemDetailsTmp.categoryHash;
-			let category = itemDetailsTmp.category;
-			let subcategoryHash = itemDetailsTmp.subcategoryHash;
-			let subcategory = itemDetailsTmp.subcategory;
-			itemDetails = sortArrays({type,name,id,iconURL,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory});
+		// sort itemDefinitionsTmp by .type
+			let type = itemDefinitionsTmp.type;
+			let name = itemDefinitionsTmp.name;
+			let id = itemDefinitionsTmp.id;
+			let iconURL = itemDefinitionsTmp.iconURL;
+			let collectibleID = itemDefinitionsTmp.collectibleID;
+			let bucketHash = itemDefinitionsTmp.bucketHash;
+			let bucket = itemDefinitionsTmp.bucket;
+			let bucketOrder = itemDefinitionsTmp.bucketOrder;
+			let categoryHash = itemDefinitionsTmp.categoryHash;
+			let category = itemDefinitionsTmp.category;
+			let subcategoryHash = itemDefinitionsTmp.subcategoryHash;
+			let subcategory = itemDefinitionsTmp.subcategory;
+			let exo = itemDefinitionsTmp.exo;
+			itemDefinitions = sortArrays({type,name,id,iconURL,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory,exo});
 		
 		// save all initData to browserstorage
 		localStorage.setItem("statDefinitions", JSON.stringify(statDefinitions));
-		localStorage.setItem("itemDetails", JSON.stringify(itemDetails));
+		localStorage.setItem("itemDefinitions", JSON.stringify(itemDefinitions));
 		localStorage.setItem("classDefinitions", JSON.stringify(classDefinitions));
 	}
 
@@ -184,8 +206,9 @@ async function getPlayer(memberID, memberType){
 	// get all details for profile
 		// 100 = profile (displayName, characterIds), 102 = profileInventory, 200 = characters (data for characters), 201 = character inventories,
 		// 205 = characterEquipment, 800 = profileCollectibles & characterCollectibles, 900 = profileRecords & characterRecords
-		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=100,102,200,201,205,800,900';
+		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=100,102,200,201,205,300,302,304,307,800,900';
 		const resProfile = await getData(rqURL);
+// console.log(resProfile);
 		// store info in obj playerDetails 
 			playerDetails.charIDs = resProfile['Response']['profile']['data']['characterIds'];
 			playerDetails.collectibles = resProfile['Response']['profileCollectibles']['data']['collectibles'];
@@ -210,6 +233,7 @@ async function getPlayer(memberID, memberType){
 					playerDetails.charInventory = false;
 				}
 				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
+				(playerDetails.itemDetails = playerDetails.itemDetails || []).push(resProfile['Response'].itemComponents);
 			}
 			// charOrder gets index of titan, hunter, warlock (0,1,2)
 			playerDetails.charOrder = [playerDetails.charClass.indexOf(0),playerDetails.charClass.indexOf(1),playerDetails.charClass.indexOf(2)];
@@ -262,31 +286,31 @@ function addPlayer(cP){
 					var hb = 0; // counter for bucket headline
 	HTML +=			"<div class='exo-weapons'>";
 					// every item...
-					for (let i = 0; i < itemDetails.type.length; i++) {
-						// ... that matches bucket
-						if(itemDetails.bucketOrder[i] === b) {
+					for (let i = 0; i < itemDefinitions.type.length; i++) {
+						// ... that is exo & matches bucket
+						if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketOrder[i] === b) {
 						// make headline for first found item
 						if (hb < 1) {
-	HTML +=					"<div class='headline-weapon-bucket'>" + itemDetails.bucket[i] + "</div>";
+	HTML +=					"<div class='headline-weapon-bucket'>" + itemDefinitions.bucket[i] + "</div>";
 							hb++;
 						}
 						// check if weapon is achieved and overlay a check mark or cross over the image
-							var checkState = cP.collectibles[itemDetails.collectibleID[i]].state;
+							var checkState = cP.collectibles[itemDefinitions.collectibleID[i]].state;
 							var marker = "";
-                            // states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
-                            // 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
-                            // states can be added! --> all odd numbers = not obtained, all even numbers = obtained
-                            if (checkState % 2 == 0) {
-                                marker="check";
-                                }
-                            else {
-                                marker="cross";
-                            }
+							// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
+							// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
+							// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
+							if (checkState % 2 == 0) {
+								marker="check";
+								}
+							else {
+								marker="cross";
+							}
 	HTML +=				"<div class='itemIconContainer'>" +
-							'<img class="' + marker + '" src="' + itemDetails.iconURL[i] + '" title="' + itemDetails.name[i] + ' (' + itemDetails.type[i] + ')">' +
+							'<img class="' + marker + '" src="' + itemDefinitions.iconURL[i] + '" title="' + itemDefinitions.name[i] + ' (' + itemDefinitions.type[i] + ')">' +
 							"<div class='itemIconStatus'>" + 
-                                    "<img src='css/images/" + marker + ".png'>" +
-                            "</div>" +
+									"<img src='css/images/" + marker + ".png'>" +
+							"</div>" +
 						"</div>";
 						}
 					}
@@ -305,24 +329,24 @@ function addPlayer(cP){
 						var hc = 0; // counter for class headline
 	HTML +=				"<div class='exo-armor-class'>";
 						// every item...
-						for (let i = 0; i < itemDetails.type.length; i++) {
-							// ... that matches bucket & class
-							if(itemDetails.bucketOrder[i] === b && itemDetails.categoryHash[i] === catHsh[c]) {
+						for (let i = 0; i < itemDefinitions.type.length; i++) {
+							// ... that is exo, matches bucket & class
+							if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketOrder[i] === b && itemDefinitions.categoryHash[i] === catHsh[c]) {
 							// make headline for first found item	
 								if (hc < 1 && b === 5) {
-	HTML +=							"<div class='headline-armor-class'>" + itemDetails.category[i] + "</div>";
+	HTML +=							"<div class='headline-armor-class'>" + itemDefinitions.category[i] + "</div>";
 									hc++;
 								}
 								if (hb < 1) {
 									if (c === 0) {
-	HTML +=							"<div class='headline-armor-bucket'>" + itemDetails.bucket[i] + "</div>";
+	HTML +=							"<div class='headline-armor-bucket'>" + itemDefinitions.bucket[i] + "</div>";
 									} else {
 	HTML +=								"<div class='headline-armor-bucket'>&emsp;</div>";	
 									}
 									hb++;
 								}
 							// check if weapon is achieved and overlay a check mark or cross over the image
-								var checkState = cP.collectibles[itemDetails.collectibleID[i]].state;
+								var checkState = cP.collectibles[itemDefinitions.collectibleID[i]].state;
 								var marker = "";
 								// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
 								// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
@@ -334,7 +358,7 @@ function addPlayer(cP){
 									marker="cross";
 								}
 	HTML +=					"<div class='itemIconContainer'>" +
-								'<img class=' + marker + ' src="' + itemDetails.iconURL[i] + '" title="' + itemDetails.name[i] + ' (' + itemDetails.type[i] + ')">' +
+								'<img class=' + marker + ' src="' + itemDefinitions.iconURL[i] + '" title="' + itemDefinitions.name[i] + ' (' + itemDefinitions.type[i] + ')">' +
 								"<div class='itemIconStatus'>" + 
                                     "<img src='css/images/" + marker + ".png'>" +
 								"</div>" +
@@ -344,6 +368,28 @@ function addPlayer(cP){
 	HTML +=				"</div>";
 					}
 	HTML +=			"</div>";
+				}
+	HTML +=		"</div>" +
+				"<br style='clear:left'><br>";
+				// character items
+				// emblems
+	HTML +=		"<div class='charList'>";
+				for (index in cP.charOrder) {
+	HTML += 		"<div class='charEmblemImg'>" +
+						"<img src='" + cP.charEmblem[cP.charOrder[index]] + "'>" +
+						"<div class='charEmblemClass'>" + classDefinitions.name[classDefinitions.no.indexOf(cP.charClass[cP.charOrder[index]])] + "</div>" +
+						"<div class='charEmblemLvl'> &#10023;" + cP.charLight[cP.charOrder[index]] + "</div>" +
+					"</div>";
+				}
+	HTML +=		"</div>" +
+				"<div class='item-list'>"
+				for (index in cP.charOrder) {
+					var cEquip = cP.charEquipment[cP.charOrder[index]]; 
+					for (item in cEquip) {
+						//console.log(cEquip[item].itemInstanceId);
+						
+					}
+						
 				}
 	HTML +=		"</div>" +
 				"<br>" +
