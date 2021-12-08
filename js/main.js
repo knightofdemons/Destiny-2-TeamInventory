@@ -427,7 +427,6 @@ function addPlayer(cP){
 	HTML +=						"<div class='itemIconContainer'>" +
 									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
 								"</div>";
-								 console.log(cInv[item].bucketHash, "id ", cInv[item].itemInstanceId);
 								}
 							}
 	HTML +=					"</div>" +
