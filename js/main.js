@@ -350,10 +350,11 @@ function addPlayer(cP){
 								marker="cross";
 							}
 	HTML +=				"<div class='itemIconContainer'>" +
-							'<img class="' + marker + '" src="' + itemDefinitions.iconURL[i] + '" title="' + itemDefinitions.name[i] + ' (' + itemDefinitions.type[i] + ')">' +
+							'<img class="' + marker + '" src="' + itemDefinitions.iconURL[i] + '">' +
 							"<div class='itemIconStatus'>" + 
 									"<img src='css/images/" + marker + ".png'>" +
 							"</div>" +
+							'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[i] + ' (' + itemDefinitions.type[i] + ')"></div>' +
 						"</div>";
 						}
 					}
@@ -401,10 +402,11 @@ function addPlayer(cP){
 									marker="cross";
 								}
 	HTML +=					"<div class='itemIconContainer'>" +
-								'<img class=' + marker + ' src="' + itemDefinitions.iconURL[i] + '" title="' + itemDefinitions.name[i] + ' (' + itemDefinitions.type[i] + ')">' +
+								'<img class=' + marker + ' src="' + itemDefinitions.iconURL[i] + '">' +
 								"<div class='itemIconStatus'>" + 
                                     "<img src='css/images/" + marker + ".png'>" +
 								"</div>" +
+								'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[i] + ' (' + itemDefinitions.type[i] + ')"></div>' +
 							"</div>";
 							}
 						}
