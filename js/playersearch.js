@@ -10,12 +10,31 @@ let searchBtn = document.querySelector(".bx-search");
 let searchBar = document.querySelector("#searchAcc");
 let langBtn = document.querySelector("#lang-btn");
 let langOpt = document.querySelector(".language-options");
+let viewMain = document.querySelector(".viewMain open");
+let viewFireteam = document.querySelector(".viewFireteam");
 let emptyArray = [];
 
 // if user press any key and release
 inputBox.onkeyup = (e)=>{
 	searchPlayer(e.target.value);
 }
+
+document.onkeydown = (e)=> {
+	var keycode;
+	if (window.event)
+		{keycode = window.event.keyCode;}
+	else if (e)
+		{keycode = e.which;}
+	
+	if(keycode = 38 && viewMain.classList.contains("open")){
+		viewMain.classList.remove("open");
+		viewFireteam.classList.add("open");
+	}else if(keycode = 40 && viewFireteam.classList.contains("open")){
+		viewFireteam.classList.remove("open");
+		viewMain.classList.add("open");
+	}
+}
+
 
 async function searchPlayer(inputData){
 	if(inputData){
@@ -113,7 +132,7 @@ function setLang(lang) {
 	document.getElementById(lang).classList.toggle("act",true);
 	langBtn.classList.replace(langBtn.classList.item(1), "flag-icon-"+lang);
 	// remove output & local storage that depends on language (otherwise new values would be pushed to old)
-	document.getElementById("main").innerHTML = "";
+	document.getElementById("viewMain").innerHTML = "";
 	document.getElementById("playerBucket").innerHTML ="";
 	localStorage.removeItem("manifestPaths");
 	localStorage.removeItem("statDefinitions");
