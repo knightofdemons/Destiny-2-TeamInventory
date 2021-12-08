@@ -133,6 +133,11 @@
         top: 4%;
         text-shadow: 0.05rem 0.05rem #11101d;
     }
+	
+	.charItemsInv
+	{
+		display: table;
+	}
     
     .charStats
 	{
