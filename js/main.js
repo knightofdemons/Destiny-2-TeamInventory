@@ -173,6 +173,7 @@ async function InitData(){
 							(itemDefinitionsTmp.subcategoryHash = itemDefinitionsTmp.subcategoryHash || []).push(0);
 							(itemDefinitionsTmp.subcategory = itemDefinitionsTmp.subcategory || []).push("");
 						}
+						
 						if (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] !== undefined && resItemDefinitions[resItemDef]['collectibleHash'] !== undefined && (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
 							(itemDefinitionsTmp.exo = itemDefinitionsTmp.exo || []).push(1);
 						} else {
@@ -484,7 +485,35 @@ function addPlayer(cP){
 	HTML +=			"</div>";
 						
 				}
-	HTML +=	"</div><br><br>";
+	HTML +=		"<br style='clear:left'><br>";
+				// vault items
+				// for buckets 2 - 9 (all weapons & armor slots)
+				for (let b = 0; b < 8; b++) {
+	HTML +=			"<div class='vaultItems'>";
+						// for every item in vault
+						for (item in cP.profileInventory) {
+							if (cP.profileInventory[item] !== undefined) {
+								indexItem = itemDefinitions.id.indexOf(cP.profileInventory[item].itemHash.toString());
+								if (itemDefinitions.bucketHash[indexItem] === buckets[b]) {
+		HTML +=					"<div class='itemIconContainer'>" +
+									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
+									"<div class='itemIconContainerLvl'>";
+									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy !== undefined) {
+		HTML +=							'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType)] + '">';
+										} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== undefined) {
+		HTML +=							'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType)] + '">';
+										}
+		HTML +=							" " + (cP.itemDetails[cP.profileInventory[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cP.profileInventory[item].itemInstanceId].quality) +
+									"</div>" +
+									'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
+								"</div>";
+								}
+							}
+						}
+	HTML +=			"</div>";
+					}
+	HTML +=			"</div>" +			
+			"</div><br><br>"; // div playerMain
 	document.getElementById("viewMain").innerHTML += HTML;
 	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
 																"<a>" +
