@@ -316,8 +316,10 @@ function addPlayer(cP){
 				for (index in cP.charOrder) {
 	HTML +=			"<div class='charStats'>";
 					for (let i = 0; i < 6; i++) {
-	HTML +=				"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(charStatOrder[i])] + "' title='" + statDefinitions.info[statDefinitions.hash.indexOf(charStatOrder[i])] + "'>" +
-						cP.charStats[cP.charOrder[index]][charStatOrder[i]] + "&emsp;";
+	HTML +=				'<div class="charStatsItem" data-title="' + statDefinitions.info[statDefinitions.hash.indexOf(charStatOrder[i])] + ')">' +
+							"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(charStatOrder[i])] + "'>" +
+							cP.charStats[cP.charOrder[index]][charStatOrder[i]] + "&emsp;" +
+						'</div>';
 						}
 	HTML +=			"</div>";				
 					}
