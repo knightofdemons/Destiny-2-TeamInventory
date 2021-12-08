@@ -26,7 +26,7 @@ async function getToken(code){
 		const data = 'client_id=' + apiclientid + '&code=' + code + '&grant_type=authorization_code';
 		const auth = await postData(rqURL, data);
 		
-		console.log(code);
+		console.log(data);
 		return auth;
 }
 
