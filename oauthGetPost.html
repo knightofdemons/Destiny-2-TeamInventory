@@ -24,7 +24,7 @@ async function getToken(code){
 		const apiclientid = '38180';
 		const rqURL = 'https://www.bungie.net/Platform/App/OAuth/Token/';
 		const data = 'client_id={' + apiclientid + '}&code={' + code + '&grant_type=authorization_code';
-		const auth = await postData(rqURL);
+		const auth = await postData(rqURL, data);
 		
 		console.log(auth);
 		return auth;
@@ -33,10 +33,11 @@ async function getToken(code){
 	if (localStorage.getItem('oauthWatcher')) {
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
-		const token = getToken(urlParams.get('code'));
+		const code = urlParams.get('code');
+		const token = getToken(code);
 		
 
-		window.opener.postMessage(code, "*");
+		window.opener.postMessage(token, "*");
 		 
 	}
 
