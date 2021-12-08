@@ -41,15 +41,6 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
   }
 }
 
-async function getData(url, useApiKey = true) {
-		//fetch json response for getRequests | use false as option to generate a request without using the apikey
-		let tmpHead = new Headers();
-		if(useApiKey){tmpHead.set('X-API-Key', akey);}
-		const fetchOptions = {method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer', headers:tmpHead,};
-		const response = await fetch(url, fetchOptions);
-		return response.json();
-}
-
 async function checkManifestVersion(language) {
 	if(localStorage.getItem("manifestPaths")){
 		var manifestPaths = JSON.parse(localStorage.getItem("manifestPaths"));

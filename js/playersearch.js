@@ -165,6 +165,17 @@ function setLang(lang) {
 	InitData();
 }
 
+
+async function getData(url, useApiKey = true) {
+		//fetch json response for getRequests | use false as option to generate a request without using the apikey
+		let tmpHead = new Headers();
+		if(useApiKey){tmpHead.set('X-API-Key', akey);}
+		const fetchOptions = {method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer', headers:tmpHead,};
+		const response = await fetch(url, fetchOptions);
+		return response.json();
+}
+
+
 async function postData(url = '', data = {}, UseJSON = true) {
 	if(UseJSON){
 		const h = "'Content-Type': 'application/json'";
