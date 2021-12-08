@@ -90,6 +90,16 @@
 		width: 40px;
 	}
 	
+	.charItemBucket {
+		display: flex;
+		justify-content: space-evenly;
+		width: 100%;
+	}
+	
+	.charItems {
+		width: 474px;
+	}
+	
 	.charList
 	{
 		display:flex;
@@ -193,11 +203,6 @@
         z-index: 0;
     }
     
-    #no1
-    {
-        border: double 4px #fff;
-    }
-    
     .itemIconContainer > img
     {
         border-radius: 10%;
@@ -205,6 +210,11 @@
         margin: 5px 5px;
         vertical-align: middle;
         width: 70px;
+    }
+	
+	.itemIconContainer.equipped > img
+    {
+        border: double 4px #fff;
     }
     
     .itemIconContainer > img.cross
