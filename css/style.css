@@ -446,26 +446,26 @@
 
 	.viewMain.open
 	{
-		opacity: 1;
+		display: grid;
 		height: 100%;
 	}
 
 	.viewFireteam.open
 	{
-		opacity: 1;
+		display: grid;
 		height: 100%;
 	}
 	
 	.viewMain
 	{
-		opacity: 0;
+		display: none;
 		height: 0%;
 		position: relative;
 	}
 
 	.viewFireteam
 	{
-		opacity: 0;
+		display: none;
 		height: 0%;
 		position: fixed;
 	}
