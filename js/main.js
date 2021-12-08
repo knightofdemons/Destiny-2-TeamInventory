@@ -6,6 +6,7 @@ let itemDefinitionsTmp = {};
 let lang = '';
 let playerlist = {};
 let charStatOrder = [2996146975,392767087,1943323491,1735777505,144602215,4244567218];
+let buckets = [1498876634,2465295065,953998645,3448274439,3551918588,14239492,20886954,1585787867];
 
 async function buttonClick(membershipId, platformType){
 		//checks if div-container is already existing for current player & add player if not
@@ -295,14 +296,14 @@ function addPlayer(cP){
 	HTML +=		"</div><br><br>" +
 				"<div class='item-list'>";
 				// exotic weapons
-				// for every bucket (2 = kinetic, 3 = energy, 4 = power)
-				for (let b = 2; b < 5; b++) {
+				// for every bucket (kinetic, energy, power)
+				for (let b = 0; b < 3; b++) {
 					var hb = 0; // counter for bucket headline
 	HTML +=			"<div class='exo-weapons'>";
 					// every item...
 					for (let i = 0; i < itemDefinitions.type.length; i++) {
 						// ... that is exo & matches bucket
-						if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketOrder[i] === b) {
+						if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketHash[i] === buckets[b]) {
 						// make headline for first found item
 						if (hb < 1) {
 	HTML +=					"<div class='headline-weapon-bucket'>" + itemDefinitions.bucket[i] + "</div>";
@@ -333,8 +334,8 @@ function addPlayer(cP){
 	HTML +=		"</div>" +
 				"<div class='item-list'>";
 				// exotic armor
-				// for every bucket (5 = head, 6 = arm, 7 = chest, 8 = leg)
-				for (let b = 5; b < 9; b++) {
+				// for every bucket (head, arm, chest, leg)
+				for (let b = 3; b < 7; b++) {
 	HTML +=			"<div class='exo-armor-bucket'>";
 					// for every class type (22 = titan, 23 = hunter, 21 = warlock)
 					catHsh = [22,23,21];
@@ -345,7 +346,7 @@ function addPlayer(cP){
 						// every item...
 						for (let i = 0; i < itemDefinitions.type.length; i++) {
 							// ... that is exo, matches bucket & class
-							if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketOrder[i] === b && itemDefinitions.categoryHash[i] === catHsh[c]) {
+							if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketHash[i] === buckets[b] && itemDefinitions.categoryHash[i] === catHsh[c]) {
 							// make headline for first found item	
 								if (hc < 1 && b === 5) {
 	HTML +=							"<div class='headline-armor-class'>" + itemDefinitions.category[i] + "</div>";
@@ -397,7 +398,7 @@ function addPlayer(cP){
 				}
 	HTML +=		"</div>";
 				// for buckets 2 - 9 (all weapons & armor slots)
-				for (let b = 2; b < 10; b++) {
+				for (let b = 0; b < 8; b++) {
 	HTML +=			"<div class='charItemBucket'>";
 					// for every character
 					for (index in cP.charOrder) {
@@ -408,7 +409,7 @@ function addPlayer(cP){
 							// for every item
 							for (item in cEquip) {
 								indexItem = itemDefinitions.id.indexOf(cEquip[item].itemHash.toString());
-								if (itemDefinitions.bucketOrder[indexItem] === b) {
+								if (cEquip[item].bucketHash === buckets[b]) {
 	HTML +=						"<div class='itemIconContainer equipped'>" +
 									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
 								"</div>";
@@ -422,11 +423,11 @@ function addPlayer(cP){
 							// for every item
 							for (item in cInv) {
 								indexItem = itemDefinitions.id.indexOf(cInv[item].itemHash.toString());
-								if (itemDefinitions.bucketOrder[indexItem] === b) {
+								if (cInv[item].bucketHash === buckets[b]) {
 	HTML +=						"<div class='itemIconContainer'>" +
 									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
 								"</div>";
-								// console.log(cInv[item].itemInstanceId);
+								 console.log(cInv[item].bucketHash, "id ", cInv[item].itemInstanceId);
 								}
 							}
 	HTML +=					"</div>" +
