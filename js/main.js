@@ -202,7 +202,7 @@ async function InitData(){
 		localStorage.setItem("itemDefinitions", JSON.stringify(itemDefinitions));
 		localStorage.setItem("classDefinitions", JSON.stringify(classDefinitions));
 		localStorage.setItem("energyDefinitions", JSON.stringify(energyDefinitions));
-		localStorage.setItem("damageTypeDefinitions", JSON.stringify(energyDefinitions));
+		localStorage.setItem("damageTypeDefinitions", JSON.stringify(damageTypeDefinitions));
 	}
 
 // load recent players from browserstorage
