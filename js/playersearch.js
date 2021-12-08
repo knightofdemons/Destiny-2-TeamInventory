@@ -59,7 +59,7 @@ async function getFireteam(){
 async function searchPlayer(inputData){
 	if(inputData){
 		let rqURL = "https://www.bungie.net/Platform/User/Search/GlobalName/" + inputData + "/";
-		let temp = await getData(rqURL);
+		let temp = await postData(rqURL);
 		if (temp['Response']['searchResults'].length > 0) {
 		let tmp = temp.Response.searchResults;
 			var tmpR = [];
