@@ -3,6 +3,7 @@ let statDefinitions = {};
 let classDefinitions = {};
 let itemDefinitions = {};
 let itemDefinitionsTmp = {};
+let energyDefinitions = {};
 let lang = '';
 let playerlist = {};
 let charStatOrder = [2996146975,392767087,1943323491,1735777505,144602215,4244567218];
@@ -66,7 +67,9 @@ async function checkManifestVersion(language) {
 				'itemDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryItemLiteDefinition'], // like [123] -> xenophage
 				'itemCategoryDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyItemCategoryDefinition'], // like [234] -> kinetic weapon
 				'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'], // like [345] -> leg armor
-				'classDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyClassDefinition'] // like [2] -> warlock 
+				'classDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyClassDefinition'], // like [2] -> warlock
+				'energyDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyEnergyTypeDefinition'], // like [6] -> stasis (for armor)
+				'damageTypeDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyDamageTypeDefinition'] // like [6] -> stasis (for weapons)
 			};
 			localStorage.setItem("manifestPaths", JSON.stringify(manifestPaths));
 	}
@@ -89,12 +92,17 @@ async function InitData(){
 		statDefinitions = JSON.parse(localStorage.getItem("statDefinitions"));
 		itemDefinitions = JSON.parse(localStorage.getItem("itemDefinitions"));
 		classDefinitions = JSON.parse(localStorage.getItem("classDefinitions"));
+		energyDefinitions = JSON.parse(localStorage.getItem("energyDefinitions"));
+		damageTypeDefinitions = JSON.parse(localStorage.getItem("damageTypeDefinitions"));
 	}else{
 		// delete (for language change)
 		statDefinitions = {};
 		itemDefinitions = {};
 		itemDefinitionsTmp = {};
 		classDefinitions = {};
+		energyDefinitions = {};
+		damageTypeDefinitions = {};
+		
 		// get details for stats from manifest
 			const resStatDefinitions = await getData(maniPaths.statDefinitions, false);
 			// for every item
@@ -111,6 +119,24 @@ async function InitData(){
 				for (let resClassDef in resClassDefinitions) {
 					(classDefinitions.name = classDefinitions.name || []).push(resClassDefinitions[resClassDef]['displayProperties']['name']);
 					(classDefinitions.no = classDefinitions.no || []).push(resClassDefinitions[resClassDef]['classType']);
+				};
+				
+		// get details for energy types from manifest
+			const resEnergyDefinitions = await getData(maniPaths.energyDefinitions, false);
+			// for every item
+				for (let resEnergyDef in resEnergyDefinitions) {
+					(energyDefinitions.name = energyDefinitions.name || []).push(resEnergyDefinitions[resEnergyDef]['displayProperties']['name']);
+					(energyDefinitions.iconURL = energyDefinitions.iconURL || []).push('https://www.bungie.net' + resEnergyDefinitions[resEnergyDef]['transparentIconPath']);
+					(energyDefinitions.no = energyDefinitions.no || []).push(resEnergyDefinitions[resEnergyDef]['enumValue']);
+				};
+				
+		// get details for damage types from manifest
+			const resDamageTypeDefinitions = await getData(maniPaths.damageTypeDefinitions, false);
+			// for every item
+				for (let resDamageTypeDef in resDamageTypeDefinitions) {
+					(damageTypeDefinitions.name = damageTypeDefinitions.name || []).push(resDamageTypeDefinitions[resDamageTypeDef]['displayProperties']['name']);
+					(damageTypeDefinitions.iconURL = damageTypeDefinitions.iconURL || []).push('https://www.bungie.net' + resDamageTypeDefinitions[resDamageTypeDef]['transparentIconPath']);
+					(damageTypeDefinitions.no = damageTypeDefinitions.no || []).push(resDamageTypeDefinitions[resDamageTypeDef]['enumValue']);
 				};
 		
 		// get details for items from manifest
@@ -175,6 +201,8 @@ async function InitData(){
 		localStorage.setItem("statDefinitions", JSON.stringify(statDefinitions));
 		localStorage.setItem("itemDefinitions", JSON.stringify(itemDefinitions));
 		localStorage.setItem("classDefinitions", JSON.stringify(classDefinitions));
+		localStorage.setItem("energyDefinitions", JSON.stringify(energyDefinitions));
+		localStorage.setItem("damageTypeDefinitions", JSON.stringify(energyDefinitions));
 	}
 
 // load recent players from browserstorage
@@ -410,10 +438,18 @@ function addPlayer(cP){
 							for (item in cEquip) {
 								indexItem = itemDefinitions.id.indexOf(cEquip[item].itemHash.toString());
 								if (cEquip[item].bucketHash === buckets[b]) {
-	HTML +=						"<div class='itemIconContainer equipped'>" +
-									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
+	HTML +=						"<div class='itemIconContainer'>" +
+									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +	
+									"<div class='itemIconContainerLvl'>";
+										if (cP.itemDetails[cEquip[item].itemInstanceId].energy !== undefined) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType)] + '">';
+										} else if (cP.itemDetails[cEquip[item].itemInstanceId].damageType !== undefined) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].damageType)] + '">';
+										}
+	HTML +=								" " + (cP.itemDetails[cEquip[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cEquip[item].itemInstanceId].quality) +
+									"</div>" +
+									'<div class="itemIconContainerInfo equipped" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
 								"</div>";
-								// console.log(cEquip[item].itemInstanceId);
 								}
 							}
 	HTML +=					"</div>" +
@@ -426,6 +462,15 @@ function addPlayer(cP){
 								if (cInv[item].bucketHash === buckets[b]) {
 	HTML +=						"<div class='itemIconContainer'>" +
 									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
+									"<div class='itemIconContainerLvl'>";
+									if (cP.itemDetails[cInv[item].itemInstanceId].energy !== undefined) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType)] + '">';
+										} else if (cP.itemDetails[cInv[item].itemInstanceId].damageType !== undefined) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].damageType)] + '">';
+										}
+	HTML +=								" " + (cP.itemDetails[cInv[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cInv[item].itemInstanceId].quality) +
+									"</div>" +
+									'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
 								"</div>";
 								}
 							}
