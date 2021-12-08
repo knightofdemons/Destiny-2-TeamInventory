@@ -414,32 +414,58 @@
 	}
 	
 /*********************************************************************************/
-/* viewFireteam                                                                  */
+/* view Classes                                                                  */
 /*********************************************************************************/
 
-	#viewFireteam
+	.viewMain, .viewFireteam
 	{
 		display: grid;
-		height: 0%;
-		padding-top: 0rem;
-		position: absolute;
 		width: 100%;
-		z-index: 1;
-	}
-
-/*********************************************************************************/
-/* viewMain                                                                      */
-/*********************************************************************************/
-
-	#viewMain
-	{
-		display: grid;
-		height: 100%;
 		padding-top: 1rem;
-		position: absolute;
-		width: 100%;
+		position: fixed;
 		z-index: 1;
+		transition: 1s;
 	}
+	
+	.viewMain.open ~ .viewFireteam
+	{
+		top: 0;
+		height: 100%;
+	}
+	
+	.viewFireteam.open ~ .viewMain
+	{
+		top: 0;
+		height: 100%;
+	}
+
+	.viewMain.open
+	{
+		opacity: 1;
+		height: 100%;
+	}
+
+	.viewFireteam.open
+	{
+		opacity: 1;
+		height: 100%;
+	}
+	
+	.viewMain
+	{
+		opacity: 0;
+		height: 0%;
+	}
+
+	.viewFireteam
+	{
+		opacity: 0;
+		height: 0%;
+	}
+
+/*********************************************************************************/
+/* Sidebar (currently used)                                                      */
+/*********************************************************************************/
 	
 	.sidebar.open ~ #viewMain
 	{

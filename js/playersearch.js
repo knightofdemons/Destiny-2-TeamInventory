@@ -10,8 +10,8 @@ let searchBtn = document.querySelector(".bx-search");
 let searchBar = document.querySelector("#searchAcc");
 let langBtn = document.querySelector("#lang-btn");
 let langOpt = document.querySelector(".language-options");
-let viewMain = document.querySelector(".viewMain open");
-let viewFireteam = document.querySelector(".viewFireteam");
+let viewMain = document.querySelector("#viewMain");
+let viewFireteam = document.querySelector("#viewFireteam");
 let emptyArray = [];
 
 // if user press any key and release
@@ -26,13 +26,31 @@ document.onkeydown = (e)=> {
 	else if (e)
 		{keycode = e.which;}
 	
-	if(keycode = 38 && viewMain.classList.contains("open")){
-		viewMain.classList.remove("open");
-		viewFireteam.classList.add("open");
-	}else if(keycode = 40 && viewFireteam.classList.contains("open")){
+	if(keycode == 40 && viewFireteam.classList.contains("open")){
 		viewFireteam.classList.remove("open");
 		viewMain.classList.add("open");
+	}else if(keycode == 38 && viewMain.classList.contains("open")){
+		viewMain.classList.remove("open");
+		viewFireteam.classList.add("open");
+			document.getElementById("viewFireteam").innerHTML = "";
+			const HTML = getFireteam();
+			document.getElementById("viewFireteam").innerHTML = HTML;
 	}
+}
+
+async function getFireteam(){
+	const HTML = "";
+	let temp = JSON.parse(localStorage.getItem("oauthToken"));
+	let rqURL = 'https://www.bungie.net/Platform/User/GetBungieNetUserById/' + temp["membership_id"] + '/';
+	temp = await getData(rqURL);
+	console.log(temp);
+	
+	//let rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
+	//temp = await getData(rqURL);
+	
+	
+	
+	return HTML;
 }
 
 
@@ -40,7 +58,6 @@ async function searchPlayer(inputData){
 	if(inputData){
 		let rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + inputData + "/0/";
 		let temp = await getData(rqURL);
-		console.log(temp);
 		if (temp['Response']['searchResults'].length > 0) {
 		let tmp = temp.Response.searchResults;
 			var tmpR = [];
