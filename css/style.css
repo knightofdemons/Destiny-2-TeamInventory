@@ -77,6 +77,33 @@
 		font-weight: 300;
 	}
 	
+	[data-title]:hover:after {
+		opacity: 1;
+		transition: all 0.1s ease 0.5s;
+		visibility: visible;
+	}
+	
+	[data-title]:after {
+		content: attr(data-title);
+		background-color: rgba(0, 0, 0, 0.85);
+		border: #c0c0c0 1px solid;
+		border-radius: 8px;
+		left: 10px;
+		margin: 5px;
+		max-width: 300px;
+		opacity: 0;
+		padding: 5px 20px 5px 5px;
+		position: absolute;
+		text-decoration: none;
+		visibility: hidden;
+		width: max-content;
+		z-index: 99999;
+		
+	}
+	
+	[data-title] {
+		position: relative;
+	}
     
 	
 /*********************************************************************************/
@@ -249,33 +276,6 @@
 	{
 		border: double white;
 		border-radius: 10%;
-	}
-	
-	
-	[data-title]:hover:after {
-		opacity: 1;
-		transition: all 0.1s ease 0.5s;
-		visibility: visible;
-	}
-	[data-title]:after {
-		content: attr(data-title);
-		background-color: rgba(0, 0, 0, 0.85);
-		border: #c0c0c0 1px solid;
-		border-radius: 8px;
-		left: 10px;
-		margin: 5px;
-		max-width: 300px;
-		opacity: 0;
-		padding: 5px 20px 5px 5px;
-		position: absolute;
-		text-decoration: none;
-		visibility: hidden;
-		width: max-content;
-		z-index: 99999;
-		
-	}
-	[data-title] {
-		position: relative;
 	}
     
 	.itemIconContainerLvl
