@@ -43,7 +43,9 @@ async function getFireteam(){
 	let temp = JSON.parse(localStorage.getItem("oauthToken"));
 	let rqURL = 'https://www.bungie.net/Platform/User/GetBungieNetUserById/' + temp["membership_id"] + '/';
 	temp = await getData(rqURL);
-	console.log(temp);
+	console.log(temp["Response"] );
+	rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + temp["Response"] + "/0/";
+	temp = await getData(rqURL);
 	
 	//let rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
 	//temp = await getData(rqURL);
@@ -56,7 +58,7 @@ async function getFireteam(){
 
 async function searchPlayer(inputData){
 	if(inputData){
-		let rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + inputData + "/0/";
+		let rqURL = "https://www.bungie.net/Platform/User/Search/GlobalName/" + inputData + "/";
 		let temp = await getData(rqURL);
 		if (temp['Response']['searchResults'].length > 0) {
 		let tmp = temp.Response.searchResults;
@@ -161,4 +163,24 @@ function setLang(lang) {
 	localStorage.setItem("lang", JSON.stringify(lang));
 	// reload manifest
 	InitData();
+}
+
+async function postData(url = '', data = {}, UseJSON = true) {
+	if(UseJSON){
+		let h = "'Content-Type': 'application/json'";
+	}else{
+		let h = "'Content-Type': 'application/x-www-form-urlencoded'";
+	}
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: { h },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: data // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
 }
