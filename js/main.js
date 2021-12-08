@@ -395,19 +395,43 @@ function addPlayer(cP){
 						"<div class='charEmblemLvl'> &#10023;" + cP.charLight[cP.charOrder[index]] + "</div>" +
 					"</div>";
 				}
-	HTML +=		"</div>" +
-				"<div class='item-list'>"
-				for (index in cP.charOrder) {
-					var cEquip = cP.charEquipment[cP.charOrder[index]]; 
-					for (item in cEquip) {
-						//console.log(cEquip[item].itemInstanceId);
-						
+	HTML +=		"</div>";
+				// for buckets 2 - 9 (all weapons & armor slots)
+				for (let b = 2; b < 10; b++) {
+	HTML +=			"<div class='charItemBucket'>";
+					// for every character
+					for (index in cP.charOrder) {
+	HTML +=				"<div class='charItems'>";					
+						// get equipped items
+						var cEquip = cP.charEquipment[cP.charOrder[index]];
+						// for every item
+						for (item in cEquip) {
+							indexItem = itemDefinitions.id.indexOf(cEquip[item].itemHash.toString());
+							if (itemDefinitions.bucketOrder[indexItem] === b) {
+	HTML +=					"<div class='itemIconContainer equipped'>" +
+								'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
+							"</div>";
+							// console.log(cEquip[item].itemInstanceId);
+							}
+						}
+						// get inventory items
+						var cInv = cP.charInventory[cP.charOrder[index]];
+						// for every item
+						for (item in cInv) {
+							indexItem = itemDefinitions.id.indexOf(cInv[item].itemHash.toString());
+							if (itemDefinitions.bucketOrder[indexItem] === b) {
+	HTML +=					"<div class='itemIconContainer'>" +
+								'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
+							"</div>";
+							// console.log(cInv[item].itemInstanceId);
+							}
+						}
+	HTML +=				"</div>";				
 					}
+	HTML +=			"</div>";
 						
 				}
-	HTML +=		"</div>" +
-				"<br>" +
-			"</div><br><br>";
+	HTML +=	"</div><br><br>";
 	document.getElementById("main").innerHTML += HTML;
 	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
 																"<a>" +
