@@ -404,29 +404,33 @@ function addPlayer(cP){
 	HTML +=				"<div class='charItems'>";					
 						// get equipped items
 						var cEquip = cP.charEquipment[cP.charOrder[index]];
-						// for every item
-						for (item in cEquip) {
-							indexItem = itemDefinitions.id.indexOf(cEquip[item].itemHash.toString());
-							if (itemDefinitions.bucketOrder[indexItem] === b) {
-	HTML +=					"<div class='itemIconContainer equipped'>" +
-								'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
-							"</div>";
-							// console.log(cEquip[item].itemInstanceId);
+	HTML +=					"<div class='charItemsEquip'>";
+							// for every item
+							for (item in cEquip) {
+								indexItem = itemDefinitions.id.indexOf(cEquip[item].itemHash.toString());
+								if (itemDefinitions.bucketOrder[indexItem] === b) {
+	HTML +=						"<div class='itemIconContainer equipped'>" +
+									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
+								"</div>";
+								// console.log(cEquip[item].itemInstanceId);
+								}
 							}
-						}
-						// get inventory items
-						var cInv = cP.charInventory[cP.charOrder[index]];
-						// for every item
-						for (item in cInv) {
-							indexItem = itemDefinitions.id.indexOf(cInv[item].itemHash.toString());
-							if (itemDefinitions.bucketOrder[indexItem] === b) {
-	HTML +=					"<div class='itemIconContainer'>" +
-								'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
-							"</div>";
-							// console.log(cInv[item].itemInstanceId);
+	HTML +=					"</div>" +
+							"<div class='charItemsInv'>";
+							// get inventory items
+							var cInv = cP.charInventory[cP.charOrder[index]];
+							// for every item
+							for (item in cInv) {
+								indexItem = itemDefinitions.id.indexOf(cInv[item].itemHash.toString());
+								if (itemDefinitions.bucketOrder[indexItem] === b) {
+	HTML +=						"<div class='itemIconContainer'>" +
+									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
+								"</div>";
+								// console.log(cInv[item].itemInstanceId);
+								}
 							}
-						}
-	HTML +=				"</div>";				
+	HTML +=					"</div>" +
+						"</div>";
 					}
 	HTML +=			"</div>";
 						
