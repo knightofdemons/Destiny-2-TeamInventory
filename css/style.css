@@ -412,12 +412,26 @@
 		height: max-content;
 		width: 100%;
 	}
+	
+/*********************************************************************************/
+/* viewFireteam                                                                  */
+/*********************************************************************************/
+
+	#viewFireteam
+	{
+		display: grid;
+		height: 100%;
+		padding-top: 1rem;
+		position: absolute;
+		width: 100%;
+		z-index: 1;
+	}
 
 /*********************************************************************************/
-/* Main                                                                          */
+/* viewMain                                                                      */
 /*********************************************************************************/
 
-	#main
+	#viewMain
 	{
 		display: grid;
 		height: 100%;
@@ -427,7 +441,7 @@
 		z-index: 1;
 	}
 	
-	.sidebar.open ~ #main
+	.sidebar.open ~ #viewMain
 	{
 		left: var(--sidebar-width);
 		width: calc(100% - var(--sidebar-width));

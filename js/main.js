@@ -485,7 +485,7 @@ function addPlayer(cP){
 						
 				}
 	HTML +=	"</div><br><br>";
-	document.getElementById("main").innerHTML += HTML;
+	document.getElementById("viewMain").innerHTML += HTML;
 	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
 																"<a>" +
 																	"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
