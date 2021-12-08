@@ -412,6 +412,11 @@
 		height: max-content;
 		width: 100%;
 	}
+
+	.vaultItems
+	{
+		display: inline-block;
+	}
 	
 /*********************************************************************************/
 /* view Classes                                                                  */
