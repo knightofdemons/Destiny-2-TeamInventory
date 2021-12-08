@@ -495,16 +495,22 @@ function addPlayer(cP){
 							if (cP.profileInventory[item] !== undefined) {
 								indexItem = itemDefinitions.id.indexOf(cP.profileInventory[item].itemHash.toString());
 								if (itemDefinitions.bucketHash[indexItem] === buckets[b]) {
-		HTML +=					"<div class='itemIconContainer'>" +
+	HTML +=						"<div class='itemIconContainer'>" +
 									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
 									"<div class='itemIconContainerLvl'>";
 									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy !== undefined) {
-		HTML +=							'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType)] + '">';
-										} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== undefined) {
-		HTML +=							'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType)] + '">';
-										}
-		HTML +=							" " + (cP.itemDetails[cP.profileInventory[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cP.profileInventory[item].itemInstanceId].quality) +
-									"</div>" +
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType)] + '">' +
+										" ";								
+									} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== 0) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType)] + '">' +
+										" ";								
+									}
+									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].primaryStat !== undefined) {
+	HTML +=								(cP.itemDetails[cP.profileInventory[item].itemInstanceId].primaryStat.value);
+									} else {
+	HTML +=								(cP.itemDetails[cP.profileInventory[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cP.profileInventory[item].itemInstanceId].quality);
+									}
+	HTML +=							"</div>" +
 									'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
 								"</div>";
 								}
