@@ -23,7 +23,7 @@ async function postData(url = '', data = {}) {
 async function getToken(code){
 		const apiclientid = '38180';
 		const rqURL = 'https://www.bungie.net/Platform/App/OAuth/Token/';
-		const data = 'client_id={' + apiclientid + '}&code={' + code + '}&grant_type=authorization_code';
+		const data = 'client_id=' + apiclientid + '&code=' + code + '&grant_type=authorization_code';
 		const auth = await postData(rqURL, data);
 		
 		console.log(code);
