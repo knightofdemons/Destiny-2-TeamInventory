@@ -92,6 +92,7 @@ async function searchPlayer(inputData){
 
 async function select(element){
     let selectData = element.textContent;
+	suggBox.innerHTML = "";
     inputBox.value = selectData;
     if (selectData) {
 		selectedAttribute = element.firstChild.firstChild.alt;
@@ -103,7 +104,6 @@ async function select(element){
 			addPlayer(currentPlayer, "viewMain");
 			addPlayerToStorage(currentPlayer);
 			searchWrapper.classList.remove("active");
-			suggBox.innerHTML = "";
 			inputBox.value = "";
 		}else{
 			console.log("already existing player");
@@ -208,4 +208,12 @@ async function postData(url = '', data = {}, UseJSON = true) {
     body: tmpData // body data type must match "Content-Type" header
   });
   return response.json(); // parses JSON response into native JavaScript objects
+}
+
+function getPlaceholder(){
+	let HTML = 		"<div id='placeholder'>" +
+						"<div class='loader-wrapper'></div>" +
+					"</div>";
+					
+	return HTML;
 }

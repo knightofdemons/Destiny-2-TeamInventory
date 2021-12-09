@@ -208,6 +208,8 @@ async function InitData(){
 }
 
 async function getPlayer(memberID, memberType){
+	viewMain.innerHTML += getPlaceholder();
+	
 	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + memberID + '/LinkedProfiles/?getAllMemberships=true';
 	let temp = await getData(rqURL);
 		memberID = temp["Response"]["profiles"][0]["membershipId"];
@@ -280,11 +282,12 @@ async function getPlayer(memberID, memberType){
 			// charOrder gets index of titan, hunter, warlock (0,1,2)
 			playerDetails.charOrder = [playerDetails.charClass.indexOf(0),playerDetails.charClass.indexOf(1),playerDetails.charClass.indexOf(2)];
 			playerDetails.charOrder = playerDetails.charOrder.filter(no => no >= 0);
+			document.getElementById("placeholder").remove();
 			return playerDetails;
 }
 
 
-function addPlayer(cP, htmlTarget){	
+function addPlayer(cP, htmlTarget){
 	// add HTML
 	HTML = "<div class='playerMain' id='acc-" + cP.membershipId[0] + "'>" +
 				// player header
