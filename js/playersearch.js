@@ -43,9 +43,9 @@ async function getFireteam(){
 	let temp = JSON.parse(localStorage.getItem("oauthToken"));
 	let rqURL = 'https://www.bungie.net/Platform/User/GetBungieNetUserById/' + temp["membership_id"] + '/';
 	temp = await getData(rqURL);
-	console.log(temp["Response"] );
 	rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + temp["Response"] + "/0/";
 	temp = await getData(rqURL);
+	console.log(temp["Response"]);
 	
 	//let rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
 	//temp = await getData(rqURL);
@@ -59,7 +59,7 @@ async function getFireteam(){
 async function searchPlayer(inputData){
 	if(inputData){
 		let rqURL = "https://www.bungie.net/Platform/User/Search/GlobalName/0/";
-		let temp = await postData(rqURL, inputData);
+		let temp = await postData(rqURL, 'displayNamePrefix:' + inputData);
 		if (temp['Response']['searchResults'].length > 0) {
 		let tmp = temp.Response.searchResults;
 			var tmpR = [];
@@ -177,20 +177,24 @@ async function getData(url, useApiKey = true) {
 
 
 async function postData(url = '', data = {}, UseJSON = true) {
+	var tmpHead = new Headers();
+	let tmpData = {};
 	if(UseJSON){
-		const h = "'Content-Type': 'application/json'";
-		const tmpData = JSON.stringify(data);
+		tmpHead.set('Content-Type', 'application/json');
+		tmpData = JSON.stringify(data);
 	}else{
-		const h = "'Content-Type': 'application/x-www-form-urlencoded'";
-		const tmpData = data;
+		tmpHead.set('Content-Type', 'application/x-www-form-urlencoded');
+		tmpData = data;
 	}
+	tmpHead.set('X-API-Key', akey);
+	console.log(tmpHead);
   // Default options are marked with *
   const response = await fetch(url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
     credentials: 'same-origin', // include, *same-origin, omit
-    headers: { h },
+    headers: tmpHead,
     redirect: 'follow', // manual, *follow, error
     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     body: tmpData // body data type must match "Content-Type" header
