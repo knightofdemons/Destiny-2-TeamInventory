@@ -41,8 +41,9 @@ document.onkeydown = (e)=> {
 }
 
 async function getFireteam(){
+	let temp = JSON.parse(localStorage.getItem("oauthToken"));
 	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
-	let temp = await getData(rqURL);
+	temp = await getData(rqURL);
 		memberID = temp["Response"]["profiles"][0]["membershipId"];
 		memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
 		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
@@ -102,6 +103,7 @@ async function select(element){
 			addPlayer(currentPlayer, "viewMain");
 			addPlayerToStorage(currentPlayer);
 			searchWrapper.classList.remove("active");
+			suggBox.innerHTML = "";
 			inputBox.value = "";
 		}else{
 			console.log("already existing player");

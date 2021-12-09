@@ -9,9 +9,11 @@ DIM orange and blue, accent colors */
 	--orange2: #00cc68;
 	--blue: #68a0b7;
 	--red: #ff3232; /* For warnings/errors */
-	--grad0:hsl(240, 20%, 28%);
-	--grad1:hsl(240, 27%, 12%);
-	--grad2:hsl(240, 20%, 40%);
+	/* --grad0:hsl(240, 20%, 28%);
+	--grad1:hsl(240, 27%, 12%); */
+	--grad0:#393956;
+	--grad1:#161627;
+	--grad2:linear-gradient(90deg, rgba(100,10,10,0.2) 0%, rgba(57,57,86,0) 90%);
 	--gradient: radial-gradient(
 	  circle at 50% 70px,
 	  var(--grad0) 0%,
