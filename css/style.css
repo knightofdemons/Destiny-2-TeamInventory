@@ -241,7 +241,7 @@
         width: 80px;
     }
     
-    .itemIconContainer > img
+    .itemIconContainer > img, .itemIconContainer.master > img
     {
         border-radius: 10%;
         height: 70px;
@@ -249,6 +249,11 @@
         vertical-align: middle;
         width: 70px;
     }
+	
+	.itemIconContainer.master > img
+	{
+		box-shadow: 1px 1px 4px #ffcb00;
+	}
 	
 	.itemIconContainer > img.cross
     {
