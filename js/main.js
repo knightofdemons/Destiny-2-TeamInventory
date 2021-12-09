@@ -13,7 +13,7 @@ async function buttonClick(membershipId, platformType){
 		//checks if div-container is already existing for current player & add player if not
 		if(!document.getElementById("acc-" + membershipId)){
 			currentPlayer = await getPlayer(membershipId, platformType); //temporary function to add a player | will be replaced by searchbar-submit
-			addPlayer(currentPlayer);
+			addPlayer(currentPlayer, "viewMain");
 			addPlayerToStorage(currentPlayer);
 		}else{
 			console.log("already existing player");
