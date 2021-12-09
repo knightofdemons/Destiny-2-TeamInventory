@@ -293,29 +293,6 @@ function addPlayer(cP, htmlTarget){
 						"</div>" +
 					"</div>" +
 				"</div><br>" +
-				// emblems
-				"<div class='charList'>";
-				for (index in cP.charOrder) {
-	HTML += 		"<div class='charEmblemImg'>" +
-						"<img src='" + cP.charEmblem[cP.charOrder[index]] + "'>" +
-						"<div class='charEmblemClass'>" + classDefinitions.name[classDefinitions.no.indexOf(cP.charClass[cP.charOrder[index]])] + "</div>" +
-						"<div class='charEmblemLvl'> &#10023;" + cP.charLight[cP.charOrder[index]] + "</div>" +
-					"</div>";
-				}
-	HTML +=		"</div>" +
-				// charstats
-				"<div class='charList'>";
-				for (index in cP.charOrder) {
-	HTML +=			"<div class='charStats'>";
-					for (let i = 0; i < 6; i++) {
-	HTML +=				'<div class="charStatsItem" data-title="' + statDefinitions.info[statDefinitions.hash.indexOf(charStatOrder[i])] + '">' +
-							"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(charStatOrder[i])] + "'>" +
-							cP.charStats[cP.charOrder[index]][charStatOrder[i]] + "&emsp;" +
-						'</div>';
-						}
-	HTML +=			"</div>";				
-					}
-	HTML +=		"</div><br><br>" +
 				"<div class='item-list'>";
 				// exotic weapons
 				// for every bucket (kinetic, energy, power)
@@ -409,18 +386,28 @@ function addPlayer(cP, htmlTarget){
 	HTML +=			"</div>";
 				}
 	HTML +=		"</div>" +
-				"<br style='clear:left'><br>";
-				// character items
+				"<br style='clear:left'><br>" +
 				// emblems
-	HTML +=		"<div class='charList'>";
+				"<div class='charList'>";
 				for (index in cP.charOrder) {
 	HTML += 		"<div class='charEmblemImg'>" +
 						"<img src='" + cP.charEmblem[cP.charOrder[index]] + "'>" +
 						"<div class='charEmblemClass'>" + classDefinitions.name[classDefinitions.no.indexOf(cP.charClass[cP.charOrder[index]])] + "</div>" +
 						"<div class='charEmblemLvl'> &#10023;" + cP.charLight[cP.charOrder[index]] + "</div>" +
-					"</div>";
+							// charstats
+							"<div class='charStats'>";
+								for (let i = 0; i < 6; i++) {
+	HTML +=							'<div class="charStatsItem" data-title="' + statDefinitions.info[statDefinitions.hash.indexOf(charStatOrder[i])] + '">' +
+										"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(charStatOrder[i])] + "'>" +
+										cP.charStats[cP.charOrder[index]][charStatOrder[i]] + "&emsp;" +
+									'</div>';
+									}	
+	HTML +=					"</div>" +	
+					"</div>&emsp;";	
 				}
-	HTML +=		"</div>";
+	HTML +=		"</div>" +
+				"<br style='clear:left'><br>";
+				// character items
 				// for buckets 2 - 9 (all weapons & armor slots)
 				for (let b = 0; b < 8; b++) {
 	HTML +=			"<div class='charItemBucket'>";
