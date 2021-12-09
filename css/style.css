@@ -359,6 +359,7 @@
 		right: 6rem;
 		text-align: right;
 		font-size: 11px;
+        line-height: 60px;
 	}
 	
 	.platformLogo
@@ -684,6 +685,12 @@
         right: 0;
         font-size: 44px;
         cursor: pointer;
+        color: fff;
+    }    
+	
+    .sidebar #sidebar-btn:hover
+    {
+        color: var(--blue);
     }
     
     .sidebar.open #sidebar-btn
@@ -696,7 +703,7 @@
     {
         color: #fff;
         height: 60px;
-        min-width: 50px;
+        min-width: 30px;
         font-size: 28px;
         text-align: center;
         line-height: 60px;
