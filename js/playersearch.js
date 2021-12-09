@@ -41,11 +41,10 @@ document.onkeydown = (e)=> {
 }
 
 async function getFireteam(){
-	let temp = JSON.parse(localStorage.getItem("oauthToken"));
 	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
-	temp = await getData(rqURL);
+	let temp = await getData(rqURL);
 		memberID = temp["Response"]["profiles"][0]["membershipId"];
-		memberType = temp["Response"]["profiles"][0]["membershipType"];
+		memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
 		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
 		temp = await getData(rqURL);
 			if (!temp["Response"]["profileTransitoryData"]["data"]){
@@ -68,12 +67,12 @@ async function searchPlayer(inputData){
 		postJson.displayNamePrefix = inputData;
 		let rqURL = "https://www.bungie.net/Platform/User/Search/GlobalName/0/";
 		let temp = await postData(rqURL, postJson); //data is requested as json
-		if (temp['Response']['searchResults'].length > 0) {
-		let tmp = temp.Response.searchResults;
+		let tmpRes = temp['Response']['searchResults'];
+		if (tmpRes.length > 0) {
 			var tmpR = [];
-			tmp.forEach(function(item, index, array) {
-			  IDs = item.destinyMemberships[0].membershipId + "|" + item.destinyMemberships[0].membershipType;
-			  t = "<li><div class='sresult'><img class='platformLogo' alt='" + IDs + "' src='css/images/logo" + item.destinyMemberships[0].membershipType + ".svg'>" + item.bungieGlobalDisplayName + "#" + item.bungieGlobalDisplayNameCode + "</div></li>";
+			tmpRes.forEach(function(item, index, array) {
+			  IDs = item.destinyMemberships[0].membershipId + "|" + item.destinyMemberships[0].applicableMembershipTypes[0];
+			  t = "<li><div class='sresult'><img class='platformLogo' alt='" + IDs + "' src='css/images/logo" + item.destinyMemberships[0].applicableMembershipTypes[0] + ".svg'>" + item.bungieGlobalDisplayName + "#" + item.bungieGlobalDisplayNameCode + "</div></li>";
 			  tmpR.push(t);
 			});
 		}
@@ -100,10 +99,10 @@ async function select(element){
 		//checks if div-container is already existing for current player & add player if not
 		if(!document.getElementById("acc-" + membershipId)){
 			currentPlayer = await getPlayer(membershipId, membershipType);
-			addPlayer(currentPlayer);
+			addPlayer(currentPlayer, "viewMain");
 			addPlayerToStorage(currentPlayer);
-		searchWrapper.classList.remove("active");
-		inputBox.value = "";
+			searchWrapper.classList.remove("active");
+			inputBox.value = "";
 		}else{
 			console.log("already existing player");
 		}
