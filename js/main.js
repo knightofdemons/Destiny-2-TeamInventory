@@ -202,7 +202,7 @@ async function InitData(){
 		const loadedPlayers = JSON.parse(localStorage.getItem("loadedPlayers"));
 		for (let i in loadedPlayers){
 			currentPlayer = await getPlayer(loadedPlayers[i].membershipId[0], loadedPlayers[i].platformType[0]);
-			addPlayer(currentPlayer);
+			addPlayer(currentPlayer, "viewMain");
 		}
 	}		
 }
@@ -278,7 +278,7 @@ async function getPlayer(memberID, memberType){
 }
 
 
-function addPlayer(cP){	
+function addPlayer(cP, htmlTarget){	
 	// add HTML
 	HTML = "<div class='playerMain' id='acc-" + cP.membershipId[0] + "'>" +
 				// player header
@@ -511,14 +511,16 @@ function addPlayer(cP){
 					}
 	HTML +=			"</div>" +			
 			"</div><br><br>"; // div playerMain
-	document.getElementById("viewMain").innerHTML += HTML;
-	document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
-																"<a>" +
-																	"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
-																	"<span class='links_name'>" + cP.platformName[0] + "</span>" +
-																	"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
-																"</a>";
-															"</li>";
+	document.getElementById(htmlTarget).innerHTML += HTML;
+	if(htmlTarget == "viewMain"){
+		document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
+																	"<a>" +
+																		"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
+																		"<span class='links_name'>" + cP.platformName[0] + "</span>" +
+																		"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
+																	"</a>";
+																"</li>";
+	}
 }
 
 function deletePlayer(membershipId){

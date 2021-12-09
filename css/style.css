@@ -428,13 +428,14 @@
 /* view Classes                                                                  */
 /*********************************************************************************/
 
-	.viewMain, .viewFireteam
+	.viewMain, .viewFireteam, #main
 	{
 		display: grid;
 		width: 100%;
 		padding-top: 1rem;
 		z-index: 1;
 		transition: 1s;
+		position: absolute;
 	}
 	
 	.viewMain.open ~ .viewFireteam
@@ -465,21 +466,19 @@
 	{
 		display: none;
 		height: 0%;
-		position: absolute;
 	}
 
 	.viewFireteam
 	{
 		display: none;
 		height: 0%;
-		position: fixed;
 	}
 
 /*********************************************************************************/
 /* Sidebar (currently used)                                                      */
 /*********************************************************************************/
 	
-	.sidebar.open ~ #viewMain
+	.sidebar.open ~ #Main
 	{
 		left: var(--sidebar-width);
 		width: calc(100% - var(--sidebar-width));

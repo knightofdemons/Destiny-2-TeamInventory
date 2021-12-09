@@ -33,33 +33,40 @@ document.onkeydown = (e)=> {
 		viewMain.classList.remove("open");
 		viewFireteam.classList.add("open");
 			document.getElementById("viewFireteam").innerHTML = "";
-			const HTML = getFireteam();
-			document.getElementById("viewFireteam").innerHTML = HTML;
+			getFireteam();
 	}
 }
 
 async function getFireteam(){
-	const HTML = "";
+	let HTML = "";
 	let temp = JSON.parse(localStorage.getItem("oauthToken"));
-	let rqURL = 'https://www.bungie.net/Platform/User/GetBungieNetUserById/' + temp["membership_id"] + '/';
+	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
 	temp = await getData(rqURL);
-	rqURL = "https://www.bungie.net/Platform/User/Search/Prefix/" + temp["Response"] + "/0/";
-	temp = await getData(rqURL);
-	console.log(temp["Response"]);
-	
-	//let rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
-	//temp = await getData(rqURL);
-	
-	
-	
-	return HTML;
+
+			memberID = temp["Response"]["profiles"][0]["membershipId"];
+			memberType = temp["Response"]["profiles"][0]["membershipType"];
+			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
+			temp = await getData(rqURL);
+			if (!temp["Response"]["profileTransitoryData"]["data"]){
+				HTML = "<div class='warning'><a>You are currently not online!</a></div>";
+			}else{
+				for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
+					rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
+					tmpProf = await getData(rqURL);
+					console.log(tmpProf);
+					currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
+					addPlayer(currentPlayer, "viewFireteam");
+				}
+			}
 }
 
 
 async function searchPlayer(inputData){
 	if(inputData){
+		let postJson = new Object();
+		postJson.displayNamePrefix = inputData;
 		let rqURL = "https://www.bungie.net/Platform/User/Search/GlobalName/0/";
-		let temp = await postData(rqURL, 'displayNamePrefix:' + inputData);
+		let temp = await postData(rqURL, postJson); //data is requested as json
 		if (temp['Response']['searchResults'].length > 0) {
 		let tmp = temp.Response.searchResults;
 			var tmpR = [];
@@ -187,7 +194,6 @@ async function postData(url = '', data = {}, UseJSON = true) {
 		tmpData = data;
 	}
 	tmpHead.set('X-API-Key', akey);
-	console.log(tmpHead);
   // Default options are marked with *
   const response = await fetch(url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
