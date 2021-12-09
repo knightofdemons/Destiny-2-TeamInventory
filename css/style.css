@@ -882,7 +882,7 @@
     {
         object-fit: cover;
         border-radius: 6px;
-        margin-right: 10px;
+        margin: 0 10px 0 10px;
     }
     
     .sidebar.open ~ .main-content
@@ -901,7 +901,8 @@
     .bx-bookmark-minus
     {
         position: absolute;
-        right: 0;
+        margin: 0 10px 0 0;
+		right: 0;
     }
     
     .bx-info-circle
@@ -927,6 +928,7 @@
     .bx-search
     {
         cursor: pointer;
+		margin: 0 20px 0 0;
     }
     
     #playerBucket .links_name
