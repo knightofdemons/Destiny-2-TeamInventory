@@ -13,6 +13,7 @@ let langOpt = document.querySelector(".language-options");
 let viewMain = document.querySelector("#viewMain");
 let viewFireteam = document.querySelector("#viewFireteam");
 let emptyArray = [];
+let myInterval;
 
 // if user press any key and release
 inputBox.onkeyup = (e)=>{
@@ -27,6 +28,7 @@ document.onkeydown = (e)=> {
 		{keycode = e.which;}
 	
 	if(keycode == 40 && viewFireteam.classList.contains("open")){
+		clearInterval(myInterval);
 		viewFireteam.classList.remove("open");
 		viewMain.classList.add("open");
 	}else if(keycode == 38 && viewMain.classList.contains("open")){
@@ -34,6 +36,7 @@ document.onkeydown = (e)=> {
 		viewFireteam.classList.add("open");
 			document.getElementById("viewFireteam").innerHTML = "";
 			getFireteam();
+			myInterval = setInterval(getFireteam, 60000);
 	}
 }
 
@@ -48,7 +51,7 @@ async function getFireteam(){
 			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
 			temp = await getData(rqURL);
 			if (!temp["Response"]["profileTransitoryData"]["data"]){
-				HTML = "<div class='warning'><a>You are currently not online!</a></div>";
+				viewFireteam.innerHTML = "<div class='warning'><a>You are currently not online!</a></div>";
 			}else{
 				for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
 					rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
