@@ -15,7 +15,7 @@
 		accent-color: #BA25F6;
 	}
 	
-	body
+	body, .loader-wrapper
 	{
 		background-position: center top;
 		background: var(--gradient);
@@ -26,7 +26,7 @@
 		position: relative;
 	}
 	
-    body:after
+    body:after, .loader-wrapper:after
 		{
 			background: url('images/overlay.png');
             content: '';
@@ -959,13 +959,14 @@
 	
     .loader-wrapper
     {
-        align-items: flex-start;
-        background-color: #11101D;
-        display:flex;
-        justify-content: center;
-        margin-top: -2%;
-        margin-bottom: -2%;
-        z-index: 100;
+		display: flex;
+		height: 108vh;
+		justify-content: center;
+		margin-top: -2%;
+		margin-bottom: -2%;
+		position: fixed;
+		width: 100vw;
+		z-index: 98;
     }
     
     .loader
