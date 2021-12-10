@@ -226,7 +226,7 @@ async function InitData(){
 }
 
 async function getPlayer(memberID, memberType){
-	viewMain.innerHTML += getPlaceholder();
+	document.getElementById("body").innerHTML += getPlaceholder();
 	
 	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + memberID + '/LinkedProfiles/?getAllMemberships=true';
 	let temp = await getData(rqURL);

@@ -212,7 +212,7 @@ async function postData(url = '', data = {}, UseJSON = true) {
 
 function getPlaceholder(){
 	let HTML = 		"<div id='placeholder'>" +
-						"<div class='loader-wrapper'></div>" +
+						"<div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div>" +
 					"</div>";
 					
 	return HTML;
