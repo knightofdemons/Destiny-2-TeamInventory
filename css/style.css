@@ -210,6 +210,14 @@
         float: left;
     }
 	
+	.heading {
+		color: #fff;
+		font-size: 1.5rem;
+		font-weight: 400;
+		line-height: 3rem;
+		text-align: center;
+	}
+	
 	.headline-armor-bucket
 	{
 		color: #fff;
