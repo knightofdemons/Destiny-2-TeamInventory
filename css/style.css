@@ -330,6 +330,7 @@
 	.item-list
 	{
 		float: left;
+		overflow: hidden;
 	}
 	
 	.language-options
@@ -438,6 +439,7 @@
 	.vaultItems
 	{
 		display: inline-block;
+		overflow: hidden;
 	}
 	
 	
