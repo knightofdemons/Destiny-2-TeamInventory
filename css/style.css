@@ -194,7 +194,7 @@
 		margin-right: 0.1rem;
 	}
 	
-	.exo-armor-bucket
+    .exo-armor-bucket
 	{
 		display: flex;
 		justify-content: space-evenly;
@@ -206,9 +206,9 @@
 	}
 	
 	.exo-weapons
-	{
-		float: left;
-	}
+    {
+        float: left;
+    }
 	
 	.heading {
 		color: #fff;
@@ -221,48 +221,47 @@
 	.headline-armor-bucket
 	{
 		color: #fff;
-		font-size: 1rem;
-		font-weight: 400;
+        font-size: 1rem;
+        font-weight: 400;
 		line-height: 3rem;
-		text-align: left;
+        text-align: left;	
 	}
 	
 	.headline-armor-class
 	{
 		color: #fff;
-		font-size: 1.2rem;
-		font-weight: 400;
+        font-size: 1.2rem;
+        font-weight: 400;
 		line-height: 3rem;
-		text-align: center;
+        text-align: center;
 	}
 	
 	.headline-weapon-bucket
 	{
 		color: #fff;
-		font-size: 1.2rem;
-		font-weight: 400;
+        font-size: 1.2rem;
+        font-weight: 400;
 		line-height: 3rem;
-		text-align: left;	
+        text-align: left;	
 	}
 	
-	.itemIconContainer
-	{
-		display: grid;
-		cursor: help;
-		float: left;
-		height: 80px;
-		position: relative;
-		width: 80px;
-	}
-	
-	.itemIconContainer > img, .itemIconContainer.master > img
-	{
-		border-radius: 10%;
-		height: 70px;
-		margin: 5px 5px;
-		vertical-align: middle;
-		width: 70px;
-	}
+    .itemIconContainer
+    {
+        cursor: help;
+        float: left;
+        height: 80px;
+        position: relative;
+        width: 80px;
+    }
+    
+    .itemIconContainer > img, .itemIconContainer.master > img
+    {
+        border-radius: 10%;
+        height: 70px;
+        margin: 5px 5px;
+        vertical-align: middle;
+        width: 70px;
+    }
 	
 	.itemIconContainer.master > img
 	{
@@ -270,9 +269,9 @@
 	}
 	
 	.itemIconContainer > img.cross
-	{
-		opacity: 50%;
-	}
+    {
+        opacity: 50%;
+    }
 	
 	.itemIconContainerEnergy
 	{
@@ -283,20 +282,20 @@
 	}
 	
 	.itemIconContainerInfo
-	{
-		height: 70px;
+    {
+        height: 70px;
 		margin-left: 5px;
 		margin-top: -75;
 		position: absolute;
 		width: 70px;
-	}
+    }
 	
 	.itemIconContainerInfo.equipped
 	{
 		border: double white;
 		border-radius: 10%;
 	}
-	
+    
 	.itemIconContainerLvl
 	{
 		background-color: rgba(0,0,0,0.5);
@@ -310,21 +309,20 @@
 		position: absolute;
 		width: max-content;
 	}
-	
-	.itemIconStatus
-	{
-		position:absolute;
-		right: 0;
-		top: 0; 
-		z-index: 1;
-	}
-	
-	.itemIconStatus > img
-	{
-		 height: 20px;
-		 width: 20px;
-		overflow: hidden;
-	}
+    
+    .itemIconStatus
+    {
+        position:absolute;
+        right: 0;
+        top: 0; 
+        z-index: 1;
+    }
+    
+    .itemIconStatus > img
+    {
+         height: 20px;
+         width: 20px;
+    }
 	
 	.item-list
 	{
@@ -370,13 +368,13 @@
 		right: 6rem;
 		text-align: right;
 		font-size: 11px;
-		line-height: 60px;
+        line-height: 60px;
 	}
 	
 	.platformLogo
 	{
 		 height: 20px;
-		 width: 20px;
+         width: 20px;
 	}
 	
 	.playerBucket
@@ -392,13 +390,13 @@
 	
 	.playerHeader
 	{
-		color: #fff;
-		font-size: 2rem;
-		font-weight: 400;
-		text-align: center;
-		padding-top: 0.4rem;
-		z-index: 97;
-	}
+        color: #fff;
+        font-size: 2rem;
+        font-weight: 400;
+        text-align: center;
+        padding-top: 0.4rem;
+        z-index: 97;
+    }
 	
 	.playerHeader img
 	{
@@ -411,9 +409,9 @@
 	
 	.playerHeaderSub
 	{
-		text-align: center;
-		font-size: 1rem;
-		font-weight: 40;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 40;
 		vertical-align: top;
 	}
 	
