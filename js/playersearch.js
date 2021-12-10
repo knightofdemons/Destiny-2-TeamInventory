@@ -42,23 +42,27 @@ document.onkeydown = (e)=> {
 
 async function getFireteam(){
 	let temp = JSON.parse(localStorage.getItem("oauthToken"));
-	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
-	temp = await getData(rqURL);
-		memberID = temp["Response"]["profiles"][0]["membershipId"];
-		memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
-		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
+	if(!temp){
+		viewFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and use the login</a></div>";
+	}else{
+		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
 		temp = await getData(rqURL);
-			if (!temp["Response"]["profileTransitoryData"]["data"]){
-				viewFireteam.innerHTML = "<div class='warning'><a>You are currently not online!</a></div>";
-			}else{
-				for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
-					rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
-					tmpProf = await getData(rqURL);
-					console.log(tmpProf);
-					currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
-					addPlayer(currentPlayer, "viewFireteam");
-				}
-			}
+			memberID = temp["Response"]["profiles"][0]["membershipId"];
+			memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
+			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
+			temp = await getData(rqURL);
+				if (!temp["Response"]["profileTransitoryData"]["data"]){
+					viewFireteam.innerHTML = "<div class='warning'><a>You are currently not online!</a></div>";
+				}else{
+					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
+						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
+						tmpProf = await getData(rqURL);
+						console.log(tmpProf);
+						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
+						addPlayer(currentPlayer, "viewFireteam");
+					}
+				}		
+	}
 }
 
 
@@ -208,12 +212,4 @@ async function postData(url = '', data = {}, UseJSON = true) {
     body: tmpData // body data type must match "Content-Type" header
   });
   return response.json(); // parses JSON response into native JavaScript objects
-}
-
-function getPlaceholder(){
-	let HTML = 		"<div id='placeholder'>" +
-						"<div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div>" +
-					"</div>";
-					
-	return HTML;
 }
