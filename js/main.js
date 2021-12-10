@@ -8,6 +8,7 @@ let lang = '';
 let playerlist = {};
 let charStatOrder = [2996146975,392767087,1943323491,1735777505,144602215,4244567218];
 let buckets = [1498876634,2465295065,953998645,3448274439,3551918588,14239492,20886954,1585787867];
+let vendorHashList = [1037843411, 3989934776, 864211278];
 
 async function buttonClick(membershipId, platformType){
 		//checks if div-container is already existing for current player & add player if not
@@ -60,7 +61,8 @@ async function checkManifestVersion(language) {
 				'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'], // like [345] -> leg armor
 				'classDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyClassDefinition'], // like [2] -> warlock
 				'energyDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyEnergyTypeDefinition'], // like [6] -> stasis (for armor)
-				'damageTypeDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyDamageTypeDefinition'] // like [6] -> stasis (for weapons)
+				'damageTypeDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyDamageTypeDefinition'], // like [6] -> stasis (for weapons)
+				'vendorDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyVendorDefinition'] // like vault
 			};
 			localStorage.setItem("manifestPaths", JSON.stringify(manifestPaths));
 	}
@@ -85,6 +87,7 @@ async function InitData(){
 		classDefinitions = JSON.parse(localStorage.getItem("classDefinitions"));
 		energyDefinitions = JSON.parse(localStorage.getItem("energyDefinitions"));
 		damageTypeDefinitions = JSON.parse(localStorage.getItem("damageTypeDefinitions"));
+		vendorDefinitions = JSON.parse(localStorage.getItem("vendorDefinitions"));
 	}else{
 		// delete (for language change)
 		statDefinitions = {};
@@ -93,6 +96,7 @@ async function InitData(){
 		classDefinitions = {};
 		energyDefinitions = {};
 		damageTypeDefinitions = {};
+		vendorDefinitions = {};
 		
 		// get details for stats from manifest
 			const resStatDefinitions = await getData(maniPaths.statDefinitions, false);
@@ -128,6 +132,19 @@ async function InitData(){
 					(damageTypeDefinitions.name = damageTypeDefinitions.name || []).push(resDamageTypeDefinitions[resDamageTypeDef]['displayProperties']['name']);
 					(damageTypeDefinitions.iconURL = damageTypeDefinitions.iconURL || []).push('https://www.bungie.net' + resDamageTypeDefinitions[resDamageTypeDef]['transparentIconPath']);
 					(damageTypeDefinitions.no = damageTypeDefinitions.no || []).push(resDamageTypeDefinitions[resDamageTypeDef]['enumValue']);
+				};
+		
+		// get details for vendors from manifest (only vault, exotic armor, exotic weapon)
+			const resVendorDefinitions = await getData(maniPaths.vendorDefinitions, false);
+			// for every item
+				for (i = 0; i < 3; i++) {
+					(vendorDefinitions.name = vendorDefinitions.name || []).push(resVendorDefinitions[vendorHashList[i]]['displayProperties']['name']);
+					if (resVendorDefinitions[vendorHashList[i]]['displayProperties']['smallTransparentIcon'] !== undefined) {
+						(vendorDefinitions.iconURL = vendorDefinitions.iconURL || []).push('https://www.bungie.net' + resVendorDefinitions[vendorHashList[i]]['displayProperties']['smallTransparentIcon']);
+					} else {
+						(vendorDefinitions.iconURL = vendorDefinitions.iconURL || []).push('https://www.bungie.net' + resVendorDefinitions[vendorHashList[i]]['displayProperties']['icon']);
+					}
+					(vendorDefinitions.hash = vendorDefinitions.hash || []).push(resVendorDefinitions[vendorHashList[i]]['hash']);
 				};
 		
 		// get details for items from manifest
@@ -195,6 +212,7 @@ async function InitData(){
 		localStorage.setItem("classDefinitions", JSON.stringify(classDefinitions));
 		localStorage.setItem("energyDefinitions", JSON.stringify(energyDefinitions));
 		localStorage.setItem("damageTypeDefinitions", JSON.stringify(damageTypeDefinitions));
+		localStorage.setItem("vendorDefinitions", JSON.stringify(vendorDefinitions));
 	}
 
 // load recent players from browserstorage
@@ -302,6 +320,9 @@ function addPlayer(cP, htmlTarget){
 						"</div>" +
 					"</div>" +
 				"</div><br>" +
+				"<div class='heading'>" + 
+					vendorDefinitions.name[vendorDefinitions.hash.indexOf(vendorHashList[2])] +
+				"</div>" +
 				"<div class='item-list'>";
 				// exotic weapons
 				// for every bucket (kinetic, energy, power)
@@ -341,6 +362,9 @@ function addPlayer(cP, htmlTarget){
 	HTML +=			"</div><br><br>";
 				}
 	HTML +=		"</div>" +
+				"<div class='heading'>" + 
+					vendorDefinitions.name[vendorDefinitions.hash.indexOf(vendorHashList[1])] +
+				"</div>" +
 				"<div class='item-list'>";
 				// exotic armor
 				// for every bucket (head, arm, chest, leg)
@@ -472,7 +496,10 @@ function addPlayer(cP, htmlTarget){
 	HTML +=			"</div>";
 						
 				}
-	HTML +=		"<br style='clear:left'><br>";
+	HTML +=		"<br style='clear:left'><br>" + 
+				"<div class='heading'>" + 
+					vendorDefinitions.name[vendorDefinitions.hash.indexOf(vendorHashList[0])] +
+				"</div>";
 				// vault items
 				// for buckets 2 - 9 (all weapons & armor slots)
 				for (let b = 0; b < 8; b++) {
