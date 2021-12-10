@@ -247,8 +247,6 @@
 	
 	.itemIconContainer
 	{
-		display: grid;
-		overflow: hidden;
 		cursor: help;
 		float: left;
 		height: 80px;
