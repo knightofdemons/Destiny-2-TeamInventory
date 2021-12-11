@@ -43,7 +43,7 @@ document.onkeydown = (e)=> {
 async function getFireteam(){
 	let temp = JSON.parse(localStorage.getItem("oauthToken"));
 	if(!temp){
-		viewFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and use the login</a></div>";
+		viewFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>";
 	}else{
 		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
 		temp = await getData(rqURL);
@@ -52,7 +52,7 @@ async function getFireteam(){
 			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
 			temp = await getData(rqURL);
 				if (!temp["Response"]["profileTransitoryData"]["data"]){
-					viewFireteam.innerHTML = "<div class='warning'><a>You are currently not online!</a></div>";
+					viewFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
 				}else{
 					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
 						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
