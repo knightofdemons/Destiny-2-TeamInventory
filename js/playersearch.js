@@ -54,6 +54,7 @@ async function getFireteam(){
 				if (!temp["Response"]["profileTransitoryData"]["data"]){
 					viewFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
 				}else{
+					viewFireteam.innerHTML = "";
 					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
 						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
 						tmpProf = await getData(rqURL);

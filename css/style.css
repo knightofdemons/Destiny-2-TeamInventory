@@ -383,7 +383,6 @@
 	
 	.playerHeaderFrame
 	{
-		width: 100%;
 		border-bottom: 1px solid var(--grad1);
 		background: rgba(0, 0, 0, .2);
 	}
@@ -430,7 +429,6 @@
 		border-radius: 10px;
 		background: rgba(0, 0, 0, .2);
 		height: max-content;
-		width: 100%;
 	}
 
 	.vaultItems
@@ -644,7 +642,7 @@
 /* view Fireteam																  */
 /*********************************************************************************/
 
-	.viewFireteam #acc-*
+	.viewFireteam [id^='acc']
 	{
 		display: grid;
 		width: 33%;
