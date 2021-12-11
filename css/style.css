@@ -330,47 +330,6 @@
 		overflow: hidden;
 	}
 	
-	.language-options
-	{
-		background-color: var(--grad1);
-		border-radius: 12px;
-		color: white;
-		display: none;
-		left: var(--sidebar-width);
-		position: absolute;
-		text-align: center;
-		top: 1rem;
-		width: 15rem;
-	}
-	
-	.language-options.open
-	{
-		display: block;
-	}
-	
-	.lang-opt
-	{
-		cursor: pointer;
-		line-height: 3rem;
-	}
-	
-	.lang-opt:hover, .lang-opt.act
-	{
-		background-color: var(--grad2);
-		border-radius: 12px;
-		color: black;
-	}
-	
-	#lang-btn
-	{
-		cursor: pointer;
-		position: absolute;
-		right: 6rem;
-		text-align: right;
-		font-size: 11px;
-        line-height: 60px;
-	}
-	
 	.platformLogo
 	{
 		 height: 20px;
@@ -651,6 +610,107 @@
 		transition: all 0.5s ease;
 		position: absolute;
 	}
+		
+/*********************************************************************************/
+/* Settings																		  */
+/*********************************************************************************/
+
+	.settingsBar
+	{
+		display: grid;
+		background-color: black;
+		top: 0;
+		right: 0;
+		border-radius: 0 0 0 12px;
+		position: fixed;
+		text-align: left;
+		width: 5rem;
+		height: 2rem;
+		z-index: 99;
+		font-size: 18px;
+	}
+	
+/*	#lang-btn
+	{
+		cursor: pointer;
+		position: absolute;
+		font-size: 11px;
+        line-height: 60px;
+	}*/
+	
+	#settingsBtn
+	{
+		width: 32px;
+		font-size:32px;
+		color: #ffffff;
+		cursor: pointer;
+		overflow: hidden;
+		transition-duration: 0.8s;
+		transition-property: transform;
+	}
+	
+	#settingsBtn:hover
+	{
+		color: gray;
+		transform: rotate(360deg);
+		-webkit-transform: rotate(360deg);
+	}
+	
+	.settingsSubMenu
+	{
+		display: block;
+		top: 5rem;
+		right: 10px;
+		background-color: var(--grad1);
+		border-radius: 12px;
+		color: #ffffff;
+		text-align: center;
+		width: 15rem;
+		font-size: 16px;
+		cursor: pointer;
+		position: fixed;
+	}
+	
+	.settingsSubMenu.open
+	{
+		display: block;
+	}
+	
+	.settingsSubMenu div
+	{
+		width: 33%;
+		padding-top: 1rem;
+		z-index: 99;
+		transition: all 0.5s ease;
+		position: absolute;
+		line-height: 3rem;
+		cursor: pointer;
+	}
+	
+	.language-options
+	{
+		top: 5rem;
+		right: 16rem;
+		background-color: var(--grad1);
+		border-radius: 12px;
+		color: white;
+		display: none;
+		position: absolute;
+		text-align: center;
+		width: 15rem;
+	}
+	
+	.language-options.open
+	{
+		display: block;
+	}
+	
+	.lang-opt:hover, .lang-opt.act
+	{
+		background-color: var(--grad2);
+		border-radius: 12px;
+		color: black;
+	}
 	
 /*********************************************************************************/
 /* Sidebar																	   */
@@ -743,11 +803,6 @@
 		line-height: 60px;
 	}
 	
-	.sidebar .sidebar-content .nav-list .nav-settings
-	{
-		height: 100%;
-	}
-	
 	.sidebar .sidebar-content ul
 	{
 		padding: 0 0 0 0;
@@ -827,8 +882,7 @@
 	
 	.sidebar.open .bx-search:hover
 	{
-		background: #1d1b31;
-		color: #fff;
+		color: blue;
 	}
 	
 	.sidebar .sidebar-content .bx-search:hover
@@ -881,7 +935,6 @@
 	
 	.sidebar .sidebar-content li a i:hover
 	{
-		
 		color: var(--red);
 	}
 	
@@ -898,13 +951,6 @@
 		object-fit: cover;
 		border-radius: 6px;
 		margin: 0 10px 0 10px;
-	}
-	
-	.sidebar-settings
-	{
-		position: relative;
-		top: 40px;
-		width: 95%;
 	}
 	
 	.bx-bookmark-minus
