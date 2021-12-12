@@ -269,6 +269,10 @@ function setTheme(element) {
 	}
 }
 
+function setIconsize(val) {
+	document.documentElement.style.setProperty('--iconsize', val + "px");
+}
+
 
 /*********************************************************************************/
 /* Temp 			                                                             */

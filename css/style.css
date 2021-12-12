@@ -255,18 +255,18 @@
     {
         cursor: help;
         float: left;
-        height: 80px;
+        height: calc(var(--iconsize) + 10);
         position: relative;
-        width: 80px;
+        width: calc(var(--iconsize) + 10);
     }
     
     .itemIconContainer > img, .itemIconContainer.master > img
     {
         border-radius: 10%;
-        height: 70px;
+        height: var(--iconsize);
         margin: 5px 5px;
         vertical-align: middle;
-        width: 70px;
+        width: var(--iconsize);
     }
 	
 	.itemIconContainer.master > img
@@ -289,11 +289,11 @@
 	
 	.itemIconContainerInfo
     {
-        height: 70px;
+        height: var(--iconsize);
 		margin-left: 5px;
 		margin-top: -75;
 		position: absolute;
-		width: 70px;
+		width: var(--iconsize);
     }
 	
 	.itemIconContainerInfo.equipped
@@ -697,13 +697,16 @@
 	
 	.settingsSubMenuBtns
 	{
+		display: flex;
 		cursor: pointer;
 		background-color: var(--grad1);
 		padding-bottom: 0.5rem;
 		padding-top: 0.5rem;
 		text-align: left;
 		transition: all 0.5s ease;
-		width: max-content;
+		width: 100%;
+		align-items: center;
+		height: 4rem;
 		z-index: 99;
 	}
 	.settingsSubMenuBtns i
@@ -727,6 +730,12 @@
 		color: var(--hovercolor);
 		transform: rotate(360deg);
 		-webkit-transform: rotate(360deg);
+	}
+	
+	#settingsIconsizeSlider
+	{
+		width: 70%;
+		accent-color: lightblue;
 	}
 	
 	.settingsLogBtns [id^='settingsLog']
@@ -756,8 +765,14 @@
 		position: fixed;
 		left: 1rem;
 		text-align: left;
-		width: max-content;
+		width: 14rem;
 		z-index: 98;
+		flex-wrap: wrap;
+	}
+	
+	.settingsSubMenu.open
+	{
+		display: flex;
 	}
 	
 	.settingsSubMenu div:not(.settingsSubMenu .language-options):hover 
@@ -765,11 +780,6 @@
 		cursor: pointer;
 		border-radius: 6px;
 		color: var(--hovercolor);
-	}
-	
-	.settingsSubMenu.open
-	{
-		display: block;
 	}
 	
 	.settingsSubMenu div i
@@ -784,8 +794,8 @@
 		border-radius: 12px;
 		width: max-content;
 		height: max-content;
-		left: 15rem;
-		bottom: 1rem;
+		left: 15.5rem;
+		bottom: 3rem;
 		position: fixed;
 		padding: 1rem;
 	}

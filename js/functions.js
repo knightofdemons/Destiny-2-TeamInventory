@@ -385,7 +385,7 @@ function addPlayer(cP, htmlTarget){
 				// for every bucket (kinetic, energy, power)
 				for (let b = 0; b < 3; b++) {
 					var hb = 0; // counter for bucket headline
-	HTML +=			"<div class='exo-weapons'>";
+	HTML +=			"<div id='anch-exos' class='exo-weapons'>";
 					// every item...
 					for (let i = 0; i < itemDefinitions.type.length; i++) {
 						// ... that is exo & matches bucket
@@ -488,7 +488,7 @@ function addPlayer(cP, htmlTarget){
 	HTML +=		"</div>" +
 				"<br style='clear:left'><br>" +
 				// emblems
-				"<div class='charList'>";
+				"<div id='anch-equip' class='charList'>";
 				for (index in cP.charOrder) {
 	HTML += 		"<div class='charEmblemImg'>" +
 						"<img src='" + cP.charEmblem[cP.charOrder[index]] + "'>" +
@@ -570,7 +570,7 @@ function addPlayer(cP, htmlTarget){
 				// vault items
 				// for buckets 2 - 9 (all weapons & armor slots)
 				for (let b = 0; b < 8; b++) {
-	HTML +=			"<div class='vaultItems'>";
+	HTML +=			"<div id='anch-vault' class='vaultItems'>";
 						// for every item in vault
 						for (item in cP.profileInventory) {
 							if (cP.profileInventory[item] !== undefined) {
@@ -604,7 +604,7 @@ function addPlayer(cP, htmlTarget){
 	document.getElementById(htmlTarget).innerHTML += HTML;
 	if(htmlTarget == "viewMain"){
 		document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
-																	"<a>" +
+																	"<a href='#acc-" + cP.membershipId[0] + "'>" +
 																		"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
 																		"<span class='links_name'>" + cP.platformName[0] + "</span>" +
 																		"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +

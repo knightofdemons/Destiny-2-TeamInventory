@@ -40,9 +40,9 @@
 			</li>
 		</ul>
 		<ul class="nav-symbols">
-			<a onclick="jumpTo('exoticWeapons')"><img src="css/images/engram.png"></img></a>
-			<a onclick="jumpTo('characterItems')"><img src="css/images/inventory.png"></img></a>
-			<a onclick="jumpTo('vaultItems')"><img src="css/images/vault.png"></img></a>
+			<a href='#anch-exos'><img src="css/images/engram.png"></img></a>
+			<a href='#anch-equip'><img src="css/images/inventory.png"></img></a>
+			<a href='#anch-vault'><img src="css/images/vault.png"></img></a>
 		</ul>
 		<h3><i class='bx bx-bookmarks'></i></h3>
 		<ul class="nav-list">
@@ -74,16 +74,19 @@
 				<div class='settingsSubMenuBtns' onClick='clearData()'><i id='settingsClearData' class='bx bxs-trash'></i>&nbsp; Clear cached data</div>
 				<div class='settingsSubMenuBtns' onClick='showTheme()'><i id='settingsThemesBtn' class='bx bxs-square-rounded'></i>&nbsp; Themes</div>
 					<div class="settingsThemes">
-							<div class="theme-opt act" id='red' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
-							<div class="theme-opt" id='blue' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
-							<div class="theme-opt" id='green' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
-							<div class="theme-opt" id='yellow' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
-							<div class="theme-opt" id='orange' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
-							<div class="theme-opt" id='purple' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
-							<div class="theme-opt" id='black' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
-							<div class="theme-opt" id='white' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
-						</div>
-				<div class='settingsSubMenuBtns'><i id='settingsIconsize' class='bx bxs-square-rounded'></i>&nbsp; Iconsize</div>
+						<div class="theme-opt act" id='red' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+						<div class="theme-opt" id='blue' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+						<div class="theme-opt" id='green' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+						<div class="theme-opt" id='yellow' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+						<div class="theme-opt" id='orange' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+						<div class="theme-opt" id='purple' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+						<div class="theme-opt" id='black' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+						<div class="theme-opt" id='white' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+					</div>
+				<div class='settingsSubMenuBtns'>
+					<i id='settingsIconsize' class='bx bx-image-add'></i>&nbsp; 
+					<input onInput='setIconsize(this.value)' onChange='setIconsize(this.value)' id='settingsIconsizeSlider' type="range" min="40" max="80" step="1.0" value="50">
+				</div>
 			</div>
 			<div class='settingsBtns'>
 				<div id='settingsBtnCog' onclick="showSettingsSubmenu()">
