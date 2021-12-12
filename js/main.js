@@ -243,29 +243,29 @@ function setTheme(element) {
 	element.classList.add("act");
 	
 	if(element.id == "red"){
-		document.documentElement.style.setProperty('--grad0', "#FAACA8");
-		document.documentElement.style.setProperty('--grad1', "#DDD6F3");		
+		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeRedA'));
+		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeRedB'));		
 	}else if(element.id == "blue"){
-		document.documentElement.style.setProperty('--grad0', "#8EC5FC");
-		document.documentElement.style.setProperty('--grad1', "#E0C3FC");		
+		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeBlueA'));
+		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeBlueB'));		
 	}else if(element.id == "green"){
-		document.documentElement.style.setProperty('--grad0', "#85FFBD");
-		document.documentElement.style.setProperty('--grad1', "#FFFB7D");
+		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeGreenA'));
+		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeGreenB'));
 	}else if(element.id == "yellow"){
-		document.documentElement.style.setProperty('--grad0', "#faf6de");
-		document.documentElement.style.setProperty('--grad1', "#FFD700");
+		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeYellowA'));
+		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeYellowB'));
 	}else if(element.id == "orange"){
-		document.documentElement.style.setProperty('--grad0', "#FBAB7E");
-		document.documentElement.style.setProperty('--grad1', "#F7CE68");
+		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeOrangeA'));
+		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeOrangeB'));
 	}else if(element.id == "purple"){
-		document.documentElement.style.setProperty('--grad0', "#393956");
-		document.documentElement.style.setProperty('--grad1', "#161627");
+		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themePurpleA'));
+		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themePurpleB'));
 	}else if(element.id == "black"){
-		document.documentElement.style.setProperty('--grad0', "rgba(184,184,184,1)");
-		document.documentElement.style.setProperty('--grad1', "rgba(255,255,255,1)");
+		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeBlackA'));
+		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeBlackB'));
 	}else if(element.id == "white"){
-		document.documentElement.style.setProperty('--grad0', "rgba(31,31,31,1)");
-		document.documentElement.style.setProperty('--grad1', "rgba(42,14,6,1)");
+		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeWhiteA'));
+		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeWhiteB'));
 	}
 }
 
