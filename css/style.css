@@ -719,6 +719,7 @@
 	
 	.settingsBtns
 	{
+		color: #ffffff;
 		align-items: flex-end;
 		bottom: 0;
 		display: flex;
@@ -729,6 +730,10 @@
 		width: var(--sidebar-width);
 	}
 	
+	.settingsBtns:hover
+	{
+		color: var(--hovercolor);
+	}
 /*	#lang-btn
 	{
 		cursor: pointer;
@@ -737,24 +742,36 @@
         line-height: 60px;
 	}*/
 	
-	#settingsBtn
+	#settingsBtnCog
 	{
-		color: #ffffff;
 		cursor: pointer;
 		font-size:32px;
 		overflow: hidden;
-		padding-top: 1rem;
 		transition-duration: 0.8s;
 		transition-property: transform;
-		width: 32px;
 		z-index: 99;
 	}
 	
-	#settingsBtn:hover
+	#settingsBtnCog:hover
 	{
-		color: gray;
+		color: var(--hovercolor);
 		transform: rotate(360deg);
 		-webkit-transform: rotate(360deg);
+	}
+	
+	.settingsLogBtns [id^='settingsLog']
+	{
+		cursor: pointer;
+		font-size:32px;
+		overflow: hidden;
+		transition-duration: 0.8s;
+		transition-property: transform;
+		z-index: 99;
+	}
+	
+	.settingsLogBtns [id^='settingsLog']:hover
+	{
+		color: var(--hovercolor);
 	}
 	
 	.settingsSubMenu
@@ -764,7 +781,7 @@
 		bottom: 3.5rem;
 		color: #ffffff;
 		cursor: pointer;
-		display: block;
+		display: none;
 		font-size: 16px;
 		padding-bottom: 2rem;
 		padding-right: 2rem;
@@ -826,6 +843,18 @@
 	{
 		display: flex;
 		justify-content: space-evenly;
+	}
+	
+	.nav-symbols a
+	{
+		cursor: pointer;
+		color: ffffff;
+		border: 1px solid white;
+	}
+	
+	.nav-symbols a:hover
+	{
+		color: var(--hovercolor);
 	}
 	
 	.nav-symbols img
@@ -914,7 +943,7 @@
     .sidebar.open #sidebar-btn
     {
         right: 3rem;
-        font-size: 22px;
+        font-size: 32px;
     }
     
     .sidebar .sidebar-content i

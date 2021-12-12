@@ -4,6 +4,7 @@ Variables and mixins that can be used from any SCSS file
 DIM orange and blue, accent colors */
 :root {
 	--sidebar-width: 20rem;
+	--hovercolor: gray;
 	
 	--orange: #e8a534;
 	--orange2: #00cc68;

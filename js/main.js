@@ -79,6 +79,13 @@ async function InitData(){
 	}
 	let maniPaths = await checkManifestVersion(lang);
 
+	if(localStorage.getItem("oauthToken")){
+		document.querySelector("#settingsLogin").style.display = 'none';
+		document.querySelector("#settingsLogout").style.display = 'flex';
+	}else{
+		document.querySelector("#settingsLogin").style.display = 'flex';
+		document.querySelector("#settingsLogout").style.display = 'none';
+	}
 			
 	// load initData from browserstorage
 	if(localStorage.getItem("statDefinitions")){
