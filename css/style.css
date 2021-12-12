@@ -748,7 +748,6 @@
 	{
 		cursor: pointer;
 		background-color: var(--grad1);
-		height: 3rem;
 		padding-bottom: 0.5rem;
 		padding-top: 0.5rem;
 		text-align: left;
@@ -760,6 +759,7 @@
 	.settingsSubMenu div:hover
 	{
 		background-color: var(--grad2);
+		border-radius: 6px;
 	}
 	
 	.settingsSubMenu div i
@@ -769,58 +769,20 @@
 	
 	.language-options
 	{
-		top: 5rem;
-		right: 16rem;
+		display: none;
 		background-color: var(--grad1);
 		border-radius: 12px;
-		color: white;
-		display: none;
-		position: absolute;
-		text-align: center;
-		width: 15rem;
+		width: max-content;
+		height: max-content;
+		left: 15rem;
+		bottom: 1rem;
+		position: fixed;
+		padding: 1rem;
 	}
 	
 	.language-options.open
 	{
 		display: block;
-	}
-	
-	.lang-opt:hover, .lang-opt.act
-	{
-		background-color: var(--grad2);
-		border-radius: 12px;
-		color: black;
-	}
-	
-	.language-options
-	{
-		background-color: var(--grad1);
-		border-radius: 12px;
-		color: white;
-		display: none;
-		left: var(--sidebar-width);
-		position: absolute;
-		text-align: center;
-		top: 1rem;
-		width: 15rem;
-	}
-	
-	.language-options.open
-	{
-		display: block;
-	}
-	
-	.lang-opt
-	{
-		cursor: pointer;
-		line-height: 3rem;
-	}
-	
-	.lang-opt:hover, .lang-opt.act
-	{
-		background-color: var(--grad2);
-		border-radius: 12px;
-		color: black;
 	}
 	
 	#lang-btn
@@ -851,6 +813,7 @@
 		cursor: pointer;
 		color: ffffff;
 		border: 1px solid white;
+        border-radius: 6px;
 	}
 	
 	.nav-symbols a:hover
@@ -1132,7 +1095,7 @@
     .sresult:hover
     {
 		cursor: pointer;
-        background-color: black;
+        background-color: var(--grad2);
 		user-select: none;
     }
     
