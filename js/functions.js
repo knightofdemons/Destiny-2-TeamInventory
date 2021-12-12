@@ -407,6 +407,16 @@ function addPlayer(cP, htmlTarget){
 							else {
 								marker="cross";
 							}
+						// #########################################################################################check if weapons catalyst is achieved
+						//console.log(itemDefinitions.name[i]);
+						//console.log(parseInt(itemDefinitions.catHash[i],10));
+						//	var checkMaster = cP.collectibles[parseInt(itemDefinitions.catHash[i],10)].state;
+						//	var master = "";
+						// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyRecordState.html#schema_Destiny-DestinyRecordState
+						// states can be added! --> all odd numbers = achieved, all even numbers = not achieved
+						//	if (checkMaster % 2 !== 0) {
+						//		console.log("master");
+						//		}
 	HTML +=				"<div class='itemIconContainer'>" +
 							'<img class="' + marker + '" src="' + itemDefinitions.iconURL[i] + '">' +
 							"<div class='itemIconStatus'>" + 
@@ -450,7 +460,7 @@ function addPlayer(cP, htmlTarget){
 									}
 									hb++;
 								}
-							// check if weapon is achieved and overlay a check mark or cross over the image
+							// check if armor is achieved and overlay a check mark or cross over the image
 								var checkState = cP.collectibles[itemDefinitions.collectibleID[i]].state;
 								var marker = "";
 								// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
