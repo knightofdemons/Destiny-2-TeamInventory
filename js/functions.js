@@ -36,6 +36,7 @@ async function postData(url = '', data = {}, UseJSON = true) {
   return response.json(); // parses JSON response into native JavaScript objects
 }
 
+
 /*********************************************************************************/
 /* Manifest & Miscellaneous                                                      */
 /*********************************************************************************/
@@ -66,6 +67,7 @@ async function checkManifestVersion(language) {
 	return manifestPaths;
 }
 
+
 function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 0) {
 // sorts object with different arrays at the same time
 // https://gist.github.com/boukeversteegh/3219ffb912ac6ef7282b1f5ce7a379ad
@@ -87,125 +89,9 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
   }
 }
 
-/*********************************************************************************/
-/* view Fireteam 	                                                            */
-/*********************************************************************************/
-async function getFireteam(){
-	let temp = JSON.parse(localStorage.getItem("oauthToken"));
-	if(!temp){
-		viewFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>";
-	}else{
-		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
-		temp = await getData(rqURL);
-			memberID = temp["Response"]["profiles"][0]["membershipId"];
-			memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
-			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
-			temp = await getData(rqURL);
-				if (!temp["Response"]["profileTransitoryData"]["data"]){
-					viewFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
-				}else{
-					viewFireteam.innerHTML = "";
-					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
-						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
-						tmpProf = await getData(rqURL);
-						console.log(tmpProf);
-						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
-						addPlayer(currentPlayer, "viewFireteam");
-					}
-				}		
-	}
-}
-
 
 /*********************************************************************************/
-/* getPlayer Function (create PlayerObject from Fetchresult                      */
-/*********************************************************************************/
-async function getPlayer(memberID, memberType){
-	let HTML = 	"<div id='placeholder'>" +
-					"<div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div>" +
-				"</div>";
-	document.getElementById("viewMain").innerHTML += HTML;
-	
-	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + memberID + '/LinkedProfiles/?getAllMemberships=true';
-	let temp = await getData(rqURL);
-		memberID = temp["Response"]["profiles"][0]["membershipId"];
-		memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
-	
-	
-	// get player details from memberID & memberType (platform)
-		rqURL = 'https://www.bungie.net/Platform/User/GetMembershipsById/' + memberID + '/All/';
-		const resPlayerDetails = await getData(rqURL);
-		// store info in obj playerDetails 
-			let playerDetails = {
-				'nameCode':resPlayerDetails['Response']['destinyMemberships'][0]['bungieGlobalDisplayNameCode']
-			};
-			playerDetails.profilePicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['bungieNetUser']['profilePicturePath'];
-			for (let i = 0; i < resPlayerDetails['Response']['destinyMemberships'].length; i++){
-				(playerDetails.platformName = playerDetails.platformName || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['displayName']);
-				(playerDetails.membershipId = playerDetails.membershipId || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['membershipId']);
-				(playerDetails.platformType = playerDetails.platformType || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['membershipType']);
-				(playerDetails.bungieName = playerDetails.bungieName || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['bungieGlobalDisplayName'] + "#" +
-																				 resPlayerDetails['Response']['destinyMemberships'][i]['bungieGlobalDisplayNameCode']);
-			};
-		
-	// get all details for profile
-		// 100 = profile (displayName, characterIds), 102 = profileInventory, 200 = characters (data for characters), 201 = character inventories,
-		// 205 = characterEquipment, 800 = profileCollectibles & characterCollectibles, 900 = profileRecords & characterRecords
-		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=100,102,200,201,205,300,302,304,307,800,900';
-		const resProfile = await getData(rqURL);
-		// store info in obj playerDetails 
-			playerDetails.charIDs = resProfile['Response']['profile']['data']['characterIds'];
-			playerDetails.collectibles = resProfile['Response']['profileCollectibles']['data']['collectibles'];
-			if(resProfile['Response']['profileInventory']['data']){
-				playerDetails.profileInventory = resProfile['Response']['profileInventory']['data']['items'];
-			}else{
-				playerDetails.profileInventory = false;
-			}
-			// check which of the three itemComponents-parts has most hashes & merge together (with the one with most hashes at first)
-				playerDetails.itemDetails = {};
-				m = Math.max(Object.keys(resProfile['Response'].itemComponents.instances.data).length, Object.keys(resProfile['Response'].itemComponents.stats.data).length, Object.keys(resProfile['Response'].itemComponents.perks.data).length);
-				if (Object.keys(resProfile['Response'].itemComponents.instances.data).length === m) {
-					for (stat in resProfile['Response'].itemComponents.instances.data) {
-					playerDetails.itemDetails[stat]={... resProfile['Response'].itemComponents.instances.data[stat], ... resProfile['Response'].itemComponents.stats.data[stat], ... resProfile['Response'].itemComponents.perks.data[stat]};
-					}
-				} else if (Object.keys(resProfile['Response'].itemComponents.stats.data).length === m) {
-					for (stat in resProfile['Response'].itemComponents.stats.data) {
-					playerDetails.itemDetails[stat]={... resProfile['Response'].itemComponents.stats.data[stat], ... resProfile['Response'].itemComponents.instances.data[stat], ... resProfile['Response'].itemComponents.perks.data[stat]};
-					}
-				} else {
-				  for (stat in resProfile['Response'].itemComponents.perks.data) {
-					playerDetails.itemDetails[stat]={... resProfile['Response'].itemComponents.perks.data[stat], ... resProfile['Response'].itemComponents.instances.data[stat], ... resProfile['Response'].itemComponents.stats.data[stat]};
-					}
-				}
-			// for every character
-			for (let i = 0; i < playerDetails.charIDs.length; i++) {
-				(playerDetails.charLight = playerDetails.charLight || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['light']);
-				(playerDetails.charClass = playerDetails.charClass || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['classType']);
-				(playerDetails.charRace = playerDetails.charRace || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['raceType']);
-				(playerDetails.charGender = playerDetails.charGender || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['genderType']);
-				(playerDetails.charEmblem = playerDetails.charEmblem || []).push("https://www.bungie.net" + resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['emblemBackgroundPath']);
-				(playerDetails.charStats = playerDetails.charStats || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['stats']); // 7 stats: [hash] -> value
-				(playerDetails.charLastPlayed = playerDetails.charLastPlayed || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['dateLastPlayed']); // wollte ich vllt später gebrauchen
-				playerDetails.collectibles = {...playerDetails.collectibles,...resProfile['Response']['characterCollectibles']['data'][playerDetails.charIDs[i]]['collectibles']};
-				if(playerDetails.profileInventory){
-					(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
-				}else{
-					playerDetails.charInventory = false;
-				}
-				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
-			}
-	
-			// charOrder gets index of titan, hunter, warlock (0,1,2)
-			playerDetails.charOrder = [playerDetails.charClass.indexOf(0),playerDetails.charClass.indexOf(1),playerDetails.charClass.indexOf(2)];
-			playerDetails.charOrder = playerDetails.charOrder.filter(no => no >= 0);
-			document.getElementById("placeholder").remove();
-			return playerDetails;
-}
-
-
-
-/*********************************************************************************/
-/* InitData Function                                                            */
+/* Get initial data                                                              */
 /*********************************************************************************/
 async function InitData(){
 	if(localStorage.getItem("lang")){
@@ -370,6 +256,121 @@ async function InitData(){
 	}		
 }
 
+
+/*********************************************************************************/
+/* view Fireteam 	                                                             */
+/*********************************************************************************/
+async function getFireteam(){
+	let temp = JSON.parse(localStorage.getItem("oauthToken"));
+	if(!temp){
+		viewFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>";
+	}else{
+		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
+		temp = await getData(rqURL);
+			memberID = temp["Response"]["profiles"][0]["membershipId"];
+			memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
+			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
+			temp = await getData(rqURL);
+				if (!temp["Response"]["profileTransitoryData"]["data"]){
+					viewFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
+				}else{
+					viewFireteam.innerHTML = "";
+					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
+						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
+						tmpProf = await getData(rqURL);
+						console.log(tmpProf);
+						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
+						addPlayer(currentPlayer, "viewFireteam");
+					}
+				}		
+	}
+}
+
+
+/*********************************************************************************/
+/* getPlayer Function (create PlayerObject with details from fetch results)      */
+/*********************************************************************************/
+async function getPlayer(memberID, memberType){
+	let HTML = 	"<div id='placeholder'>" +
+					"<div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div>" +
+				"</div>";
+	document.getElementById("viewMain").innerHTML += HTML;
+	
+	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + memberID + '/LinkedProfiles/?getAllMemberships=true';
+	let temp = await getData(rqURL);
+		memberID = temp["Response"]["profiles"][0]["membershipId"];
+		memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
+	
+	
+	// get player details from memberID & memberType (platform)
+		rqURL = 'https://www.bungie.net/Platform/User/GetMembershipsById/' + memberID + '/All/';
+		const resPlayerDetails = await getData(rqURL);
+		// store info in obj playerDetails 
+			let playerDetails = {
+				'nameCode':resPlayerDetails['Response']['destinyMemberships'][0]['bungieGlobalDisplayNameCode']
+			};
+			playerDetails.profilePicturePath = "https://www.bungie.net" + resPlayerDetails['Response']['bungieNetUser']['profilePicturePath'];
+			for (let i = 0; i < resPlayerDetails['Response']['destinyMemberships'].length; i++){
+				(playerDetails.platformName = playerDetails.platformName || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['displayName']);
+				(playerDetails.membershipId = playerDetails.membershipId || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['membershipId']);
+				(playerDetails.platformType = playerDetails.platformType || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['membershipType']);
+				(playerDetails.bungieName = playerDetails.bungieName || []).push(resPlayerDetails['Response']['destinyMemberships'][i]['bungieGlobalDisplayName'] + "#" +
+																				 resPlayerDetails['Response']['destinyMemberships'][i]['bungieGlobalDisplayNameCode']);
+			};
+		
+	// get all details for profile
+		// 100 = profile (displayName, characterIds), 102 = profileInventory, 200 = characters (data for characters), 201 = character inventories,
+		// 205 = characterEquipment, 800 = profileCollectibles & characterCollectibles, 900 = profileRecords & characterRecords
+		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=100,102,200,201,205,300,302,304,307,800,900';
+		const resProfile = await getData(rqURL);
+		// store info in obj playerDetails 
+			playerDetails.charIDs = resProfile['Response']['profile']['data']['characterIds'];
+			playerDetails.collectibles = resProfile['Response']['profileCollectibles']['data']['collectibles'];
+			if(resProfile['Response']['profileInventory']['data']){
+				playerDetails.profileInventory = resProfile['Response']['profileInventory']['data']['items'];
+			}else{
+				playerDetails.profileInventory = false;
+			}
+			// check which of the three itemComponents-parts has most hashes & merge together (with the one with most hashes at first)
+				playerDetails.itemDetails = {};
+				m = Math.max(Object.keys(resProfile['Response'].itemComponents.instances.data).length, Object.keys(resProfile['Response'].itemComponents.stats.data).length, Object.keys(resProfile['Response'].itemComponents.perks.data).length);
+				if (Object.keys(resProfile['Response'].itemComponents.instances.data).length === m) {
+					for (stat in resProfile['Response'].itemComponents.instances.data) {
+					playerDetails.itemDetails[stat]={... resProfile['Response'].itemComponents.instances.data[stat], ... resProfile['Response'].itemComponents.stats.data[stat], ... resProfile['Response'].itemComponents.perks.data[stat]};
+					}
+				} else if (Object.keys(resProfile['Response'].itemComponents.stats.data).length === m) {
+					for (stat in resProfile['Response'].itemComponents.stats.data) {
+					playerDetails.itemDetails[stat]={... resProfile['Response'].itemComponents.stats.data[stat], ... resProfile['Response'].itemComponents.instances.data[stat], ... resProfile['Response'].itemComponents.perks.data[stat]};
+					}
+				} else {
+				  for (stat in resProfile['Response'].itemComponents.perks.data) {
+					playerDetails.itemDetails[stat]={... resProfile['Response'].itemComponents.perks.data[stat], ... resProfile['Response'].itemComponents.instances.data[stat], ... resProfile['Response'].itemComponents.stats.data[stat]};
+					}
+				}
+			// for every character
+			for (let i = 0; i < playerDetails.charIDs.length; i++) {
+				(playerDetails.charLight = playerDetails.charLight || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['light']);
+				(playerDetails.charClass = playerDetails.charClass || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['classType']);
+				(playerDetails.charRace = playerDetails.charRace || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['raceType']);
+				(playerDetails.charGender = playerDetails.charGender || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['genderType']);
+				(playerDetails.charEmblem = playerDetails.charEmblem || []).push("https://www.bungie.net" + resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['emblemBackgroundPath']);
+				(playerDetails.charStats = playerDetails.charStats || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['stats']); // 7 stats: [hash] -> value
+				(playerDetails.charLastPlayed = playerDetails.charLastPlayed || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['dateLastPlayed']); // wollte ich vllt später gebrauchen
+				playerDetails.collectibles = {...playerDetails.collectibles,...resProfile['Response']['characterCollectibles']['data'][playerDetails.charIDs[i]]['collectibles']};
+				if(playerDetails.profileInventory){
+					(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
+				}else{
+					playerDetails.charInventory = false;
+				}
+				(playerDetails.charEquipment = playerDetails.charEquipment || []).push(resProfile['Response']['characterEquipment']['data'][playerDetails.charIDs[i]]['items']);
+			}
+	
+			// charOrder gets index of titan, hunter, warlock (0,1,2)
+			playerDetails.charOrder = [playerDetails.charClass.indexOf(0),playerDetails.charClass.indexOf(1),playerDetails.charClass.indexOf(2)];
+			playerDetails.charOrder = playerDetails.charOrder.filter(no => no >= 0);
+			document.getElementById("placeholder").remove();
+			return playerDetails;
+}
 
 
 /*********************************************************************************/
