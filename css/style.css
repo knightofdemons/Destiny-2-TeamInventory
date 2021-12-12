@@ -690,22 +690,11 @@
 		width: var(--sidebar-width);
 	}
 	
-	.settingsBtns:hover
-	{
-		color: var(--hovercolor);
-	}
-/*	#lang-btn
-	{
-		cursor: pointer;
-		position: absolute;
-		font-size: 11px;
-        line-height: 60px;
-	}*/
-	
 	#settingsBtnCog
 	{
 		cursor: pointer;
 		font-size:32px;
+		color: white;
 		overflow: hidden;
 		transition-duration: 0.8s;
 		transition-property: transform;
@@ -960,7 +949,6 @@
     
     .sidebar .sidebar-content i
     {
-        color: #fff;
         min-width: 30px;
         font-size: 28px;
         text-align: center;
@@ -1039,29 +1027,10 @@
         width: 100%;
     }
     
-    .radio
-    {
-        display: flex;
-        overflow: auto;
-    }
-    
-    .radio input
-    {
-        height: 1rem;
-        width: 1rem;
-    }
-    
-    .radio img
-    {
-        height: 20px;
-        margin-right: 10px;
-        width: 20px;
-    }
-    
     .sidebar .sidebar-content .bx-search
     {
         position: absolute;
-		right: 0;
+		right: -10px;
 		font-size: 22px;
 		background: #1d1b31;
 		color: #fff;
@@ -1153,6 +1122,18 @@
         position: relative;
         top: 40px;
         width: 95%;
+    }
+	
+	.sidebar #autocom-box
+    {
+        z-index: 101;
+    }
+	
+    .sresult:hover
+    {
+		cursor: pointer;
+        background-color: black;
+		user-select: none;
     }
     
     .bx-bookmark-minus
