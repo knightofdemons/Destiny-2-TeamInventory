@@ -70,6 +70,7 @@
         font-size: 1rem;
         font-weight: 400;
         text-align: left;
+		padding-bottom: 1rem;
 	}
 	
 	strong, b
@@ -328,47 +329,6 @@
 	{
 		float: left;
 		overflow: hidden;
-	}
-	
-	.language-options
-	{
-		background-color: var(--grad1);
-		border-radius: 12px;
-		color: white;
-		display: none;
-		left: var(--sidebar-width);
-		position: absolute;
-		text-align: center;
-		top: 1rem;
-		width: 15rem;
-	}
-	
-	.language-options.open
-	{
-		display: block;
-	}
-	
-	.lang-opt
-	{
-		cursor: pointer;
-		line-height: 3rem;
-	}
-	
-	.lang-opt:hover, .lang-opt.act
-	{
-		background-color: var(--grad2);
-		border-radius: 12px;
-		color: black;
-	}
-	
-	#lang-btn
-	{
-		cursor: pointer;
-		position: absolute;
-		right: 6rem;
-		text-align: right;
-		font-size: 11px;
-        line-height: 60px;
 	}
 	
 	.platformLogo
@@ -721,7 +681,7 @@
 	{
 		color: #ffffff;
 		align-items: flex-end;
-		bottom: 0;
+		bottom: 0.5rem;
 		display: flex;
 		justify-content: space-evenly;
 		left: 0;
@@ -776,15 +736,13 @@
 	
 	.settingsSubMenu
 	{
-		background-color: var(--grad1);
-		border-radius: 12px;
-		bottom: 3.5rem;
-		color: #ffffff;
-		cursor: pointer;
 		display: none;
+		background-color: var(--grad1);
+		padding: 1rem;
+		border-radius: 12px;
+		bottom: 3rem;
+		color: #ffffff;
 		font-size: 16px;
-		padding-bottom: 2rem;
-		padding-right: 2rem;
 		position: fixed;
 		left: 1rem;
 		text-align: left;
@@ -800,14 +758,24 @@
 	.settingsSubMenu div
 	{
 		cursor: pointer;
+		background-color: var(--grad1);
 		height: 3rem;
-		margin-left: 1.5rem;
 		padding-bottom: 0.5rem;
 		padding-top: 0.5rem;
 		text-align: left;
 		transition: all 0.5s ease;
 		width: max-content;
 		z-index: 99;
+	}
+
+	.settingsSubMenu div:hover
+	{
+		background-color: var(--grad2);
+	}
+	
+	.settingsSubMenu div i
+	{
+		padding-top: 0.1rem;
 	}
 	
 	.language-options
@@ -833,6 +801,50 @@
 		background-color: var(--grad2);
 		border-radius: 12px;
 		color: black;
+	}
+	
+	.language-options
+	{
+		background-color: var(--grad1);
+		border-radius: 12px;
+		color: white;
+		display: none;
+		left: var(--sidebar-width);
+		position: absolute;
+		text-align: center;
+		top: 1rem;
+		width: 15rem;
+	}
+	
+	.language-options.open
+	{
+		display: block;
+	}
+	
+	.lang-opt
+	{
+		cursor: pointer;
+		line-height: 3rem;
+	}
+	
+	.lang-opt:hover, .lang-opt.act
+	{
+		background-color: var(--grad2);
+		border-radius: 12px;
+		color: black;
+	}
+	
+	#lang-btn
+	{
+		font-size: 16px;
+	}
+	
+	#lang-btn-div
+	{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
 	}
 
 	
@@ -949,11 +961,9 @@
     .sidebar .sidebar-content i
     {
         color: #fff;
-        height: 60px;
         min-width: 30px;
         font-size: 28px;
         text-align: center;
-        line-height: 60px;
     }
     
     .sidebar .sidebar-content .nav-list .nav-settings
