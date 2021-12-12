@@ -23,6 +23,7 @@ let sidebar = document.querySelector(".sidebar");
 let closeBtn = document.querySelector("#sidebar-btn");
 let searchBtn = document.querySelector(".bx-search");
 let searchBar = document.querySelector("#searchAcc");
+let settingsSubMenu = document.querySelector(".settingsSubMenu");
 let langBtn = document.querySelector("#lang-btn");
 let langOpt = document.querySelector(".language-options");
 let viewMain = document.querySelector("#viewMain");
@@ -61,6 +62,10 @@ document.onkeydown = (e)=> {
 /*********************************************************************************/
 /* Element Actions	                                                           */
 /*********************************************************************************/
+
+function showSettingsSubmenu(){
+	settingsSubMenu.classList.toggle("open");
+}
 
 function deletePlayer(membershipId){
 	document.getElementById("acc-" + membershipId).parentNode.removeChild(document.getElementById("acc-" + membershipId));
