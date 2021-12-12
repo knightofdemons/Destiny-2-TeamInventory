@@ -30,9 +30,7 @@
 		<ul class="nav-list">
 			<li>
 				<div class="search-input">
-					<i class='bx bx-search' id="searchIcon"></i>
 					<input type="search" id="searchAcc" placeholder="Search Destiny-Account...">
-					<span class="tooltip">Search</span>
 					<ul>
 						<div class="autocom-box">
 							<!-- searchresults will be inserted here -->
@@ -74,16 +72,16 @@
 						<div class="lang-opt" id="zh-cht" onclick='setLang("zh-cht")'><span class="flag-icon flag-icon-zh-cht"></span>&nbsp; 繁體中文</div>
 					</div>
 				<div class='settingsSubMenuBtns' onClick='clearData()'><i id='settingsClearData' class='bx bxs-trash'></i>&nbsp; Clear cached data</div>
-				<div class='settingsSubMenuBtns' onClick='document.querySelector(".settingsThemes").classList.toggle("open")'><i id='settingsThemesBtn' class='bx bxs-square-rounded settingsThemes'></i>&nbsp; Themes</div>
+				<div class='settingsSubMenuBtns' onClick='showTheme()'><i id='settingsThemesBtn' class='bx bxs-square-rounded'></i>&nbsp; Themes</div>
 					<div class="settingsThemes">
-							<div class="theme-opt act" id='red' onclick='setTheme(this)'><i class='bx bxs-square-rounded settingsThemes'></i></div>
-							<div class="theme-opt" id='blue' onclick='setTheme(this)'><i class='bx bxs-square-rounded settingsThemes'></i></div>
-							<div class="theme-opt" id='green' onclick='setTheme(this)'><i class='bx bxs-square-rounded settingsThemes'></i></div>
-							<div class="theme-opt" id='yellow' onclick='setTheme(this)'><i class='bx bxs-square-rounded settingsThemes'></i></div>
-							<div class="theme-opt" id='orange' onclick='setTheme(this)'><i class='bx bxs-square-rounded settingsThemes'></i></div>
-							<div class="theme-opt" id='purple' onclick='setTheme(this)'><i class='bx bxs-square-rounded settingsThemes'></i></div>
-							<div class="theme-opt" id='black' onclick='setTheme(this)'><i class='bx bxs-square-rounded settingsThemes'></i></div>
-							<div class="theme-opt" id='white' onclick='setTheme(this)'><i class='bx bxs-square-rounded settingsThemes'></i></div>
+							<div class="theme-opt act" id='red' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+							<div class="theme-opt" id='blue' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+							<div class="theme-opt" id='green' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+							<div class="theme-opt" id='yellow' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+							<div class="theme-opt" id='orange' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+							<div class="theme-opt" id='purple' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+							<div class="theme-opt" id='black' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
+							<div class="theme-opt" id='white' onclick='setTheme(this)'><i class='bx bxs-square-rounded'></i></div>
 						</div>
 				<div class='settingsSubMenuBtns'><i id='settingsIconsize' class='bx bxs-square-rounded'></i>&nbsp; Iconsize</div>
 			</div>

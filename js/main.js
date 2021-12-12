@@ -234,10 +234,39 @@ function clickLogin() {
 	location.reload();
 }
 
+function showTheme() {
+	document.querySelector(".settingsThemes").classList.toggle("open")
+}
+
 function setTheme(element) {
-	document.querySelector(".theme-opt").classList.remove("act");
+	document.querySelector(".theme-opt.act").classList.remove("act");
 	element.classList.add("act");
-	console.log(element.id);
+	
+	if(element.id == "red"){
+		document.documentElement.style.setProperty('--grad0', "#FAACA8");
+		document.documentElement.style.setProperty('--grad1', "#DDD6F3");		
+	}else if(element.id == "blue"){
+		document.documentElement.style.setProperty('--grad0', "#8EC5FC");
+		document.documentElement.style.setProperty('--grad1', "#E0C3FC");		
+	}else if(element.id == "green"){
+		document.documentElement.style.setProperty('--grad0', "#85FFBD");
+		document.documentElement.style.setProperty('--grad1', "#FFFB7D");
+	}else if(element.id == "yellow"){
+		document.documentElement.style.setProperty('--grad0', "#faf6de");
+		document.documentElement.style.setProperty('--grad1', "#FFD700");
+	}else if(element.id == "orange"){
+		document.documentElement.style.setProperty('--grad0', "#FBAB7E");
+		document.documentElement.style.setProperty('--grad1', "#F7CE68");
+	}else if(element.id == "purple"){
+		document.documentElement.style.setProperty('--grad0', "#393956");
+		document.documentElement.style.setProperty('--grad1', "#161627");
+	}else if(element.id == "black"){
+		document.documentElement.style.setProperty('--grad0', "rgba(184,184,184,1)");
+		document.documentElement.style.setProperty('--grad1', "rgba(255,255,255,1)");
+	}else if(element.id == "white"){
+		document.documentElement.style.setProperty('--grad0', "rgba(31,31,31,1)");
+		document.documentElement.style.setProperty('--grad1', "rgba(42,14,6,1)");
+	}
 }
 
 

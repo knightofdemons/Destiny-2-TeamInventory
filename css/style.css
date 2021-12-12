@@ -67,7 +67,7 @@
 	h3
 	{
         color: #fff;
-        font-size: 1rem;
+        font-size: 32px;
         font-weight: 400;
         text-align: left;
 		padding-bottom: 1rem;
@@ -211,6 +211,11 @@
         float: left;
     }
 	
+	.flexbreak {
+		flex-basis: 100%;
+		height: 0;
+		break-after: always; 
+	}
 	.heading {
 		color: #fff;
 		font-size: 1.5rem;
@@ -701,6 +706,10 @@
 		width: max-content;
 		z-index: 99;
 	}
+	.settingsSubMenuBtns i
+	{
+		font-size: 28px;
+	}
 	
 	#settingsBtnCog
 	{
@@ -743,7 +752,7 @@
 		border-radius: 12px;
 		bottom: 3rem;
 		color: #ffffff;
-		font-size: 16px;
+        font-size: 16px;
 		position: fixed;
 		left: 1rem;
 		text-align: left;
@@ -801,23 +810,108 @@
 
 	.settingsThemes
 	{
-		display:none;
+		display: none;
+		background-color: var(--grad1);
+		border-radius: 12px;
+		width: 16rem;
+		left: 15rem;
+		bottom: 3rem;
+		position: fixed;
+		padding: 1rem;
+	}
+	
+	.settingsThemes #red i
+	{
+		background-color: #FAACA8;
+		background-image: linear-gradient(19deg, #FAACA8 0%, #DDD6F3 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #blue i
+	{
+		background-color: #8EC5FC;
+		background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #green i
+	{
+		background-color: #85FFBD;
+		background-image: linear-gradient(45deg, #85FFBD 0%, #FFFB7D 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #yellow i
+	{
+		background-color: #FBDA61;
+		background-image: linear-gradient(45deg, #FBDA61 0%, #FFD700 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #orange i
+	{
+		background-color: #FBAB7E;
+		background-image: linear-gradient(62deg, #FBAB7E 0%, #F7CE68 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #purple i
+	{
+		background-color: #85FFBD;
+		background-image: linear-gradient(45deg, #393956 0%, #161627 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #black i
+	{
+		background: rgb(184,184,184);
+		background: linear-gradient(90deg, rgba(184,184,184,1) 0%, rgba(255,255,255,1) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #white i
+	{
+		background: rgb(31,31,31);
+		background: linear-gradient(90deg, rgba(31,31,31,1) 0%, rgba(42,14,6,1) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
 	}
 	
 	.settingsThemes.open
 	{
-		display:block;
+		display: flex;
+		flex-wrap: wrap;
 	}
 	
 	.settingsThemes i
 	{
 		cursor: pointer;
-		border: 2px solid white;
+		border-radius: 6px;
+		font-size: 40px;
+		box-shadow:inset 0px 0px 0px 4px #fff;
+		margin: 0.5rem;
+	}
+	
+	.settingsThemes i:hover
+	{
+		box-shadow:inset 0px 0px 0px 4px gray;
 	}
 	
 	#settingsThemesBtn
 	{
-		color: var(--grad1);
+		background: var(--grad0);
+		background: linear-gradient(90deg, var(--grad0) 0%, var(--grad1) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		box-shadow:inset 0px 0px 0px 4px #fff;
+		border-radius: 6px;
 	}
 	
 /*********************************************************************************/
@@ -934,7 +1028,6 @@
     .sidebar .sidebar-content i
     {
         min-width: 30px;
-        font-size: 28px;
         text-align: center;
     }
     
@@ -1002,7 +1095,7 @@
         border: none;
         border-radius: 12px;
         transition: all 0.5s ease;
-        background: #1d1b31;
+        background: var(--grad1);
     }
     
     .sidebar.open input
@@ -1016,21 +1109,16 @@
         position: absolute;
 		right: -10px;
 		font-size: 22px;
-		background: #1d1b31;
+		background: var(--grad1);
 		color: #fff;
     }
     
-    .sidebar.open .bx-search:hover
+    .bx-search:hover
     {
-        background: #1d1b31;
+        background: var(--grad1);
         color: #fff;
     }
     
-    .sidebar .sidebar-content .bx-search:hover
-    {
-        background: #fff;
-        color: #11101d;
-    }
     
     .sidebar .sidebar-content li a
     {
@@ -1041,7 +1129,7 @@
         align-items: center;
         text-decoration: none;
         transition: all 0.4s ease;
-        background: #11101d;
+        background: var(--grad1);
         overflow: hidden;
     }
     
