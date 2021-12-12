@@ -679,15 +679,27 @@
 	
 	.settingsBtns
 	{
-		color: #ffffff;
-		align-items: flex-end;
-		bottom: 0.5rem;
 		display: flex;
 		justify-content: space-evenly;
+		align-items: flex-end;
+		color: #ffffff;
+		bottom: 0.5rem;
 		left: 0;
-		position: fixed;
 		right: 0;
+		position: fixed;
 		width: var(--sidebar-width);
+	}
+	
+	.settingsSubMenuBtns
+	{
+		cursor: pointer;
+		background-color: var(--grad1);
+		padding-bottom: 0.5rem;
+		padding-top: 0.5rem;
+		text-align: left;
+		transition: all 0.5s ease;
+		width: max-content;
+		z-index: 99;
 	}
 	
 	#settingsBtnCog
@@ -739,27 +751,16 @@
 		z-index: 98;
 	}
 	
+	.settingsSubMenu div:not(.settingsSubMenu .language-options):hover 
+	{
+		cursor: pointer;
+		border-radius: 6px;
+		color: var(--hovercolor);
+	}
+	
 	.settingsSubMenu.open
 	{
 		display: block;
-	}
-	
-	.settingsSubMenu div
-	{
-		cursor: pointer;
-		background-color: var(--grad1);
-		padding-bottom: 0.5rem;
-		padding-top: 0.5rem;
-		text-align: left;
-		transition: all 0.5s ease;
-		width: max-content;
-		z-index: 99;
-	}
-
-	.settingsSubMenu div:hover
-	{
-		background-color: var(--grad2);
-		border-radius: 6px;
 	}
 	
 	.settingsSubMenu div i
@@ -798,6 +799,26 @@
 		width: 100%;
 	}
 
+	.settingsThemes
+	{
+		display:none;
+	}
+	
+	.settingsThemes.open
+	{
+		display:block;
+	}
+	
+	.settingsThemes i
+	{
+		cursor: pointer;
+		border: 2px solid white;
+	}
+	
+	#settingsThemesBtn
+	{
+		color: var(--grad1);
+	}
 	
 /*********************************************************************************/
 /* Sidebar                                                                       */

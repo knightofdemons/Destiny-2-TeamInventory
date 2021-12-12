@@ -193,6 +193,8 @@ function setLang(lang) {
 	document.getElementById(lang).classList.toggle("act",true);
 	langBtn.classList.replace(langBtn.classList.item(1), "flag-icon-"+lang);
 	// remove output & local storage that depends on language (otherwise new values would be pushed to old)
+	document.querySelector(".settingsSubMenu").style.display = "none";
+	document.querySelector(".language-options").style.display = "none";
 	document.getElementById("viewMain").innerHTML = "";
 	document.getElementById("playerBucket").innerHTML ="";
 	localStorage.removeItem("manifestPaths");
@@ -205,6 +207,36 @@ function setLang(lang) {
 	localStorage.setItem("lang", JSON.stringify(lang));
 	// reload manifest
 	InitData();
+}
+
+function clearData() {
+	document.querySelector(".settingsSubMenu").classList.toggle("open");
+	document.querySelector(".language-options").classList.remove("open");
+	document.getElementById("viewMain").innerHTML = "";
+	document.getElementById("playerBucket").innerHTML ="";
+	localStorage.clear();
+	// save lang
+	localStorage.setItem("lang", JSON.stringify(lang));
+	// reload page
+	location.reload();
+}
+
+function clickLogout() {
+	document.querySelector(".settingsSubMenu").classList.toggle("open");
+	document.querySelector(".language-options").classList.remove("open");
+	localStorage.removeItem("oauthToken");
+		document.querySelector("#settingsLogin").style.display = 'flex';
+		document.querySelector("#settingsLogout").style.display = 'none';
+}
+
+function clickLogin() {
+	location.reload();
+}
+
+function setTheme(element) {
+	document.querySelector(".theme-opt").classList.remove("act");
+	element.classList.add("act");
+	console.log(element.id);
 }
 
 
