@@ -20,83 +20,75 @@
 															<span></span><span></span><span></span><span></span><a>Login</a></i></div>
 		<center><i class="bx bx-exit" style="font-size:44;" onclick='document.getElementById("loginFrame").parentNode.removeChild(document.getElementById("loginFrame")); InitData();'></i></center>
 	</div>
-	<div class='settingsBar'>
-		<div id='settingsBtn'><i class='bx bx-cog'></i></div>
-		<div class='settingsSubMenu'>
-			<div><span class="flag-icon flag-icon-en lang-btn" id="lang-btn"></span></div>
-				<div class="language-options">
-					<div class="lang-opt" id="de" onclick='setLang("de")'><span class="flag-icon flag-icon-de"></span>&nbsp; Deutsch</div>
-					<div class="lang-opt act" id="en" onclick='setLang("en")'><span class="flag-icon flag-icon-en"></span>&nbsp; English</div>
-					<div class="lang-opt" id="es" onclick='setLang("es")'><span class="flag-icon flag-icon-es"></span>&nbsp; Español</div>
-					<div class="lang-opt" id="es-mx" onclick='setLang("es-mx")'><span class="flag-icon flag-icon-es-mx"></span>&nbsp; Español (México)</div>
-					<div class="lang-opt" id="fr" onclick='setLang("fr")'><span class="flag-icon flag-icon-fr"></span>&nbsp; Français</div>
-					<div class="lang-opt" id="it" onclick='setLang("it")'><span class="flag-icon flag-icon-it"></span>&nbsp; Italiano</div>
-					<div class="lang-opt" id="ja" onclick='setLang("ja")'><span class="flag-icon flag-icon-ja"></span>&nbsp; 日本語</div>
-					<div class="lang-opt" id="ko" onclick='setLang("ko")'><span class="flag-icon flag-icon-ko"></span>&nbsp; 한국어</div>
-					<div class="lang-opt" id="pl" onclick='setLang("pl")'><span class="flag-icon flag-icon-pl"></span>&nbsp; Polski</div>
-					<div class="lang-opt" id="pt-br" onclick='setLang("pt-br")'><span class="flag-icon flag-icon-pt-br"></span>&nbsp; Português (Brasil)</div>
-					<div class="lang-opt" id="ru" onclick='setLang("ru")'><span class="flag-icon flag-icon-ru"></span>&nbsp; Русский</div>
-					<div class="lang-opt" id="zh-chs" onclick='setLang("zh-chs")'><span class="flag-icon flag-icon-zh-chs"></span>&nbsp; 简体中文</div>
-					<div class="lang-opt" id="zh-cht" onclick='setLang("zh-cht")'><span class="flag-icon flag-icon-zh-cht"></span>&nbsp; 繁體中文</div>
+<div class="sidebar open">
+	<div class="sidebar-content">
+		<div class="sidebar-logo-details">
+			<img src="css/images/ico/favicon.ico"></img>
+			<div class="sidebar-logo_name">&nbsp; D2 TeamInv</div>
+			<i class="bx bx-menu" id="sidebar-btn"></i>
+		</div>
+		<ul class="nav-list">
+			<li>
+				<div class="search-input">
+					<i class='bx bx-search' id="searchIcon"></i>
+					<input type="search" id="searchAcc" placeholder="Search Destiny-Account...">
+					<span class="tooltip">Search</span>
+					<ul>
+						<div class="autocom-box">
+							<!-- searchresults will be inserted here -->
+						</div>
+					</ul>
 				</div>
-			<div><i id='settingsClearData' class='bx bxs-trash'></i>&nbsp; Clear cached data</div>
-			<div><i id='settingsThemes' class='bx bxs-square-rounded'></i>&nbsp; Themes</div>
-			<div><i id='settingsLogin' class='bx bx-log-in'></i><i id='settingsLogout' class='bx bx-log-out'></i></div>
+			</li>
+		</ul>
+		<ul class="nav-symbols">
+			<a onclick="jumpTo('exoticWeapons')"><img src="css/images/engram.png"></img></a>
+			<a onclick="jumpTo('characterItems')"><img src="css/images/inventory.png"></img></a>
+			<a onclick="jumpTo('vaultItems')"><img src="css/images/vault.png"></img></a>
+		</ul>
+		<h3><i class='bx bx-bookmarks'></i></h3>
+		<ul class="nav-list">
+			<button onclick="buttonClick('4611686018471653494', '3')">Add Hühnchen</button> 
+			<button onclick="buttonClick('4611686018489703844', '3')">Add Quaithe</button> 
+			<button onclick="buttonClick('4611686018491598431', '3')">Add Drasuk</button> 
+			
+			<ul class="playerBucket" id="playerBucket">
+			</ul>
+		</ul>  
+		<div class='settingsBar'>
+			<div class='settingsSubMenu'>
+				<div><span class="flag-icon flag-icon-en lang-btn" id="lang-btn"></span></div>
+					<div class="language-options">
+						<div class="lang-opt" id="de" onclick='setLang("de")'><span class="flag-icon flag-icon-de"></span>&nbsp; Deutsch</div>
+						<div class="lang-opt act" id="en" onclick='setLang("en")'><span class="flag-icon flag-icon-en"></span>&nbsp; English</div>
+						<div class="lang-opt" id="es" onclick='setLang("es")'><span class="flag-icon flag-icon-es"></span>&nbsp; Español</div>
+						<div class="lang-opt" id="es-mx" onclick='setLang("es-mx")'><span class="flag-icon flag-icon-es-mx"></span>&nbsp; Español (México)</div>
+						<div class="lang-opt" id="fr" onclick='setLang("fr")'><span class="flag-icon flag-icon-fr"></span>&nbsp; Français</div>
+						<div class="lang-opt" id="it" onclick='setLang("it")'><span class="flag-icon flag-icon-it"></span>&nbsp; Italiano</div>
+						<div class="lang-opt" id="ja" onclick='setLang("ja")'><span class="flag-icon flag-icon-ja"></span>&nbsp; 日本語</div>
+						<div class="lang-opt" id="ko" onclick='setLang("ko")'><span class="flag-icon flag-icon-ko"></span>&nbsp; 한국어</div>
+						<div class="lang-opt" id="pl" onclick='setLang("pl")'><span class="flag-icon flag-icon-pl"></span>&nbsp; Polski</div>
+						<div class="lang-opt" id="pt-br" onclick='setLang("pt-br")'><span class="flag-icon flag-icon-pt-br"></span>&nbsp; Português (Brasil)</div>
+						<div class="lang-opt" id="ru" onclick='setLang("ru")'><span class="flag-icon flag-icon-ru"></span>&nbsp; Русский</div>
+						<div class="lang-opt" id="zh-chs" onclick='setLang("zh-chs")'><span class="flag-icon flag-icon-zh-chs"></span>&nbsp; 简体中文</div>
+						<div class="lang-opt" id="zh-cht" onclick='setLang("zh-cht")'><span class="flag-icon flag-icon-zh-cht"></span>&nbsp; 繁體中文</div>
+					</div>
+				<div><i id='settingsClearData' class='bx bxs-trash'></i>&nbsp; Clear cached data</div>
+				<div><i id='settingsThemes' class='bx bxs-square-rounded'></i>&nbsp; Themes</div>
+			</div>
+			<div class='settingsBtns'>
+				<div class='settingsBtn' id='settingsBtn'>
+					<i class='bx bx-cog'></i>
+				</div>
+				<div class='settingsBtn'>
+					<i id='settingsLogin' class='bx bx-log-in'></i>
+					<i id='settingsLogout' class='bx bx-log-out'></i>
+				</div>
+			</div>
 		</div>
 	</div>
-	<div class="sidebar open">
-  <div class="sidebar-content">
-  <div class="sidebar-logo-details">
-    <img src="css/images/ico/favicon.ico"></img>
-    <div class="sidebar-logo_name">&nbsp; D2 TeamInv</div>
-    <i class="bx bx-menu" id="sidebar-btn"></i>
-  </div>
-  <ul class="nav-list">
-    <li>
-		<div class="search-input">
-			<i class='bx bx-search' id="searchIcon"></i>
-			<input type="search" id="searchAcc" placeholder="Search Destiny-Account...">
-			<span class="tooltip">Search</span>
-			<ul>
-				<div class="autocom-box">
-					<!-- searchresults will be inserted here -->
-				</div>
-			</ul>
-		</div>
-    </li>
-    <li><h3><i class='bx bx-bookmarks'></i></h3></li>
-		<button onclick="buttonClick('4611686018471653494', '3')">Add Hühnchen</button> 
-		<button onclick="buttonClick('4611686018489703844', '3')">Add Quaithe</button> 
-		<button onclick="buttonClick('4611686018491598431', '3')">Add Drasuk</button> 
-    <ul class="playerBucket" id="playerBucket">
-    </ul>
-  </ul>  
-<div class="sidebar-settings">
-    <ul class="nav-settings" style="display: none;">
-      <li><h3>Spieler-Details</h3></li>
-      <li>
-        <a onclick="jumpTo('exoticWeapons')">
-          <i class='bx bxs-user-detail' ></i>
-          <span class="links_name">Exotische Waffen</span>
-        </a>
-        <a onclick="jumpTo('exoticArmor')">
-          <i class='bx bxs-user-detail' ></i>
-          <span class="links_name">Exotische Ausr&uuml;stung</span>
-        </a>
-        <a onclick="jumpTo('characterItems')">
-          <i class='bx bxs-user-detail' ></i>
-          <span class="links_name">Charakter Items</span>
-        </a>
-        <a onclick="jumpTo('vaultItems')">
-          <i class='bx bxs-user-detail' ></i>
-          <span class="links_name">Tresor Items</span>
-        </a>
-      </li>
-    </ul>
-  </div>
-  </div>
 </div>
-<div id="Main" class="main-content">
+<div id="Main" class="Main">
 	<div id="viewMain" class="viewMain open">
 	</div>
 	<div id="viewFireteam" class="viewFireteam">Getting Fireteam ... Loading Playerdata ...
