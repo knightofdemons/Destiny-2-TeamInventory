@@ -182,6 +182,14 @@ async function InitData(){
 			const resItemDefinitions = await getData(maniPaths.itemDefinitions, false);
 			const resItemBucketDetails = await getData(maniPaths.itemBucketDetails, false);
 			const resItemCategoryDetails = await getData(maniPaths.itemCategoryDetails, false);
+			// get details for catalysts
+			for (let resItemDef in resItemDefinitions) {
+				if (resItemDefinitions[resItemDef]['inventory']['bucketTypeHash'] === 2422292810 && resItemDefinitions[resItemDef]['inventory']['recoveryBucketTypeHash'] === 215593132 && resItemDefinitions[resItemDef]['inventory']['tierTypeName'] === "Exotic" && resItemDefinitions[resItemDef]['perks'][0] !== undefined && resItemDefinitions[resItemDef]['perks'][0]['perkHash'] !== undefined && resItemDefinitions[resItemDef]['itemType'] === 19) {
+					(catDefinitions.name = catDefinitions.name || []).push(resItemDefinitions[resItemDef]['displayProperties']['name']);
+					(catDefinitions.id = catDefinitions.id || []).push(resItemDef);
+				}
+			}
+			
 			// for every item
 				for (let resItemDef in resItemDefinitions) {
 					// filter only exotic weapons & every item once; otherwise, resItemDefinitions[resItemDef].itemCategoryHashes can be undefined
@@ -212,30 +220,38 @@ async function InitData(){
 							(itemDefinitionsTmp.subcategoryHash = itemDefinitionsTmp.subcategoryHash || []).push(0);
 							(itemDefinitionsTmp.subcategory = itemDefinitionsTmp.subcategory || []).push("");
 						}
-						
 						if (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] !== undefined && resItemDefinitions[resItemDef]['collectibleHash'] !== undefined && (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
 							(itemDefinitionsTmp.exo = itemDefinitionsTmp.exo || []).push(1);
+							if ([buckets[0], buckets[1], buckets[2]].includes(resItemDefinitions[resItemDef]['inventory']['bucketTypeHash'])) {
+								(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(catDefinitions.id[catDefinitions.name.findIndex(v => v.includes(resItemDefinitions[resItemDef]['displayProperties']['name']))]);
+							} else {
+								(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(0);
+							}							
 						} else {
 							(itemDefinitionsTmp.exo = itemDefinitionsTmp.exo || []).push(0);
-						}
+							(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(0);
+						}						
 					}
 				};
 		
-		// sort itemDefinitionsTmp by .type
-			let type = itemDefinitionsTmp.type;
-			let name = itemDefinitionsTmp.name;
-			let id = itemDefinitionsTmp.id;
-			let iconURL = itemDefinitionsTmp.iconURL;
-			let collectibleID = itemDefinitionsTmp.collectibleID;
-			let bucketHash = itemDefinitionsTmp.bucketHash;
-			let bucket = itemDefinitionsTmp.bucket;
-			let bucketOrder = itemDefinitionsTmp.bucketOrder;
-			let categoryHash = itemDefinitionsTmp.categoryHash;
-			let category = itemDefinitionsTmp.category;
-			let subcategoryHash = itemDefinitionsTmp.subcategoryHash;
-			let subcategory = itemDefinitionsTmp.subcategory;
-			let exo = itemDefinitionsTmp.exo;
-			itemDefinitions = sortArrays({type,name,id,iconURL,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory,exo});
+			// sort itemDefinitionsTmp by .type
+				let type = itemDefinitionsTmp.type;
+				let name = itemDefinitionsTmp.name;
+				let id = itemDefinitionsTmp.id;
+				let iconURL = itemDefinitionsTmp.iconURL;
+				let collectibleID = itemDefinitionsTmp.collectibleID;
+				let bucketHash = itemDefinitionsTmp.bucketHash;
+				let bucket = itemDefinitionsTmp.bucket;
+				let bucketOrder = itemDefinitionsTmp.bucketOrder;
+				let categoryHash = itemDefinitionsTmp.categoryHash;
+				let category = itemDefinitionsTmp.category;
+				let subcategoryHash = itemDefinitionsTmp.subcategoryHash;
+				let subcategory = itemDefinitionsTmp.subcategory;
+				let exo = itemDefinitionsTmp.exo;
+				let catHash = itemDefinitionsTmp.catHash;
+				itemDefinitions = sortArrays({type,name,id,iconURL,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory,exo,catHash});
+		
+		
 		
 		// save all initData to browserstorage
 		localStorage.setItem("statDefinitions", JSON.stringify(statDefinitions));
@@ -254,36 +270,6 @@ async function InitData(){
 			addPlayer(currentPlayer, "viewMain");
 		}
 	}		
-}
-
-
-/*********************************************************************************/
-/* view Fireteam 	                                                             */
-/*********************************************************************************/
-async function getFireteam(){
-	let temp = JSON.parse(localStorage.getItem("oauthToken"));
-	if(!temp){
-		viewFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>";
-	}else{
-		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
-		temp = await getData(rqURL);
-			memberID = temp["Response"]["profiles"][0]["membershipId"];
-			memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
-			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
-			temp = await getData(rqURL);
-				if (!temp["Response"]["profileTransitoryData"]["data"]){
-					viewFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
-				}else{
-					viewFireteam.innerHTML = "";
-					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
-						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
-						tmpProf = await getData(rqURL);
-						console.log(tmpProf);
-						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
-						addPlayer(currentPlayer, "viewFireteam");
-					}
-				}		
-	}
 }
 
 
@@ -442,7 +428,7 @@ function addPlayer(cP, htmlTarget){
 				for (let b = 3; b < 7; b++) {
 	HTML +=			"<div class='exo-armor-bucket'>";
 					// for every class type (22 = titan, 23 = hunter, 21 = warlock)
-					catHsh = [22,23,21];
+					charClassHash = [22,23,21];
 					for (let c = 0; c < 3; c++) {
 						var hb = 0; // counter for bucket headline
 						var hc = 0; // counter for class headline
@@ -450,7 +436,7 @@ function addPlayer(cP, htmlTarget){
 						// every item...
 						for (let i = 0; i < itemDefinitions.type.length; i++) {
 							// ... that is exo, matches bucket & class
-							if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketHash[i] === buckets[b] && itemDefinitions.categoryHash[i] === catHsh[c]) {
+							if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketHash[i] === buckets[b] && itemDefinitions.categoryHash[i] === charClassHash[c]) {
 							// make headline for first found item	
 								if (hc < 1 && b === 5) {
 	HTML +=							"<div class='headline-armor-class'>" + itemDefinitions.category[i] + "</div>";
@@ -614,5 +600,35 @@ function addPlayer(cP, htmlTarget){
 																		"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
 																	"</a>";
 																"</li>";
+	}
+}
+
+
+/*********************************************************************************/
+/* view Fireteam 	                                                             */
+/*********************************************************************************/
+async function getFireteam(){
+	let temp = JSON.parse(localStorage.getItem("oauthToken"));
+	if(!temp){
+		viewFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>";
+	}else{
+		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
+		temp = await getData(rqURL);
+			memberID = temp["Response"]["profiles"][0]["membershipId"];
+			memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
+			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
+			temp = await getData(rqURL);
+				if (!temp["Response"]["profileTransitoryData"]["data"]){
+					viewFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
+				}else{
+					viewFireteam.innerHTML = "";
+					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
+						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
+						tmpProf = await getData(rqURL);
+						console.log(tmpProf);
+						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
+						addPlayer(currentPlayer, "viewFireteam");
+					}
+				}		
 	}
 }

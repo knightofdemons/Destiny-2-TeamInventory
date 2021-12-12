@@ -8,6 +8,7 @@ let classDefinitions = {};
 let itemDefinitions = {};
 let itemDefinitionsTmp = {};
 let energyDefinitions = {};
+let catDefinitions = {};
 let lang = '';
 let playerlist = {};
 let charStatOrder = [2996146975,392767087,1943323491,1735777505,144602215,4244567218];
