@@ -646,6 +646,7 @@ function addPlayer(cP, htmlTarget){
 /* view Fireteam 	                                                             */
 /*********************************************************************************/
 async function getFireteam(){
+	contentFireteam.innerHTML = "<div class='warning'><a>Loading data from Bungie...</a></div>";
 	let temp = JSON.parse(localStorage.getItem("oauthToken"));
 	if(!temp){
 		fireteamCounter = -1;
@@ -661,12 +662,11 @@ async function getFireteam(){
 					fireteamCounter = 0;
 					contentFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
 				}else{
+					contentFireteam.innerHTML = "";
 					fireteamCounter = temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length;
-					contentFireteam.innerHTML = "<div class='warning'><a>Loading data from Bungie...</a></div>";
 					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
 						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
-						tmpProf = await getData(rqURL);
-						console.log(tmpProf);
+						let tmpProf = await getData(rqURL);
 						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
 						addPlayer(currentPlayer, "contentFireteam");
 					}

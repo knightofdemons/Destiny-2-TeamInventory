@@ -52,10 +52,14 @@ document.onkeydown = (e)=> {
 		{keycode = e.which;}
 	
 	if(keycode == 40 && viewFireteam.classList.contains("open")){
+		sidebar.style.display = "block";
+		sidebar.classList.toggle("open");
 		clearInterval(fireteamInterval);
 		viewFireteam.classList.remove("open");
 		viewMain.classList.add("open");
 	}else if(keycode == 38 && viewMain.classList.contains("open")){
+		sidebar.style.display = "none";
+		sidebar.classList.toggle("open");
 		viewMain.classList.remove("open");
 		viewFireteam.classList.add("open");
 		countDown(60, getFireteam());
@@ -79,7 +83,7 @@ function countDown(i, callback) {
 			timerBar.innerHTML = "<div class='timerBar'><span id='livedot'>&#9679;</span>&nbsp;" +
 								"Live Fireteam - <i class='bx bx-sync'></i> in " + i + "s</div>";
 		}
-        i-- || (countDown(60, getFireteam()));
+        i-- || (clearInterval(fireteamInterval), i=60, countDown(60, getFireteam()));
     }, 1000);
 }
 
