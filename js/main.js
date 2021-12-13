@@ -34,6 +34,7 @@ let viewMain = document.querySelector("#viewMain");
 let viewFireteam = document.querySelector("#viewFireteam");
 let contentFireteam = document.querySelector("#contentFireteam");
 let timerBar = document.querySelector(".timerBar");
+let viewDIM = document.querySelector(".viewDIM");
 let emptyArray = [];
 let myInterval;
 
@@ -51,7 +52,7 @@ document.onkeydown = (e)=> {
 		{keycode = window.event.keyCode;}
 	else if (e)
 		{keycode = e.which;}
-	
+	//Fireteam
 	if(keycode == 40 && viewFireteam.classList.contains("open")){
 		sidebar.style.display = "block";
 		sidebar.classList.toggle("open");
@@ -64,6 +65,18 @@ document.onkeydown = (e)=> {
 		viewMain.classList.remove("open");
 		viewFireteam.classList.add("open");
 		countDown(fireteamTimer, getFireteam());
+		
+	//DIM
+	}else if(keycode == 39 && viewDIM.classList.contains("open")){
+		sidebar.style.display = "none";
+		sidebar.classList.toggle("open");
+		viewMain.classList.remove("open");
+		viewDIM.classList.add("open");
+	}else if(keycode == 37 && viewMain.classList.contains("open")){
+		sidebar.style.display = "none";
+		sidebar.classList.toggle("open");
+		viewMain.classList.remove("open");
+		viewDIM.classList.add("open");
 	}
 }
 
