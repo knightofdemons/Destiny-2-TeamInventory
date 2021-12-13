@@ -402,7 +402,7 @@ function addPlayer(cP, htmlTarget){
 						"</div>" +
 					"</div>" +
 				"</div><br>" +
-				"<div class='heading'>" + 
+				"<div id='anch-exos' class='heading'>" + 
 					vendorDefinitions.name[vendorDefinitions.hash.indexOf(vendorHashList[2])] +
 				"</div>" +
 				"<div class='item-list'>";
@@ -410,7 +410,7 @@ function addPlayer(cP, htmlTarget){
 				// for every bucket (kinetic, energy, power)
 				for (let b = 0; b < 3; b++) {
 					var hb = 0; // counter for bucket headline
-	HTML +=			"<div id='anch-exos' class='exo-weapons'>";
+	HTML +=			"<div class='exo-weapons'>";
 					// every item...
 					for (let i = 0; i < itemDefinitions.type.length; i++) {
 						// ... that is exo & matches bucket
@@ -593,13 +593,13 @@ function addPlayer(cP, htmlTarget){
 						
 				}
 	HTML +=		"<br style='clear:left'><br>" + 
-				"<div class='heading'>" + 
+				"<div id='anch-vault' class='heading'>" + 
 					vendorDefinitions.name[vendorDefinitions.hash.indexOf(vendorHashList[0])] +
 				"</div>";
 				// vault items
 				// for buckets 2 - 9 (all weapons & armor slots)
 				for (let b = 0; b < 8; b++) {
-	HTML +=			"<div id='anch-vault' class='vaultItems'>";
+	HTML +=			"<div class='vaultItems'>";
 						// for every item in vault
 						for (item in cP.profileInventory) {
 							if (cP.profileInventory[item] !== undefined) {
@@ -642,15 +642,15 @@ function addPlayer(cP, htmlTarget){
 	}
 }
 
-
 /*********************************************************************************/
 /* view Fireteam 	                                                             */
 /*********************************************************************************/
 async function getFireteam(){
 	let temp = JSON.parse(localStorage.getItem("oauthToken"));
 	if(!temp){
-		viewFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>"; +
-									"<div class='timerBar'></div>";
+		fireteamCounter = -1;
+		contentFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>";
+		timerBar.innerHTML 		=  "You're not logged in - <i class='bx bx-sync'></i> in 00s";
 	}else{
 		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
 		temp = await getData(rqURL);
@@ -659,16 +659,19 @@ async function getFireteam(){
 			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
 			temp = await getData(rqURL);
 				if (!temp["Response"]["profileTransitoryData"]["data"]){
-					viewFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
-					timerBar.innerHTML = 	 "<span id='livedot'>&#9679;</span>Live Fireteam - <i class='bx bx-sync'></i> in 00s";
+					fireteamCounter = 0;
+					contentFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
+					timerBar.innerHTML 		= "<span id='offdot'>&#9679;</span>Offline (no data) - <i class='bx bx-sync'></i> in 00s";
 				}else{
-					viewFireteam.innerHTML = "<div class='warning'><a>Loading data from Bungie...</a></div><div class='timerBar'></div>";
+					fireteamCounter = temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length;
+					contentFireteam.innerHTML = "<div class='warning'><a>Loading data from Bungie...</a></div>";
+					timerBar.innerHTML 		=  "<span id='livedot'>&#9679;</span>Live Fireteam - <i class='bx bx-sync'></i> in 00s";
 					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
 						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
 						tmpProf = await getData(rqURL);
 						console.log(tmpProf);
 						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
-						addPlayer(currentPlayer, "viewFireteam");
+						addPlayer(currentPlayer, "contentFireteam");
 					}
 				}		
 	}

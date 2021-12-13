@@ -14,6 +14,8 @@ let playerlist = {};
 let charStatOrder = [2996146975,392767087,1943323491,1735777505,144602215,4244567218];
 let buckets = [1498876634,2465295065,953998645,3448274439,3551918588,14239492,20886954,1585787867];
 let vendorHashList = [1037843411, 3989934776, 864211278];
+let fireteamInterval;
+let fireteamCounter;
 
 let searchWrapper = document.querySelector(".search-input");
 let inputBox = searchWrapper.querySelector("#searchAcc");
@@ -29,6 +31,7 @@ let langBtn = document.querySelector("#lang-btn");
 let langOpt = document.querySelector(".language-options");
 let viewMain = document.querySelector("#viewMain");
 let viewFireteam = document.querySelector("#viewFireteam");
+let contentFireteam = document.querySelector("#contentFireteam");
 let timerBar = document.querySelector(".timerBar");
 let emptyArray = [];
 let myInterval;
@@ -65,14 +68,11 @@ document.onkeydown = (e)=> {
 
 
 function countDown(i, callback) {
-    callback = callback || function(){};
-    var fireteamInterval = setInterval(function() {
-        document.querySelector(".timerBar").innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
-		
-		
-		document.querySelector(".timerBar").innerHTML += "<div class='timerBar'><span id='livedot'>&#9679;</span>&nbsp;" +
+    fireteamInterval = setInterval(function() {
+        contentFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
+		timerBar.innerHTML = "<div class='timerBar'><span id='livedot'>&#9679;</span>&nbsp;" +
 															"Live Fireteam - <i class='bx bx-sync'></i> in " + i + "s</div>";
-        i-- || (clearInterval(fireteamInterval), callback());
+        i-- || (countDown(60, getFireteam()));
     }, 1000);
 }
 
