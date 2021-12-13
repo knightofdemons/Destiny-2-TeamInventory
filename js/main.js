@@ -69,9 +69,16 @@ document.onkeydown = (e)=> {
 
 function countDown(i, callback) {
     fireteamInterval = setInterval(function() {
-        contentFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
-		timerBar.innerHTML = "<div class='timerBar'><span id='livedot'>&#9679;</span>&nbsp;" +
-															"Live Fireteam - <i class='bx bx-sync'></i> in " + i + "s</div>";
+		if(fireteamCounter == -1){
+			timerBar.innerHTML = "<div class='timerBar'>" +
+								"You're not logged in - <i class='bx bx-sync'></i> in " + i + "s</div>";			
+		}else if(fireteamCounter == 0){
+			timerBar.innerHTML = "<div class='timerBar'><span id='offdot'>&#9679;</span>&nbsp;" +
+								"Offline (no data) - <i class='bx bx-sync'></i> in " + i + "s</div>";			
+		}else if(fireteamCounter > 0){
+			timerBar.innerHTML = "<div class='timerBar'><span id='livedot'>&#9679;</span>&nbsp;" +
+								"Live Fireteam - <i class='bx bx-sync'></i> in " + i + "s</div>";
+		}
         i-- || (countDown(60, getFireteam()));
     }, 1000);
 }
