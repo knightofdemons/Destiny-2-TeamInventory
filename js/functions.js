@@ -60,7 +60,8 @@ async function checkManifestVersion(language) {
 				'classDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyClassDefinition'], // like [2] -> warlock
 				'energyDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyEnergyTypeDefinition'], // like [6] -> stasis (for armor)
 				'damageTypeDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyDamageTypeDefinition'], // like [6] -> stasis (for weapons)
-				'vendorDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyVendorDefinition'] // like vault
+				'vendorDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyVendorDefinition'], // like vault
+				'recordDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyRecordDefinition'] // records like cats
 			};
 			localStorage.setItem("manifestPaths", JSON.stringify(manifestPaths));
 	}
@@ -119,6 +120,8 @@ async function InitData(){
 		energyDefinitions = JSON.parse(localStorage.getItem("energyDefinitions"));
 		damageTypeDefinitions = JSON.parse(localStorage.getItem("damageTypeDefinitions"));
 		vendorDefinitions = JSON.parse(localStorage.getItem("vendorDefinitions"));
+		recordDefinitions = JSON.parse(localStorage.getItem("recordDefinitions"));
+		
 	}else{
 		// delete (for language change)
 		statDefinitions = {};
@@ -128,6 +131,7 @@ async function InitData(){
 		energyDefinitions = {};
 		damageTypeDefinitions = {};
 		vendorDefinitions = {};
+		recordDefinitions = {};
 		
 		// get details for stats from manifest
 			const resStatDefinitions = await getData(maniPaths.statDefinitions, false);
@@ -177,6 +181,18 @@ async function InitData(){
 					}
 					(vendorDefinitions.hash = vendorDefinitions.hash || []).push(resVendorDefinitions[vendorHashList[i]]['hash']);
 				};
+				
+		// get details for records from manifest (only objectiveHashes)
+			const resRecordDefinitions = await getData(maniPaths.recordDefinitions, false);
+			// for every item
+				for (let resRecordDef in resRecordDefinitions) {
+					if (resRecordDefinitions[resRecordDef]['objectiveHashes'] !== undefined && resRecordDefinitions[resRecordDef]['objectiveHashes'][0] !== undefined) {
+						for (let i=0; i<resRecordDefinitions[resRecordDef]['objectiveHashes'].length; i++) {
+						(recordDefinitions.hash = recordDefinitions.hash || []).push(resRecordDefinitions[resRecordDef]['hash']);
+						(recordDefinitions.objectiveHash = recordDefinitions.objectiveHash || []).push(resRecordDefinitions[resRecordDef]['objectiveHashes'][i]);
+						}
+					}
+				};
 		
 		// get details for items from manifest
 			const resItemDefinitions = await getData(maniPaths.itemDefinitions, false);
@@ -189,7 +205,7 @@ async function InitData(){
 					(catDefinitions.id = catDefinitions.id || []).push(resItemDef);
 				}
 			}
-			
+			var tmpObjectiveNo = 0;
 			// for every item
 				for (let resItemDef in resItemDefinitions) {
 					// filter only exotic weapons & every item once; otherwise, resItemDefinitions[resItemDef].itemCategoryHashes can be undefined
@@ -222,8 +238,14 @@ async function InitData(){
 						}
 						if (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] !== undefined && resItemDefinitions[resItemDef]['collectibleHash'] !== undefined && (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
 							(itemDefinitionsTmp.exo = itemDefinitionsTmp.exo || []).push(1);
+							// for exo weapons
 							if ([buckets[0], buckets[1], buckets[2]].includes(resItemDefinitions[resItemDef]['inventory']['bucketTypeHash'])) {
-								(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(catDefinitions.id[catDefinitions.name.findIndex(v => v.includes(resItemDefinitions[resItemDef]['displayProperties']['name']))]);
+								tmpObjectiveNo = resItemDefinitions[resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'][resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'].length-1]['plugItemHash']]['objectives']['objectiveHashes'];			
+								if (recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1]) > 0) {								
+									(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(recordDefinitions.hash[recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1])]);
+								} else {
+									(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(0);
+								}
 							} else {
 								(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(0);
 							}							
@@ -260,6 +282,7 @@ async function InitData(){
 		localStorage.setItem("energyDefinitions", JSON.stringify(energyDefinitions));
 		localStorage.setItem("damageTypeDefinitions", JSON.stringify(damageTypeDefinitions));
 		localStorage.setItem("vendorDefinitions", JSON.stringify(vendorDefinitions));
+		localStorage.setItem("recordDefinitions", JSON.stringify(recordDefinitions));
 	}
 
 // load recent players from browserstorage
@@ -312,6 +335,7 @@ async function getPlayer(memberID, memberType){
 		// store info in obj playerDetails 
 			playerDetails.charIDs = resProfile['Response']['profile']['data']['characterIds'];
 			playerDetails.collectibles = resProfile['Response']['profileCollectibles']['data']['collectibles'];
+			playerDetails.records = resProfile['Response']['profileRecords']['data']['records'];
 			if(resProfile['Response']['profileInventory']['data']){
 				playerDetails.profileInventory = resProfile['Response']['profileInventory']['data']['items'];
 			}else{
@@ -343,6 +367,7 @@ async function getPlayer(memberID, memberType){
 				(playerDetails.charStats = playerDetails.charStats || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['stats']); // 7 stats: [hash] -> value
 				(playerDetails.charLastPlayed = playerDetails.charLastPlayed || []).push(resProfile['Response']['characters']['data'][playerDetails.charIDs[i]]['dateLastPlayed']); // wollte ich vllt später gebrauchen
 				playerDetails.collectibles = {...playerDetails.collectibles,...resProfile['Response']['characterCollectibles']['data'][playerDetails.charIDs[i]]['collectibles']};
+				playerDetails.records = {...playerDetails.records,...resProfile['Response']['characterRecords']['data'][playerDetails.charIDs[i]]['records']};
 				if(playerDetails.profileInventory){
 					(playerDetails.charInventory = playerDetails.charInventory || []).push(resProfile['Response']['characterInventories']['data'][playerDetails.charIDs[i]]['items']);
 				}else{
@@ -407,17 +432,21 @@ function addPlayer(cP, htmlTarget){
 							else {
 								marker="cross";
 							}
-						// #########################################################################################check if weapons catalyst is achieved
-						//console.log(itemDefinitions.name[i]);
-						//console.log(parseInt(itemDefinitions.catHash[i],10));
-						//	var checkMaster = cP.collectibles[parseInt(itemDefinitions.catHash[i],10)].state;
-						//	var master = "";
+							if (itemDefinitions.catHash[i] > 0 && cP.records[itemDefinitions.catHash[i]] !== undefined) {
+								var checkMaster = cP.records[itemDefinitions.catHash[i]].state;
+							} else {
+								var checkMaster = 2;
+							}
+							var master = "";
 						// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyRecordState.html#schema_Destiny-DestinyRecordState
 						// states can be added! --> all odd numbers = achieved, all even numbers = not achieved
-						//	if (checkMaster % 2 !== 0) {
-						//		console.log("master");
-						//		}
-	HTML +=				"<div class='itemIconContainer'>" +
+							if (checkMaster % 2 == 1) {
+								master=" master";
+								}
+							else {
+								master="";
+							}
+	HTML +=				"<div class='itemIconContainer" + master + "'>" +
 							'<img class="' + marker + '" src="' + itemDefinitions.iconURL[i] + '">' +
 							"<div class='itemIconStatus'>" + 
 									"<img src='css/images/" + marker + ".png'>" +
@@ -620,7 +649,8 @@ function addPlayer(cP, htmlTarget){
 async function getFireteam(){
 	let temp = JSON.parse(localStorage.getItem("oauthToken"));
 	if(!temp){
-		viewFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>";
+		viewFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>"; +
+									"<div class='timerBar'></div>";
 	}else{
 		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
 		temp = await getData(rqURL);
@@ -630,8 +660,9 @@ async function getFireteam(){
 			temp = await getData(rqURL);
 				if (!temp["Response"]["profileTransitoryData"]["data"]){
 					viewFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
+					timerBar.innerHTML = 	 "<span id='livedot'>&#9679;</span>Live Fireteam - <i class='bx bx-sync'></i> in 00s";
 				}else{
-					viewFireteam.innerHTML = "";
+					viewFireteam.innerHTML = "<div class='warning'><a>Loading data from Bungie...</a></div><div class='timerBar'></div>";
 					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
 						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
 						tmpProf = await getData(rqURL);

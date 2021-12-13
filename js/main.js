@@ -29,6 +29,7 @@ let langBtn = document.querySelector("#lang-btn");
 let langOpt = document.querySelector(".language-options");
 let viewMain = document.querySelector("#viewMain");
 let viewFireteam = document.querySelector("#viewFireteam");
+let timerBar = document.querySelector(".timerBar");
 let emptyArray = [];
 let myInterval;
 
@@ -48,21 +49,32 @@ document.onkeydown = (e)=> {
 		{keycode = e.which;}
 	
 	if(keycode == 40 && viewFireteam.classList.contains("open")){
-		clearInterval(myInterval);
+		clearInterval(fireteamInterval);
 		viewFireteam.classList.remove("open");
 		viewMain.classList.add("open");
 	}else if(keycode == 38 && viewMain.classList.contains("open")){
 		viewMain.classList.remove("open");
 		viewFireteam.classList.add("open");
-			document.getElementById("viewFireteam").innerHTML = "";
-			getFireteam();
-			myInterval = setInterval(getFireteam, 60000);
+		countDown(60, getFireteam());
 	}
 }
 
 /*********************************************************************************/
 /* Element Actions	                                                             */
 /*********************************************************************************/
+
+
+function countDown(i, callback) {
+    callback = callback || function(){};
+    var fireteamInterval = setInterval(function() {
+        document.querySelector(".timerBar").innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
+		
+		
+		document.querySelector(".timerBar").innerHTML += "<div class='timerBar'><span id='livedot'>&#9679;</span>&nbsp;" +
+															"Live Fireteam - <i class='bx bx-sync'></i> in " + i + "s</div>";
+        i-- || (clearInterval(fireteamInterval), callback());
+    }, 1000);
+}
 
 function showSettingsSubmenu(){
 	settingsSubMenu.classList.toggle("open");
