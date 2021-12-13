@@ -16,6 +16,7 @@ let buckets = [1498876634,2465295065,953998645,3448274439,3551918588,14239492,20
 let vendorHashList = [1037843411, 3989934776, 864211278];
 let fireteamInterval;
 let fireteamCounter;
+let fireteamTimer = 60;
 
 let searchWrapper = document.querySelector(".search-input");
 let inputBox = searchWrapper.querySelector("#searchAcc");
@@ -62,7 +63,7 @@ document.onkeydown = (e)=> {
 		sidebar.classList.toggle("open");
 		viewMain.classList.remove("open");
 		viewFireteam.classList.add("open");
-		countDown(60, getFireteam());
+		countDown(fireteamTimer, getFireteam());
 	}
 }
 
@@ -71,20 +72,26 @@ document.onkeydown = (e)=> {
 /*********************************************************************************/
 
 
-function countDown(i, callback) {
+function countDown(time, callback) {
     fireteamInterval = setInterval(function() {
 		if(fireteamCounter == -1){
 			timerBar.innerHTML = "<div class='timerBar'>" +
-								"You're not logged in - <i class='bx bx-sync'></i> in " + i + "s</div>";			
+								"You're not logged in - <i onClick='refreshTimer()' class='bx bx-sync'></i> in " + time + "s</div>";			
 		}else if(fireteamCounter == 0){
 			timerBar.innerHTML = "<div class='timerBar'><span id='offdot'>&#9679;</span>&nbsp;" +
-								"Offline (no data) - <i class='bx bx-sync'></i> in " + i + "s</div>";			
+								"Offline (no data) - <i onClick='refreshTimer()' class='bx bx-sync'></i> in " + time + "s</div>";			
 		}else if(fireteamCounter > 0){
 			timerBar.innerHTML = "<div class='timerBar'><span id='livedot'>&#9679;</span>&nbsp;" +
-								"Live Fireteam - <i class='bx bx-sync'></i> in " + i + "s</div>";
+								"Live Fireteam - <i onClick='refreshTimer()' class='bx bx-sync'></i> in " + time + "s</div>";
 		}
-        i-- || (clearInterval(fireteamInterval), i=60, countDown(60, getFireteam()));
+        time-- || (clearInterval(fireteamInterval), time=fireteamTimer, countDown(fireteamTimer, getFireteam()));
     }, 1000);
+}
+
+function refreshTimer() {
+	clearInterval(fireteamInterval);
+	time=fireteamTimer;
+	countDown(fireteamTimer, getFireteam());
 }
 
 function showSettingsSubmenu(){

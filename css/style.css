@@ -679,8 +679,18 @@
 	
 	.timerBar .bx
 	{
-		line-height: 10px;
-		font-size: 1rem;
+		cursor: pointer;
+		line-height: 25px;
+		font-size: 1.5rem;
+		transition-duration: 1s;
+		transition-property: transform;
+	}
+	
+	.timerBar .bx:hover
+	{
+		color: var(--hovercolor);
+		transform: rotate(360deg);
+		-webkit-transform: rotate(360deg);
 	}
 	
 	#livedot{
@@ -738,7 +748,7 @@
 		font-size:32px;
 		color: white;
 		overflow: hidden;
-		transition-duration: 0.8s;
+		transition-duration: 1s;
 		transition-property: transform;
 		z-index: 99;
 	}
