@@ -989,9 +989,22 @@
         border-radius: 6px;
 	}
 	
-	.nav-symbols a:hover
+	.nav-symbols a:nth-child(1):hover
 	{
-		color: var(--hovercolor);
+		box-shadow:inset 0px 0px 9px 12px #ffd700;
+		box-shadow:0px 0px 9px 3px #ffd700;
+	}
+	
+	.nav-symbols a:nth-child(2):hover
+	{
+		box-shadow:inset 0px 0px 9px 12px #663399;
+		box-shadow:0px 0px 9px 6px #663399;
+	}
+	
+	.nav-symbols a:nth-child(3):hover
+	{
+		box-shadow:inset 0px 0px 9px 12px #0a5d00;
+		box-shadow:0px 0px 9px 6px #0a5d00;
 	}
 	
 	.nav-symbols img
