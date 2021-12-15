@@ -17,6 +17,7 @@ let vendorHashList = [1037843411, 3989934776, 864211278];
 let fireteamInterval;
 let fireteamCounter;
 let fireteamTimer = 60;
+let siteSettings = {};
 
 let searchWrapper = document.querySelector(".search-input");
 let inputBox = searchWrapper.querySelector("#searchAcc");
@@ -248,7 +249,7 @@ function setLang(lang) {
 	localStorage.removeItem("itemCategoryDetails");
 	localStorage.removeItem("itemBucketDetails");
 	// save lang
-	localStorage.setItem("lang", JSON.stringify(lang));
+	saveSiteSettings("lang", lang);
 	// reload manifest
 	InitData();
 }
@@ -313,7 +314,7 @@ function setTheme(element) {
 }
 
 function setIconsize(val) {
-	document.documentElement.style.setProperty('--iconsize', val + "px");
+	document.documentElement.style.setProperty('--sizeMultiplier', val);
 }
 
 

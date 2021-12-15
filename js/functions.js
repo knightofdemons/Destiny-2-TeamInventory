@@ -91,16 +91,35 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
 }
 
 
+function saveSiteSettings(target, val) {
+	let obj = {};
+	if(localStorage.getItem("siteSettings")){
+		obj = JSON.parse(localStorage.getItem("siteSettings"));
+	}
+	obj[target] = val;
+	localStorage.setItem("siteSettings", JSON.stringify(obj));
+}
+
+function loadSiteSettings(target) {
+	let obj = JSON.parse(localStorage.getItem("siteSettings"));
+	if(obj){
+		return obj[target];	
+	}else{
+		return null;
+	}
+}
+
+
 /*********************************************************************************/
 /* Get initial data                                                              */
 /*********************************************************************************/
 async function InitData(){
-	if(localStorage.getItem("lang")){
-		lang = JSON.parse(localStorage.getItem("lang"));
+	lang = loadSiteSettings("lang");
+	if(lang){
 		document.querySelector("#lang-btn").classList.replace(document.querySelector("#lang-btn").classList.item(1), "flag-icon-"+lang);
 	}else{
 		lang = 'en';
-		localStorage.setItem("lang", JSON.stringify(lang));
+		saveSiteSettings("lang", lang);
 	}
 	let maniPaths = await checkManifestVersion(lang);
 
