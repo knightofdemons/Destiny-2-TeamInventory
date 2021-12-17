@@ -602,7 +602,7 @@ function addPlayer(cP, htmlTarget){
 	HTML +=								(cP.itemDetails[cEquip[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cEquip[item].itemInstanceId].quality);
 									}
 	HTML +=							"</div>" +
-									'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
+									'<div class="itemIconContainerInfo equipped" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
 								"</div>";
 								}
 							}
