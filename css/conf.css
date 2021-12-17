@@ -6,6 +6,7 @@ DIM orange and blue, accent colors */
 	--sizeMultiplier: 1;
 	--iconSize: calc(50px * var(--sizeMultiplier));
 	--sidebar-width: 20rem;
+	--columWidth: 400px; /* 474px */
 	--hovercolor: gray;
 	--anchorExo: #ffd700;
 	--anchorInv: #663399;
