@@ -29,6 +29,8 @@ let closeBtn = document.querySelector("#sidebar-btn");
 let searchBtn = document.querySelector(".bx-search");
 let searchBar = document.querySelector("#searchAcc");
 let settingsSubMenu = document.querySelector(".settingsSubMenu");
+let settingsThemes = document.querySelector(".settingsThemes");
+let settingsBtnCog = document.querySelector("#settingsBtnCog");
 let langBtn = document.querySelector("#lang-btn");
 let langOpt = document.querySelector(".language-options");
 let viewMain = document.querySelector("#viewMain");
@@ -45,6 +47,14 @@ let myInterval;
 /*********************************************************************************/
 inputBox.onkeyup = (e)=>{
 	searchPlayer(e.target.value);
+}
+
+document.onmousedown = (e)=> {
+	if(!langOpt.contains(e.target) && !settingsSubMenu.contains(e.target) && !settingsThemes.contains(e.target)&& !settingsBtnCog.contains(e.target)){
+		langOpt.classList.remove("open");
+		settingsSubMenu.classList.remove("open");
+		settingsThemes.classList.remove("open");
+	}
 }
 
 document.onkeydown = (e)=> {

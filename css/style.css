@@ -831,7 +831,7 @@
 		left: 1rem;
 		text-align: left;
 		width: 14rem;
-		z-index: 98;
+		z-index: 101;
 		flex-wrap: wrap;
 	}
 	
@@ -1136,7 +1136,7 @@
 	
 	.sidebar .sidebar-content li
 	{
-		margin-top: 14px;
+		margin-top: 0.5rem;
 		list-style: none;
 		width: 100%;
 	}
