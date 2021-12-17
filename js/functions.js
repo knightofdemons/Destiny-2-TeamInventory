@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Request/Fetch Functions                                                       */
+/* Request/Fetch Functions													   */
 /*********************************************************************************/
 async function getData(url, useApiKey = true) {
 		//fetch json response for getRequests | use false as option to generate a request without using the apikey
@@ -24,21 +24,21 @@ async function postData(url = '', data = {}, UseJSON = true) {
 	tmpHead.set('X-API-Key', akey);
   // Default options are marked with *
   const response = await fetch(url, {
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, *cors, same-origin
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
-    headers: tmpHead,
-    redirect: 'follow', // manual, *follow, error
-    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    body: tmpData // body data type must match "Content-Type" header
+	method: 'POST', // *GET, POST, PUT, DELETE, etc.
+	mode: 'cors', // no-cors, *cors, same-origin
+	cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+	credentials: 'same-origin', // include, *same-origin, omit
+	headers: tmpHead,
+	redirect: 'follow', // manual, *follow, error
+	referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+	body: tmpData // body data type must match "Content-Type" header
   });
   return response.json(); // parses JSON response into native JavaScript objects
 }
 
 
 /*********************************************************************************/
-/* Manifest & Miscellaneous                                                      */
+/* Manifest & Miscellaneous													  */
 /*********************************************************************************/
 async function checkManifestVersion(language) {
 	if(localStorage.getItem("manifestPaths")){
@@ -80,13 +80,13 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
   let sortByIndexes = (array, sortedIndexes) => sortedIndexes.map(sortedIndex => array[sortedIndex]);
 
   if (Array.isArray(arrays)) {
-    return arrayKeys.map(arrayIndex => sortByIndexes(arrays[arrayIndex], sortedIndexes));
+	return arrayKeys.map(arrayIndex => sortByIndexes(arrays[arrayIndex], sortedIndexes));
   } else {
-    let sortedArrays = {};
-    arrayKeys.forEach((arrayKey) => {
-      sortedArrays[arrayKey] = sortByIndexes(arrays[arrayKey], sortedIndexes);
-    });
-    return sortedArrays;
+	let sortedArrays = {};
+	arrayKeys.forEach((arrayKey) => {
+	  sortedArrays[arrayKey] = sortByIndexes(arrays[arrayKey], sortedIndexes);
+	});
+	return sortedArrays;
   }
 }
 
@@ -111,7 +111,7 @@ function loadSiteSettings(target) {
 
 
 /*********************************************************************************/
-/* Get initial data                                                              */
+/* Get initial data															  */
 /*********************************************************************************/
 async function InitData(){
 	lang = loadSiteSettings("lang");
@@ -136,7 +136,7 @@ async function InitData(){
 	document.querySelector("#anchorExo")['contentDocument']['all'][2]['children'][1]['attributes'][0]['nodeValue'] = getComputedStyle(document.documentElement).getPropertyValue('--anchorExo');
 	document.querySelector("#anchorInv")['contentDocument']['all'][2]['children'][1]['attributes'][0]['nodeValue'] = getComputedStyle(document.documentElement).getPropertyValue('--anchorInv');
 	document.querySelector("#anchorVault")['contentDocument']['all'][2]['children'][1]['attributes'][0]['nodeValue'] = getComputedStyle(document.documentElement).getPropertyValue('--anchorVault');
-			
+
 	// load initData from browserstorage
 	if(localStorage.getItem("statDefinitions")){
 		statDefinitions = JSON.parse(localStorage.getItem("statDefinitions"));
@@ -322,7 +322,7 @@ async function InitData(){
 
 
 /*********************************************************************************/
-/* getPlayer Function (create PlayerObject with details from fetch results)      */
+/* getPlayer Function (create PlayerObject with details from fetch results)	  */
 /*********************************************************************************/
 async function getPlayer(memberID, memberType){
 	let HTML = 	"<div id='placeholder'>" +
@@ -410,7 +410,7 @@ async function getPlayer(memberID, memberType){
 
 
 /*********************************************************************************/
-/* addPlayer HTML Function                                                       */
+/* addPlayer HTML Function													   */
 /*********************************************************************************/
 function addPlayer(cP, htmlTarget){
 	// add HTML
@@ -529,7 +529,7 @@ function addPlayer(cP, htmlTarget){
 	HTML +=					"<div class='itemIconContainer'>" +
 								'<img class=' + marker + ' src="' + itemDefinitions.iconURL[i] + '">' +
 								"<div class='itemIconStatus'>" + 
-                                    "<img src='css/images/" + marker + ".png'>" +
+									"<img src='css/images/" + marker + ".png'>" +
 								"</div>" +
 								'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[i] + ' (' + itemDefinitions.type[i] + ')"></div>' +
 							"</div>";
@@ -689,7 +689,7 @@ function addPlayer(cP, htmlTarget){
 }
 
 /*********************************************************************************/
-/* view Fireteam 	                                                             */
+/* view Fireteam 																 */
 /*********************************************************************************/
 async function getFireteam(){
 	contentFireteam.innerHTML = "<div class='warning'><a>Loading data from Bungie...</a></div>";
