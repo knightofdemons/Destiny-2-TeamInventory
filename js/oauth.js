@@ -1,5 +1,3 @@
-
-
 function openOauthPopup(){
 	const apiclientid = '38180';
 	rqURL = "https://www.bungie.net/en/OAuth/Authorize?client_id=" + apiclientid + "&response_type=code";
@@ -14,5 +12,9 @@ function openOauthPopup(){
 }
 
 if(localStorage.getItem('oauthToken')){
-	openOauthPopup();
+		loginFr = document.getElementById("loginFrame");
+		loginFr.parentNode.removeChild(loginFr);
+		InitData();
+	}else{
+		openOauthPopup();
 	}

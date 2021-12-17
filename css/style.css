@@ -996,7 +996,7 @@
 		justify-content: space-evenly;
 	}
 	
-	.nav-symbols a
+	.sidebarAnchors
 	{
 		cursor: pointer;
 		color: ffffff;
@@ -1004,22 +1004,19 @@
 		border-radius: 6px;
 	}
 	
-	.nav-symbols a:nth-child(1):hover
+	.sidebarAnchors:nth-child(1):hover
 	{
-		box-shadow:inset 0px 0px 9px 12px #ffd700;
-		box-shadow:0px 0px 9px 3px #ffd700;
+		box-shadow:0px 0px 9px 3px var(--anchorExo);
 	}
 	
-	.nav-symbols a:nth-child(2):hover
+	.sidebarAnchors:nth-child(2):hover
 	{
-		box-shadow:inset 0px 0px 9px 12px #663399;
-		box-shadow:0px 0px 9px 6px #663399;
+		box-shadow:0px 0px 9px 6px var(--anchorInv);
 	}
 	
-	.nav-symbols a:nth-child(3):hover
+	.sidebarAnchors:nth-child(3):hover
 	{
-		box-shadow:inset 0px 0px 9px 12px #0a5d00;
-		box-shadow:0px 0px 9px 6px #0a5d00;
+		box-shadow:0px 0px 9px 6px var(--anchorVault);
 	}
 	
 	.nav-symbols img
