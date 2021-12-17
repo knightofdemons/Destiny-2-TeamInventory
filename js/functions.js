@@ -510,7 +510,7 @@ function addPlayer(cP, htmlTarget){
 							// ... that is exo, matches bucket & class
 							if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketHash[i] === buckets[b] && itemDefinitions.categoryHash[i] === charClassHash[c]) {
 							// make headline for first found item	
-								if (hc < 1 && b === 5) {
+								if (hc < 1 && b === 3) {
 	HTML +=							"<div class='headline-armor-class'>" + itemDefinitions.category[i] + "</div>";
 									hc++;
 								}
