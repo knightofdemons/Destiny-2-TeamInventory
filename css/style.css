@@ -308,15 +308,15 @@
 	
 	.itemIconContainerLvl
 	{
-		background-color: rgba(0,0,0,0.35);
+		background-color: rgba(0,0,0,0.5);
 		border-bottom-left-radius: 6.5px;
+		border-bottom-right-radius: 6.5px;
 		font-size: calc(0.7rem * var(--sizeMultiplier));
 		font-weight: 400;
 		margin-left: 5px;
-		margin-top: -24px;
 		padding-left: calc(0.05 * var(--iconSize));
-		padding-right: calc(0.05 * var(--iconSize));
 		position: absolute;
+		transform: translateY(-120%);
 		width: var(--iconSize);
 	}
 	
