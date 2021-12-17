@@ -302,7 +302,7 @@
 	
 	.itemIconContainerInfo.equipped
 	{
-		border: ridge darkcyan; /*maroon*/
+		border: ridge white;
 		border-radius: 10%;
 	}
 	
