@@ -312,14 +312,15 @@
 	{
 		background-color: rgba(0,0,0,0.5);
 		border-bottom-left-radius: 6.5px;
-		font-size: 0.8rem;
+		border-bottom-right-radius: 6.5px;
+		font-size: calc(0.7rem * var(--sizeMultiplier));
 		font-weight: 400;
 		margin-left: 5px;
 		margin-top: -24px;
-		padding-left: 8px;
-		padding-right: 5px;
+		padding-left: calc(0.05 * var(--iconSize));
+		padding-right: calc(0.05 * var(--iconSize));
 		position: absolute;
-		width: max-content;
+		width: var(--iconSize);
 	}
 	
 	.itemIconStatus
