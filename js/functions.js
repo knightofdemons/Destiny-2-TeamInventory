@@ -64,6 +64,9 @@ async function checkManifestVersion(language) {
 				'recordDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyRecordDefinition'] // records like cats
 			};
 			localStorage.setItem("manifestPaths", JSON.stringify(manifestPaths));
+	}if else(check.status == 501){
+		Window.alert("Errorcode: " + check.status + " - Reloading Page");
+		location.reload();
 	}
 	return manifestPaths;
 }
