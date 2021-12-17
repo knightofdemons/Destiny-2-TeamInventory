@@ -181,7 +181,7 @@
 	
 	.charItemsInv:not(.charItemsInv:first-child)
 	{
-		border-top: 1px double black;
+		margin-top: 0.1rem;
 	}
 	
 	.charStats
@@ -309,7 +309,7 @@
 	
 	.itemIconContainerLvl
 	{
-		background-color: rgba(0,0,0,0.5);
+		background-color: rgba(0,0,0,0.35);
 		border-bottom-left-radius: 6.5px;
 		font-size: calc(0.7rem * var(--sizeMultiplier));
 		font-weight: 400;
