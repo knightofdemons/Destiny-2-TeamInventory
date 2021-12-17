@@ -576,16 +576,25 @@ function addPlayer(cP, htmlTarget){
 								indexItem = itemDefinitions.id.indexOf(cEquip[item].itemHash.toString());
 								if (cEquip[item].bucketHash === buckets[b]) {
 	HTML +=						"<div class='itemIconContainer'>" +
-									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +	
+									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
 									"<div class='itemIconContainerLvl'>";
-										if (cP.itemDetails[cEquip[item].itemInstanceId].energy !== undefined) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType)] + '">';
-										} else if (cP.itemDetails[cEquip[item].itemInstanceId].damageType !== undefined) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].damageType)] + '">';
-										}
-	HTML +=								" " + (cP.itemDetails[cEquip[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cEquip[item].itemInstanceId].quality) +
-									"</div>" +
-									'<div class="itemIconContainerInfo equipped" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
+									if (cP.itemDetails[cEquip[item].itemInstanceId].energy !== undefined) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType)] + '">' +
+										" ";								
+									} else if (cP.itemDetails[cEquip[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cEquip[item].itemInstanceId].damageType !== 0) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].damageType)] + '">' +
+										" ";								
+									}
+									else {
+	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
+									}
+									if (cP.itemDetails[cEquip[item].itemInstanceId].primaryStat !== undefined) {
+	HTML +=								(cP.itemDetails[cEquip[item].itemInstanceId].primaryStat.value);
+									} else {
+	HTML +=								(cP.itemDetails[cEquip[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cEquip[item].itemInstanceId].quality);
+									}
+	HTML +=							"</div>" +
+									'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
 								"</div>";
 								}
 							}
@@ -601,12 +610,21 @@ function addPlayer(cP, htmlTarget){
 									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
 									"<div class='itemIconContainerLvl'>";
 									if (cP.itemDetails[cInv[item].itemInstanceId].energy !== undefined) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType)] + '">';
-										} else if (cP.itemDetails[cInv[item].itemInstanceId].damageType !== undefined) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].damageType)] + '">';
-										}
-	HTML +=								" " + (cP.itemDetails[cInv[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cInv[item].itemInstanceId].quality) +
-									"</div>" +
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType)] + '">' +
+										" ";								
+									} else if (cP.itemDetails[cInv[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cInv[item].itemInstanceId].damageType !== 0) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].damageType)] + '">' +
+										" ";								
+									}
+									else {
+	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
+									}
+									if (cP.itemDetails[cInv[item].itemInstanceId].primaryStat !== undefined) {
+	HTML +=								(cP.itemDetails[cInv[item].itemInstanceId].primaryStat.value);
+									} else {
+	HTML +=								(cP.itemDetails[cInv[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cInv[item].itemInstanceId].quality);
+									}
+	HTML +=							"</div>" +
 									'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
 								"</div>";
 								}
@@ -639,6 +657,9 @@ function addPlayer(cP, htmlTarget){
 									} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== 0) {
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType)] + '">' +
 										" ";								
+									}
+									else {
+	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
 									}
 									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].primaryStat !== undefined) {
 	HTML +=								(cP.itemDetails[cP.profileInventory[item].itemInstanceId].primaryStat.value);
