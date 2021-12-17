@@ -315,6 +315,7 @@ function setTheme(element) {
 
 function setIconsize(val) {
 	document.documentElement.style.setProperty('--sizeMultiplier', val);
+	saveSiteSettings("sizeMultiplier", val);
 }
 
 
