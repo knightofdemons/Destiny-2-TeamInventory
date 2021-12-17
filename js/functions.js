@@ -131,6 +131,8 @@ async function InitData(){
 		document.querySelector("#settingsLogout").style.display = 'none';
 	}
 	
+	// HTML Prep
+	document.documentElement.style.setProperty('--sizeMultiplier', val);
 	document.querySelector("#anchorExo")['contentDocument']['all'][2]['children'][1]['attributes'][0]['nodeValue'] = getComputedStyle(document.documentElement).getPropertyValue('--anchorExo');
 	document.querySelector("#anchorInv")['contentDocument']['all'][2]['children'][1]['attributes'][0]['nodeValue'] = getComputedStyle(document.documentElement).getPropertyValue('--anchorInv');
 	document.querySelector("#anchorVault")['contentDocument']['all'][2]['children'][1]['attributes'][0]['nodeValue'] = getComputedStyle(document.documentElement).getPropertyValue('--anchorVault');
