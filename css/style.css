@@ -408,7 +408,7 @@
 		border-radius: 10px;
 		background: rgba(0, 0, 0, .2);
 		height: max-content;
-		width: 100%;
+		width: calc(100% - var(--sidbar-width));
 	}
 
 	.vaultItems
