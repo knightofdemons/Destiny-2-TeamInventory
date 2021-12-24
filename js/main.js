@@ -29,6 +29,7 @@ let closeBtn = document.querySelector("#sidebar-btn");
 let searchBtn = document.querySelector(".bx-search");
 let searchBar = document.querySelector("#searchAcc");
 let settingsSubMenu = document.querySelector(".settingsSubMenu");
+let aboutFrame = document.querySelector(".aboutFrameOuter");
 let settingsThemes = document.querySelector(".settingsThemes");
 let settingsBtnCog = document.querySelector("#settingsBtnCog");
 let langBtn = document.querySelector("#lang-btn");
@@ -50,10 +51,11 @@ inputBox.onkeyup = (e)=>{
 }
 
 document.onmousedown = (e)=> {
-	if(!langOpt.contains(e.target) && !settingsSubMenu.contains(e.target) && !settingsThemes.contains(e.target)&& !settingsBtnCog.contains(e.target)){
+	if(!langOpt.contains(e.target) && !settingsSubMenu.contains(e.target) && !settingsThemes.contains(e.target)&& !settingsBtnCog.contains(e.target) && !aboutFrame.contains(e.target)){
 		langOpt.classList.remove("open");
 		settingsSubMenu.classList.remove("open");
 		settingsThemes.classList.remove("open");
+		aboutFrame.classList.add("closed");
 	}
 }
 
@@ -120,6 +122,10 @@ function refreshTimer() {
 
 function showSettingsSubmenu(){
 	settingsSubMenu.classList.toggle("open");
+}
+
+function showSettingsAbout(){
+	aboutFrame.classList.toggle("closed");
 }
 
 

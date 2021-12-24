@@ -463,6 +463,103 @@
 	}	
 	
 /*********************************************************************************/
+/* About							var(--gradient)											 */
+/*********************************************************************************/
+	
+	.aboutFrameOuter.closed
+	{
+		display: none;
+	}
+	
+	.aboutFrameOuter {
+		display: block;
+		 position: fixed;
+		 top: 50%;
+		 left: 50%;
+		 transform: translate3d(-50%, -50%, 0);
+		 background-color: rgba(0, 0, 0, 0.95);
+		 width: 40%;
+		 padding: 5px;
+		 border: 2px solid var(--aboutFrame);
+		 font-size: 2rem;
+		 z-index: 101;
+	}
+	 .aboutFrameOuter:before, .aboutFrameOuter:after {
+		 content: "•";
+		 position: absolute;
+		 width: 14px;
+		 height: 14px;
+		 font-size: 14px;
+		 color: var(--aboutFrame);
+		 border: 2px solid var(--aboutFrame);
+		 line-height: 12px;
+		 top: 5px;
+		 text-align: center;
+	}
+	 .aboutFrameOuter:before {
+		 left: 5px;
+	}
+	 .aboutFrameOuter:after {
+		 right: 5px;
+	}
+	 .aboutFrameOuter .aboutFrame {
+		 position: relative;
+		 border: 2px solid var(--aboutFrame);
+		 padding: 40px;
+	}
+	 .aboutFrameOuter .aboutFrame:before, .aboutFrameOuter .aboutFrame:after {
+		 content: "•";
+		 position: absolute;
+		 width: 14px;
+		 height: 14px;
+		 font-size: 14px;
+		 color: var(--aboutFrame);
+		 border: 2px solid var(--aboutFrame);
+		 line-height: 12px;
+		 bottom: -2px;
+		 text-align: center;
+	}
+	 .aboutFrameOuter .aboutFrame:before {
+		 left: -2px;
+	}
+	 .aboutFrameOuter .aboutFrame:after {
+		 right: -2px;
+	}
+	
+	.aboutFrame
+	{
+		height: 80hv;
+	}
+	
+	.aboutFrame div
+	{
+		display: flex;
+		position: relative;
+		width: 100%;
+		align-items: center;
+		margin-top: 20px;
+	}
+	
+	.aboutFrame img
+	{
+		height: 30px;
+		width: 30px;
+		margin-left: 20px;
+	}
+	
+	.aboutFrame img[href]:hover
+	{
+		cursor: pointer;
+		filter: brightness(1.75);
+	}
+	
+	.aboutFrame img:not([href])
+	{
+		cursor: pointer;
+		filter: brightness(0.5);
+	}
+	
+/*********************************************************************************/
 /* Login																		 */
 /*********************************************************************************/
 	
@@ -1002,25 +1099,36 @@
 	
 	.sidebarAnchors
 	{
-		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		color: ffffff;
 		border: 1px solid white;
 		border-radius: 6px;
+		width: 40;
+		height: 40;
+		fill: #fff;
 	}
 	
-	.sidebarAnchors:nth-child(1):hover
+	#anchorExo:hover
 	{
-		box-shadow:0px 0px 9px 3px var(--anchorExo);
+		cursor: pointer;
+		box-shadow: 0px 0px 9px 9px var(--anchorExo);
+		box-shadow: inset 0px 0px 9px 3px var(--anchorExo);
 	}
 	
-	.sidebarAnchors:nth-child(2):hover
+	#anchorInv:hover
 	{
-		box-shadow:0px 0px 9px 6px var(--anchorInv);
+		cursor: pointer;
+		box-shadow: 0px 0px 9px 6px var(--anchorInv);
+		box-shadow: inset 0px 0px 9px 6px var(--anchorInv);
 	}
 	
-	.sidebarAnchors:nth-child(3):hover
+	#anchorVault:hover
 	{
-		box-shadow:0px 0px 9px 6px var(--anchorVault);
+		cursor: pointer;
+		box-shadow: 0px 0px 9px 4px var(--anchorVault);
+		box-shadow: inset 0px 0px 9px 4px var(--anchorVault);
 	}
 	
 	.nav-symbols img
@@ -1028,7 +1136,6 @@
 		height: 2.5rem;
 		width: 2.5rem;
 	}
-	
 	
 	.sidebar.open ~ #Main
 	{

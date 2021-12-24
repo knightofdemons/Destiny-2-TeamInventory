@@ -141,9 +141,6 @@ async function InitData(){
 	}else{
 		saveSiteSettings("sizeMultiplier", 1);
 	}
-	document.querySelector("#anchorExo")['contentDocument']['all'][2]['children'][1]['attributes'][0]['nodeValue'] = getComputedStyle(document.documentElement).getPropertyValue('--anchorExo');
-	document.querySelector("#anchorInv")['contentDocument']['all'][2]['children'][1]['attributes'][0]['nodeValue'] = getComputedStyle(document.documentElement).getPropertyValue('--anchorInv');
-	document.querySelector("#anchorVault")['contentDocument']['all'][2]['children'][1]['attributes'][0]['nodeValue'] = getComputedStyle(document.documentElement).getPropertyValue('--anchorVault');
 
 	// load initData from browserstorage
 	if(localStorage.getItem("statDefinitions")){

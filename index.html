@@ -6,9 +6,9 @@
         <meta charset="utf-8">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" type="text/css">
     <!-- favicon -->
-        <link rel="apple-touch-icon" sizes="180x180" href="css/images/ico/favicon180.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="css/images/ico/favicon32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="css/images/ico/favicon16.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="css/images/favicon180.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="css/images/favicon32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="css/images/favicon16.png">
     <!-- css -->
         <link rel="stylesheet" href="css/style.css">
     	<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.0/css/boxicons.min.css"/>
@@ -20,10 +20,47 @@
 															<span></span><span></span><span></span><span></span><a>Login</a></i></div>
 		<center><i class="bx bx-exit" style="font-size:44;" onclick="document.getElementById('loginFrame').parentNode.removeChild(document.getElementById('loginFrame')); InitData();"></i></center>
 	</div>
+	<div class="aboutFrameOuter closed">
+		<div class="aboutFrame">
+			<div>
+				the one, i miss
+			</div>
+			<div>
+				<img href="https://github.com/quaithemerald" src="css/images/social-1_logo-github.svg"></img>
+				<img href="https://www.instagram.com/quaithemerald/" src="css/images/social-1_logo-instagram.svg"></img>
+				<img href="https://www.reddit.com/user/quaithemerald/" src="css/images/social-1_logo-reddit.svg"></img>
+				<img src="css/images/social-1_logo-twitter.svg"></img>
+				<img src="css/images/social-1_logo-youtube.svg"></img>
+			</div>
+			<div>
+				Hühnchen Süß-Sauer 7,99€
+			</div>
+			<div>
+				<img href="https://github.com/knightofdemons" src="css/images/social-1_logo-github.svg"></img>
+				<img src="css/images/social-1_logo-instagram.svg"></img>
+				<img href="https://www.reddit.com/user/knighToFdemonS" src="css/images/social-1_logo-reddit.svg"></img>
+				<img href="https://twitter.com/_knighToFdemonS" src="css/images/social-1_logo-twitter.svg"></img>
+				<img href="https://www.youtube.com/channel/UC_JcSgou_trn3-aZIPIYDCA" src="css/images/social-1_logo-youtube.svg"></img>
+			</div>
+			<div>
+				&nbsp;
+			</div>
+			<div>
+				Project - Media
+			</div>
+			<div>
+				<img href="https://github.com/knightofdemons/Destiny-2-TeamInventory" src="css/images/social-1_logo-github.svg"></img>
+				<img href="" src="css/images/social-1_logo-paypal.svg"></img>
+				<img href="" src="css/images/social-1_logo-reddit.svg"></img>
+				<img href="" src="css/images/social-1_logo-twitter.svg"></img>
+			</div>
+			<div><a style="font-size: 14">Thanks to DIM, D2Checklist and DestinyTracker for inspriation (not affiliated).</a></div>
+		</div>
+	</div>
 <div class="sidebar open">
 	<div class="sidebar-content">
 		<div class="sidebar-logo-details">
-			<img src="css/images/ico/favicon.ico"></img>
+			<img src="css/images/favicon.ico"></img>
 			<div class="sidebar-logo_name">&nbsp; D2 TeamInv</div>
 			<i class="bx bx-menu" id="sidebar-btn"></i>
 		</div>
@@ -47,14 +84,14 @@
 		<h3><i class="bx bx-bookmarks"></i></h3>
 		<ul class="nav-list">
 			<button onclick="buttonClick('4611686018471653494', '3')">Add Hühnchen</button> 
-			<button onclick="buttonClick('4611686018489703844', '3')">Add Quaithe</button> 
+			<button onclick="buttonClick('4611686018489703844', '3')">Add Quaith</button> 
 			<button onclick="buttonClick('4611686018491598431', '3')">Add Drasuk</button>
 			<ul class="playerBucket" id="playerBucket">
 			</ul>
 		</ul>  
 		<div class="settingsBar">
 			<div class="settingsSubMenu">
-				<div id="lang-btn-div"><span class="flag-icon flag-icon-en lang-btn" id="lang-btn"></span></div>
+				<div id="lang-btn-div"><span class="flag-icon flag-icon-en lang-btn" id="lang-btn"></span><a>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;</a><i id="settingsAbout" class="bx bxs-info-circle" onClick="showSettingsAbout()"></i></div>
 					<div class="language-options">
 						<div class="lang-opt" id="de" onclick="setLang('de')"><span class="flag-icon flag-icon-de"></span>&nbsp; Deutsch</div>
 						<div class="lang-opt act" id="en" onclick="setLang('en')"><span class="flag-icon flag-icon-en"></span>&nbsp; English</div>
