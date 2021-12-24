@@ -146,6 +146,7 @@
 	
 	.charEmblemImg, .charEmblemImg img
 	{
+		overflow: hidden;
 		position: relative;
 		width: calc(var(--columWidth) * var(--sizeMultiplier));
 	}
@@ -223,10 +224,14 @@
 	}
 	
 	.heading {
+		display: flex;
+		position: relative;
 		color: #fff;
 		font-size: calc(1.5rem * var(--sizeMultiplier));
 		font-weight: 400;
 		line-height: calc(3rem * var(--sizeMultiplier));
+		align-items: center;
+		justify-content:center;
 		text-align: center;
 	}
 	
@@ -471,7 +476,8 @@
 		display: none;
 	}
 	
-	.aboutFrameOuter {
+	.aboutFrameOuter
+	{
 		display: block;
 		 position: fixed;
 		 top: 50%;
@@ -484,51 +490,59 @@
 		 font-size: 2rem;
 		 z-index: 101;
 	}
-	 .aboutFrameOuter:before, .aboutFrameOuter:after {
-		 content: "•";
-		 position: absolute;
-		 width: 14px;
-		 height: 14px;
-		 font-size: 14px;
-		 color: var(--aboutFrame);
-		 border: 2px solid var(--aboutFrame);
-		 line-height: 12px;
-		 top: 5px;
-		 text-align: center;
-	}
-	 .aboutFrameOuter:before {
-		 left: 5px;
-	}
-	 .aboutFrameOuter:after {
-		 right: 5px;
-	}
-	 .aboutFrameOuter .aboutFrame {
-		 position: relative;
-		 border: 2px solid var(--aboutFrame);
-		 padding: 40px;
-	}
-	 .aboutFrameOuter .aboutFrame:before, .aboutFrameOuter .aboutFrame:after {
-		 content: "•";
-		 position: absolute;
-		 width: 14px;
-		 height: 14px;
-		 font-size: 14px;
-		 color: var(--aboutFrame);
-		 border: 2px solid var(--aboutFrame);
-		 line-height: 12px;
-		 bottom: -2px;
-		 text-align: center;
-	}
-	 .aboutFrameOuter .aboutFrame:before {
-		 left: -2px;
-	}
-	 .aboutFrameOuter .aboutFrame:after {
-		 right: -2px;
+	
+	.aboutFrameOuter:before, .aboutFrameOuter:after
+	{
+		content: "•";
+		position: absolute;
+		width: 14px;
+		height: 14px;
+		font-size: 14px;
+		color: var(--aboutFrame);
+		border: 2px solid var(--aboutFrame);
+		line-height: 12px;
+		top: 5px;
+		text-align: center;
 	}
 	
-	.aboutFrame
+	.aboutFrameOuter:before
 	{
-		height: 80hv;
+		left: 5px;
+	}
+	
+	.aboutFrameOuter:after
+	{
+		right: 5px;
+	}
+	
+	.aboutFrameOuter .aboutFrame
+	{
+		position: relative;
+		border: 2px solid var(--aboutFrame);
+		padding: 40px;
+	}
+	
+	.aboutFrameOuter .aboutFrame:before, .aboutFrameOuter .aboutFrame:after
+	{
+		content: "•";
+		position: absolute;
+		width: 14px;
+		height: 14px;
+		font-size: 14px;
+		color: var(--aboutFrame);
+		border: 2px solid var(--aboutFrame);
+		line-height: 12px;
+		bottom: -2px;
+		text-align: center;
+	}
+	
+	.aboutFrameOuter .aboutFrame:before
+	{
+		left: -2px;
+	}
+	 .aboutFrameOuter .aboutFrame:after
+	{
+		right: -2px;
 	}
 	
 	.aboutFrame div

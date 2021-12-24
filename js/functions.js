@@ -485,13 +485,13 @@ function addPlayer(cP, htmlTarget){
 						"</div>";
 						}
 					}
-	HTML +=			"</div><br><br>";
+	HTML +=			"</div>";
 				}
 	HTML +=		"</div>" +
+				"<div class='item-list'>" +
 				"<div class='heading'>" + 
 					vendorDefinitions.name[vendorDefinitions.hash.indexOf(vendorHashList[1])] +
-				"</div>" +
-				"<div class='item-list'>";
+				"</div>";
 				// exotic armor
 				// for every bucket (head, arm, chest, leg)
 				for (let b = 3; b < 7; b++) {
