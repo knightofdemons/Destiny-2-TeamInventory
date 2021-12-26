@@ -129,28 +129,55 @@ function showSettingsAbout(){
 	aboutFrame.classList.toggle("closed");
 }
 
+function saveSiteSettings(prop, val){
+	if(!userDB['siteSettings'].hasOwnProperty(prop)){
+		userDB['siteSettings'][prop] = {};
+	}
+	userDB['siteSettings'][prop] = val;
+	localStorage.setItem("userDB", JSON.stringify(userDB));
+}
+
 
 function deletePlayer(membershipId){
-	document.getElementById("acc-" + membershipId).parentNode.removeChild(document.getElementById("acc-" + membershipId));
 	HTML = document.getElementsByClassName("acc-" + membershipId);
 	while (HTML[0]){
 		HTML[0].remove(); //has to be index0 because element also gets deleted from array for whatever reason
 	}
-	let storageTmp = JSON.parse(localStorage.getItem("loadedPlayers"));
-	let index = storageTmp.findIndex(function(toBeDeleted) {
-		return toBeDeleted.membershipId[0] == membershipId;
-	});
-	storageTmp.splice(index, 1);
+	delete userDB['loadedPlayers'][membershipId];
 	console.log("deleting " + membershipId + " from local player storage");
-	localStorage.setItem("loadedPlayers", JSON.stringify(storageTmp));
+	localStorage.setItem("userDB", JSON.stringify(userDB));
 }
 
 
-function addPlayerToStorage(data){
-	let storageTmp = JSON.parse(localStorage.getItem("loadedPlayers"));
-	(storageTmp = storageTmp || []).push(data);
-	console.log("saving " + data.platformName + " to local player storage");
-	localStorage.setItem("loadedPlayers", JSON.stringify(storageTmp));
+async function savePlayer(cP){
+	if(!userDB.hasOwnProperty('loadedPlayers')){
+			userDB['loadedPlayers'] = {};
+		}
+		if(!userDB['loadedPlayers'].hasOwnProperty(cP.membershipId)){
+			currentPlayer = await getPlayer(cP.membershipId, cP.platformType);
+			let tmpAdd = generatePlayerHTML(currentPlayer);
+			userDB['loadedPlayers'][cP.membershipId] = {
+				membershipId : cP.membershipId,
+				platformType : cP.platformType,
+				savedHTML : tmpAdd
+				};
+			localStorage.setItem("userDB", JSON.stringify(userDB));
+			document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
+																		"<a href='#acc-" + cP.membershipId[0] + "'>" +
+																			"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
+																			"<span class='links_name'>" + cP.platformName[0] + "</span>" +
+																			"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
+																		"</a>";
+																	"</li>";
+		}else{
+			console.log("already existing player");
+		}
+}
+
+
+function clearData() {
+	localStorage.clear();
+	location.reload();
 }
 
 
@@ -182,7 +209,6 @@ async function searchPlayer(inputData){
 	
 }
 
-
 async function select(element){
     let selectData = element.textContent;
 	suggBox.innerHTML = "";
@@ -191,16 +217,9 @@ async function select(element){
 		selectedAttribute = element.firstChild.firstChild.alt;
         membershipType = (selectedAttribute.split('|'))[1];
         membershipId = (selectedAttribute.split('|'))[0];
-		//checks if div-container is already existing for current player & add player if not
-		if(!document.getElementById("acc-" + membershipId)){
-			currentPlayer = await getPlayer(membershipId, membershipType);
-			addPlayer(currentPlayer, "viewMain");
-			addPlayerToStorage(currentPlayer);
+			savePlayer(currentPlayer);
 			searchWrapper.classList.remove("active");
 			inputBox.value = "";
-		}else{
-			console.log("already existing player");
-		}
     }
 }
 
@@ -254,32 +273,8 @@ function setLang(lang) {
 	}
 	document.getElementById(lang).classList.toggle("act",true);
 	langBtn.classList.replace(langBtn.classList.item(1), "flag-icon-"+lang);
-	// remove output & local storage that depends on language (otherwise new values would be pushed to old)
-	document.querySelector(".settingsSubMenu").style.display = "none";
-	document.querySelector(".language-options").style.display = "none";
-	document.getElementById("viewMain").innerHTML = "";
-	document.getElementById("playerBucket").innerHTML ="";
-	localStorage.removeItem("manifestPaths");
-	localStorage.removeItem("statDefinitions");
-	localStorage.removeItem("classDefinitions");
-	localStorage.removeItem("itemDetails");
-	localStorage.removeItem("itemCategoryDetails");
-	localStorage.removeItem("itemBucketDetails");
-	// save lang
-	saveSiteSettings("lang", lang);
-	// reload manifest
-	InitData();
-}
-
-function clearData() {
-	document.querySelector(".settingsSubMenu").classList.toggle("open");
-	document.querySelector(".language-options").classList.remove("open");
-	document.getElementById("viewMain").innerHTML = "";
-	document.getElementById("playerBucket").innerHTML ="";
-	localStorage.clear();
-	// save lang
-	localStorage.setItem("lang", JSON.stringify(lang));
-	// reload page
+	userDB['siteSettings']['lang'] = lang;
+	localStorage.setItem("userDB", JSON.stringify(userDB));
 	location.reload();
 }
 
@@ -328,6 +323,8 @@ function setTheme(element) {
 		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeWhiteA'));
 		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeWhiteB'));
 	}
+	saveSiteSettings("ThemeGrad0", getComputedStyle(document.documentElement).getPropertyValue('--grad0'));
+	saveSiteSettings("ThemeGrad1", getComputedStyle(document.documentElement).getPropertyValue('--grad01'));
 }
 
 function setIconsize(val) {
@@ -340,23 +337,8 @@ function setIconsize(val) {
 /* Temp 			                                                             */
 /*********************************************************************************/
 async function buttonClick(mshipId, platType){
-		//checks if current player is already existing & add player if not
-		if(!userDB.hasOwnProperty('loadedPlayers')){
-			userDB['loadedPlayers'] = {};
-		}
-		if(!userDB['loadedPlayers'].hasOwnProperty(mshipId)){
-			currentPlayer = await getPlayer(mshipId, platType);
-			let tmpAdd = generatePlayerHTML(currentPlayer);
-			userDB['loadedPlayers'][mshipId] = {
-				membershipId : mshipId,
-				platformType : platType,
-				savedHTML : tmpAdd
-				};
-			localStorage.setItem("userDB", JSON.stringify(userDB));
-		}else{
-			console.log("already existing player");
-		}
-		console.log(userDB);
+		let cP = await getPlayer(mshipId, platType);
+		savePlayer(cP);
 }
 
 

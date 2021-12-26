@@ -252,19 +252,21 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
 /*********************************************************************************/
 async function InitData(){
 	userDB = JSON.parse(localStorage.getItem("userDB"));
+	// HTML Prep
 	if(userDB){
 		document.querySelector("#lang-btn").classList.replace(document.querySelector("#lang-btn").classList.item(1), "flag-icon-"+userDB['siteSettings']['lang']);
+		document.documentElement.style.setProperty('--sizeMultiplier', userDB['siteSettings']['sizeMultiplier']);
+		document.documentElement.style.setProperty('--grad0', userDB['siteSettings']['ThemeGrad0']);
+		document.documentElement.style.setProperty('--grad1', userDB['siteSettings']['ThemeGrad1']);
 	}else{
-		userDB = {siteSettings: {lang: 'en'}};
+		userDB = {siteSettings: {
+			lang: 'en',
+			sizeMultiplier: 1,
+			ThemeGrad0: getComputedStyle(document.documentElement).getPropertyValue('--grad0'),
+			ThemeGrad1: getComputedStyle(document.documentElement).getPropertyValue('--grad1')
+		}};
 	}
 	
-	// HTML Prep
-	if(userDB['siteSettings']['sizeMultiplier']){
-		document.documentElement.style.setProperty('--sizeMultiplier', userDB['siteSettings']['sizeMultiplier']);
-	}else{
-		userDB['siteSettings'] = {sizeMultiplier : 1};
-	}
-
 	if(localStorage.getItem("oauthToken")){
 		document.querySelector("#settingsLogin").style.display = 'none';
 		document.querySelector("#settingsLogout").style.display = 'flex';
@@ -273,7 +275,7 @@ async function InitData(){
 		document.querySelector("#settingsLogout").style.display = 'none';
 	}
 	
-	// load initData from browserstorage
+	// load manifests from browserstorage
 	let tmpManifestCheck = await checkManifestVersion(userDB['siteSettings']['lang']);
 	if(tmpManifestCheck){
 		await getDefinitions();
@@ -281,8 +283,10 @@ async function InitData(){
 
 	// load recent players from browserstorage
 	if(userDB['loadedPlayers']){
-			currentPlayer = await getPlayer(Object.keys(userDB['loadedPlayers'])[0].membershipId[0], Object.keys(userDB['loadedPlayers'])[0].platformType[0]);
-			userDB['loadedPlayers'][currentPlayer.membershipId[0]]['savedHTML'] = generatePlayerHTML(currentPlayer);
+		console.log();
+			currentPlayer = await getPlayer(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[0]].membershipId[0], userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[0]].platformType[0]);
+			userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[0]]['savedHTML'] = generatePlayerHTML(currentPlayer);
+			viewMain.innerHTML = userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[0]]['savedHTML'];
 	}
 	
 	//console.log(userDB); Object.keys(userDB.siteSettings.lang)
@@ -645,16 +649,6 @@ function generatePlayerHTML(cP){
 	HTML +=			"</div>" +			
 			"</div><br><br>";
 	return HTML;
-	/*
-	if(htmlTarget == "viewMain"){
-		document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
-																	"<a href='#acc-" + cP.membershipId[0] + "'>" +
-																		"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
-																		"<span class='links_name'>" + cP.platformName[0] + "</span>" +
-																		"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
-																	"</a>";
-																"</li>";
-	}*/
 }
 
 
@@ -684,7 +678,12 @@ async function getFireteam(){
 						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
 						let tmpProf = await getData(rqURL);
 						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
-						database['fireteamPlayers'][currentPlayer.membershipId[0]]['savedHTML'] = generatePlayerHTML(currentPlayer);
+						let tmpAdd = generatePlayerHTML(currentPlayer);
+						database['fireteamPlayers'][currentPlayer.membershipId[0]] = {
+							membershipId : currentPlayer.membershipId[0],
+							platformType : currentPlayer.membershipType[0],
+							savedHTML : tmpAdd
+						}
 						contentFireteam.innerHTML += database['fireteamPlayers'][currentPlayer.membershipId[0]]['savedHTML'];
 					}
 				}		
