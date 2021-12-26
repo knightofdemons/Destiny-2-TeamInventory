@@ -3,21 +3,22 @@
 /*********************************************************************************/
 
 const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
-let statDefinitions = {};
-let classDefinitions = {};
-let itemDefinitions = {};
-let itemDefinitionsTmp = {};
-let energyDefinitions = {};
-let catDefinitions = {};
+let userDB = new Object();
+let statDefinitions = new Object();
+let classDefinitions = new Object();
+let itemDefinitions = new Object();
+let itemDefinitionsTmp = new Object();
+let energyDefinitions = new Object();
+let catDefinitions = new Object();
+let playerlist = new Object();
+let siteSettings = new Object();
 let lang = '';
-let playerlist = {};
 let charStatOrder = [2996146975,392767087,1943323491,1735777505,144602215,4244567218];
 let buckets = [1498876634,2465295065,953998645,3448274439,3551918588,14239492,20886954,1585787867];
 let vendorHashList = [1037843411, 3989934776, 864211278];
 let fireteamInterval;
 let fireteamCounter;
 let fireteamTimer = 60;
-let siteSettings = {};
 
 let searchWrapper = document.querySelector(".search-input");
 let inputBox = searchWrapper.querySelector("#searchAcc");
@@ -338,15 +339,24 @@ function setIconsize(val) {
 /*********************************************************************************/
 /* Temp 			                                                             */
 /*********************************************************************************/
-async function buttonClick(membershipId, platformType){
-		//checks if div-container is already existing for current player & add player if not
-		if(!document.getElementById("acc-" + membershipId)){
-			currentPlayer = await getPlayer(membershipId, platformType); //temporary function to add a player | will be replaced by searchbar-submit
-			addPlayer(currentPlayer, "viewMain");
-			addPlayerToStorage(currentPlayer);
+async function buttonClick(mshipId, platType){
+		//checks if current player is already existing & add player if not
+		if(!userDB.hasOwnProperty('loadedPlayers')){
+			userDB['loadedPlayers'] = {};
+		}
+		if(!userDB['loadedPlayers'].hasOwnProperty(mshipId)){
+			currentPlayer = await getPlayer(mshipId, platType);
+			let tmpAdd = generatePlayerHTML(currentPlayer);
+			userDB['loadedPlayers'][mshipId] = {
+				membershipId : mshipId,
+				platformType : platType,
+				savedHTML : tmpAdd
+				};
+			localStorage.setItem("userDB", JSON.stringify(userDB));
 		}else{
 			console.log("already existing player");
 		}
+		console.log(userDB);
 }
 
 
