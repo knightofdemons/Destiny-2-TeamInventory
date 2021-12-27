@@ -68,7 +68,7 @@
 	h3
 	{
 		color: #fff;
-		font-size: calc(32px * var(--sizeMultiplier));
+		font-size: 32px;
 		font-weight: 400;
 		text-align: left;
 		padding-bottom: 1rem;

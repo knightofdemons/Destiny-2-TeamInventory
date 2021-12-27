@@ -251,8 +251,7 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
 /* Get initial data															  */
 /*********************************************************************************/
 async function InitData(){
-	userDB = JSON.parse(localStorage.getItem("userDB"));
-	// HTML Prep
+	// load settings from db
 	if(userDB){
 		document.querySelector("#lang-btn").classList.replace(document.querySelector("#lang-btn").classList.item(1), "flag-icon-"+userDB['siteSettings']['lang']);
 		document.documentElement.style.setProperty('--sizeMultiplier', userDB['siteSettings']['sizeMultiplier']);
@@ -262,6 +261,7 @@ async function InitData(){
 		userDB = {siteSettings: {
 			lang: 'en',
 			sizeMultiplier: 1,
+			userDBcursor: 0,
 			ThemeGrad0: getComputedStyle(document.documentElement).getPropertyValue('--grad0'),
 			ThemeGrad1: getComputedStyle(document.documentElement).getPropertyValue('--grad1')
 		}};
@@ -275,20 +275,17 @@ async function InitData(){
 		document.querySelector("#settingsLogout").style.display = 'none';
 	}
 	
-	// load manifests from browserstorage
+	// load manifests from db
 	let tmpManifestCheck = await checkManifestVersion(userDB['siteSettings']['lang']);
 	if(tmpManifestCheck){
 		await getDefinitions();
 	}
 
-	// load recent players from browserstorage
+	// load recent players from db
 	if(userDB['loadedPlayers']){
-		console.log();
-			currentPlayer = await getPlayer(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[0]].membershipId[0], userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[0]].platformType[0]);
-			userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[0]]['savedHTML'] = generatePlayerHTML(currentPlayer);
-			viewMain.innerHTML = userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[0]]['savedHTML'];
+		refreshPlayer(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]['membershipId'][0]);
+		viewMain.innerHTML += generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]);
 	}
-	
 	//console.log(userDB); Object.keys(userDB.siteSettings.lang)
 	localStorage.setItem("userDB", JSON.stringify(userDB));
 }
@@ -298,10 +295,6 @@ async function InitData(){
 /* getPlayer Function (create PlayerObject with details from fetch results)	  */
 /*********************************************************************************/
 async function getPlayer(memberID, memberType){
-	let HTML = 	"<div id='placeholder'>" +
-					"<div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div>" +
-				"</div>";
-	document.getElementById("viewMain").innerHTML += HTML;
 	
 	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + memberID + '/LinkedProfiles/?getAllMemberships=true';
 	let temp = await getData(rqURL);
@@ -377,7 +370,6 @@ async function getPlayer(memberID, memberType){
 			// charOrder gets index of titan, hunter, warlock (0,1,2)
 			playerDetails.charOrder = [playerDetails.charClass.indexOf(0),playerDetails.charClass.indexOf(1),playerDetails.charClass.indexOf(2)];
 			playerDetails.charOrder = playerDetails.charOrder.filter(no => no >= 0);
-			document.getElementById("placeholder").remove();
 			return playerDetails;
 }
 
@@ -677,14 +669,10 @@ async function getFireteam(){
 					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
 						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
 						let tmpProf = await getData(rqURL);
-						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
+						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0], "contentFireteam");
 						let tmpAdd = generatePlayerHTML(currentPlayer);
-						database['fireteamPlayers'][currentPlayer.membershipId[0]] = {
-							membershipId : currentPlayer.membershipId[0],
-							platformType : currentPlayer.membershipType[0],
-							savedHTML : tmpAdd
-						}
-						contentFireteam.innerHTML += database['fireteamPlayers'][currentPlayer.membershipId[0]]['savedHTML'];
+						database['fireteamPlayers'][currentPlayer.membershipId[0]] = currentPlayer;
+						contentFireteam.innerHTML += generatePlayerHTML(currentPlayer);
 					}
 				}		
 	}

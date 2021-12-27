@@ -4,6 +4,8 @@
 
 const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
 let userDB = new Object();
+userDB = JSON.parse(localStorage.getItem("userDB"));
+let placeholderHTML = 	"<div id='placeholder'><div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div></div>";
 let statDefinitions = new Object();
 let classDefinitions = new Object();
 let itemDefinitions = new Object();
@@ -80,17 +82,13 @@ document.onkeydown = (e)=> {
 		viewFireteam.classList.add("open");
 		countDown(fireteamTimer, getFireteam());
 		
-	//DIM
-	}else if(keycode == 39 && viewDIM.classList.contains("open")){
-		sidebar.style.display = "none";
-		sidebar.classList.toggle("open");
-		viewMain.classList.remove("open");
-		viewDIM.classList.add("open");
-	}else if(keycode == 37 && viewMain.classList.contains("open")){
-		sidebar.style.display = "none";
-		sidebar.classList.toggle("open");
-		viewMain.classList.remove("open");
-		viewDIM.classList.add("open");
+	//Playerscrolling
+	}else if(keycode == 37 && viewMain.classList.contains("open") && userDB['siteSettings']['userDBcursor'] > 0){
+		userDB['siteSettings']['userDBcursor']--;
+		switchPlayer();
+	}else if(keycode == 39 && viewMain.classList.contains("open") && userDB['siteSettings']['userDBcursor'] < (Object.keys(userDB['loadedPlayers']).length - 1)){
+		userDB['siteSettings']['userDBcursor']++;
+		switchPlayer();
 	}
 }
 
@@ -98,6 +96,12 @@ document.onkeydown = (e)=> {
 /* Element Actions	                                                             */
 /*********************************************************************************/
 
+async function switchPlayer(){
+	viewMain.innerHTML = placeholderHTML;
+	refreshPlayer(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]['membershipId'][0]);
+	document.getElementById("placeholder").remove();
+	viewMain.innerHTML = generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]);
+}
 
 function countDown(time, callback) {
     fireteamInterval = setInterval(function() {
@@ -137,6 +141,12 @@ function saveSiteSettings(prop, val){
 	localStorage.setItem("userDB", JSON.stringify(userDB));
 }
 
+async function refreshPlayer(membershipId){
+	currentPlayer = await getPlayer(userDB['loadedPlayers'][membershipId]['membershipId'][0], userDB['loadedPlayers'][membershipId]['platformType'][0]);
+	userDB['loadedPlayers'][membershipId] = currentPlayer;
+	localStorage.setItem("userDB", JSON.stringify(userDB));
+	console.log("refreshed player " + membershipId);
+}
 
 function deletePlayer(membershipId){
 	HTML = document.getElementsByClassName("acc-" + membershipId);
@@ -148,19 +158,12 @@ function deletePlayer(membershipId){
 	localStorage.setItem("userDB", JSON.stringify(userDB));
 }
 
-
 async function savePlayer(cP){
 	if(!userDB.hasOwnProperty('loadedPlayers')){
 			userDB['loadedPlayers'] = {};
 		}
 		if(!userDB['loadedPlayers'].hasOwnProperty(cP.membershipId)){
-			currentPlayer = await getPlayer(cP.membershipId, cP.platformType);
-			let tmpAdd = generatePlayerHTML(currentPlayer);
-			userDB['loadedPlayers'][cP.membershipId] = {
-				membershipId : cP.membershipId,
-				platformType : cP.platformType,
-				savedHTML : tmpAdd
-				};
+			userDB['loadedPlayers'][cP.membershipId[0]] = cP;
 			localStorage.setItem("userDB", JSON.stringify(userDB));
 			document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
 																		"<a href='#acc-" + cP.membershipId[0] + "'>" +
@@ -217,6 +220,7 @@ async function select(element){
 		selectedAttribute = element.firstChild.firstChild.alt;
         membershipType = (selectedAttribute.split('|'))[1];
         membershipId = (selectedAttribute.split('|'))[0];
+			currentPlayer = await getPlayer(membershipId, membershipType);
 			savePlayer(currentPlayer);
 			searchWrapper.classList.remove("active");
 			inputBox.value = "";
@@ -346,13 +350,5 @@ async function buttonClick(mshipId, platType){
 test ids:
 Hühnchen: 4611686018471653494 (für Umlaute)
 BlackBlotch: 4611686018471477303 (für mehrere Platformen)
-quaithemerald: 4611686018489703844 (für nur zwei character) 
-
-method: 'GET', // *GET, POST, PUT, DELETE, etc.
-mode: 'cors', // no-cors, *cors, same-origin
-cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
-credentials: 'same-origin', // include, *same-origin, omit
-headers: { 'X-API-Key': akey },
-redirect: 'follow', // manual, *follow, error
-referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+quaithemerald: 4611686018489703844 (für nur zwei character)
 */
