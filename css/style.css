@@ -568,7 +568,7 @@
 	
 	.aboutFrame img:not([href])
 	{
-		cursor: pointer;
+		cursor: auto;
 		filter: brightness(0.5);
 	}
 	
