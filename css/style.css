@@ -1112,15 +1112,16 @@
 	
 	.sidebarAnchors
 	{
-		display: flex;
 		align-items: center;
-		justify-content: center;
-		color: ffffff;
 		border: 1px solid white;
 		border-radius: 6px;
-		width: 40;
-		height: 40;
+		color: ffffff;
+		display: flex;
 		fill: #fff;
+		height: 40;
+		justify-content: center;
+		padding: 0.2rem;
+		width: 40;
 	}
 	
 	#anchorExo:hover
