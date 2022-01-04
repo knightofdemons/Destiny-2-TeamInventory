@@ -299,7 +299,7 @@ async function getPlayer(memberID, memberType){
 	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + memberID + '/LinkedProfiles/?getAllMemberships=true';
 	let temp = await getData(rqURL);
 		memberID = temp["Response"]["profiles"][0]["membershipId"];
-		memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
+		memberType = temp["Response"]["profiles"][0]["membershipType"];
 	
 	
 	// get player details from memberID & memberType (platform)
