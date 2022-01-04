@@ -142,13 +142,19 @@ function saveSiteSettings(prop, val){
 		userDB['siteSettings'][prop] = {};
 	}
 	userDB['siteSettings'][prop] = val;
-	localStorage.setItem("userDB", JSON.stringify(userDB));
+	userDBtmp = Object.assign({},userDB);
+	delete userDBtmp.loadedPlayers;
+	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
+	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
 }
 
 async function refreshPlayer(membershipId){
 	currentPlayer = await getPlayer(userDB['loadedPlayers'][membershipId]['membershipId'][0], userDB['loadedPlayers'][membershipId]['platformType'][0]);
 	userDB['loadedPlayers'][membershipId] = currentPlayer;
-	localStorage.setItem("userDB", JSON.stringify(userDB));
+	userDBtmp = Object.assign({},userDB);
+	delete userDBtmp.loadedPlayers;
+	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
+	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
 	console.log("refreshed player " + membershipId);
 }
 
@@ -159,7 +165,10 @@ function deletePlayer(membershipId){
 	}
 	delete userDB['loadedPlayers'][membershipId];
 	console.log("deleting " + membershipId + " from local player storage");
-	localStorage.setItem("userDB", JSON.stringify(userDB));
+	userDBtmp = Object.assign({},userDB);
+	delete userDBtmp.loadedPlayers;
+	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
+	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
 }
 
 async function savePlayer(cP){
@@ -168,7 +177,10 @@ async function savePlayer(cP){
 		}
 		if(!userDB['loadedPlayers'].hasOwnProperty(cP.membershipId)){
 			userDB['loadedPlayers'][cP.membershipId[0]] = cP;
-			localStorage.setItem("userDB", JSON.stringify(userDB));
+			userDBtmp = Object.assign({},userDB);
+			delete userDBtmp.loadedPlayers;
+			userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
+			localStorage.setItem("userDB", JSON.stringify(userDBtmp));
 			document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
 																		"<a href='#acc-" + cP.membershipId[0] + "'>" +
 																			"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
@@ -282,7 +294,10 @@ function setLang(lang) {
 	document.getElementById(lang).classList.toggle("act",true);
 	langBtn.classList.replace(langBtn.classList.item(1), "flag-icon-"+lang);
 	userDB['siteSettings']['lang'] = lang;
-	localStorage.setItem("userDB", JSON.stringify(userDB));
+	userDBtmp = Object.assign({},userDB);
+	delete userDBtmp.loadedPlayers;
+	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
+	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
 	location.reload();
 }
 
@@ -348,11 +363,3 @@ async function buttonClick(mshipId, platType){
 		let cP = await getPlayer(mshipId, platType);
 		savePlayer(cP);
 }
-
-
-/*
-test ids:
-Hühnchen: 4611686018471653494 (für Umlaute)
-BlackBlotch: 4611686018471477303 (für mehrere Platformen)
-quaithemerald: 4611686018489703844 (für nur zwei character)
-*/
