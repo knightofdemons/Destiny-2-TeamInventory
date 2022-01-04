@@ -515,7 +515,7 @@ function generatePlayerHTML(cP){
 							// charstats
 							"<div class='charStats'>";
 								for (let i = 0; i < 6; i++) {
-	HTML +=							'<div class="charStatsItem" data-title="' + userDB['Definitions']['stat'].info[userDB['Definitions']['stat'].hash.indexOf(charStatOrder[i])] + '">' +
+	HTML +=							'<div class="charStatsItem" title="' + userDB['Definitions']['stat'].info[userDB['Definitions']['stat'].hash.indexOf(charStatOrder[i])] + '">' +
 										"<img src='" + userDB['Definitions']['stat'].iconURL[userDB['Definitions']['stat'].hash.indexOf(charStatOrder[i])] + "'>" +
 										cP.charStats[cP.charOrder[index]][charStatOrder[i]] + "&emsp;" +
 									'</div>';
@@ -558,7 +558,7 @@ function generatePlayerHTML(cP){
 	HTML +=								(cP.itemDetails[cEquip[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cEquip[item].itemInstanceId].quality);
 									}
 	HTML +=							"</div>" +
-									'<div class="itemIconContainerInfo equipped" data-title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
+									'<div class="itemIconContainerInfo equipped" title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
 								"</div>";
 								}
 							}
@@ -589,7 +589,7 @@ function generatePlayerHTML(cP){
 	HTML +=								(cP.itemDetails[cInv[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cInv[item].itemInstanceId].quality);
 									}
 	HTML +=							"</div>" +
-									'<div class="itemIconContainerInfo" data-title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
+									'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
 								"</div>";
 								}
 							}
@@ -631,7 +631,7 @@ function generatePlayerHTML(cP){
 	HTML +=								(cP.itemDetails[cP.profileInventory[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cP.profileInventory[item].itemInstanceId].quality);
 									}
 	HTML +=							"</div>" +
-									'<div class="itemIconContainerInfo" data-title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
+									'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
 								"</div>";
 								}
 							}
