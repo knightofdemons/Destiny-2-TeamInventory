@@ -1464,6 +1464,11 @@
 		margin: 0 20px 0 0;
 	}
 	
+	.bx.bx-x:hover {
+		color: red;
+		cursor: pointer;
+	}
+	
 	#playerBucket .links_name
 	{
 		margin-right: 2rem;
