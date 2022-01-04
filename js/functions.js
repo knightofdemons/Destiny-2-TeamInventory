@@ -38,7 +38,7 @@ async function postData(url = '', data = {}, UseJSON = true) {
 
 
 /*********************************************************************************/
-/* Manifest & Miscellaneous													  */
+/* Manifest & Miscellaneous												         */
 /*********************************************************************************/
 async function checkManifestVersion(language) {
 	if(!userDB['manifestPaths']){
@@ -440,7 +440,7 @@ function generatePlayerHTML(cP){
 							"<div class='itemIconStatus'>" + 
 									"<img src='css/images/" + marker + ".png'>" +
 							"</div>" +
-							'<div class="itemIconContainerInfo" data-title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
+							'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
 						"</div>";
 						}
 					}
@@ -495,7 +495,7 @@ function generatePlayerHTML(cP){
 								"<div class='itemIconStatus'>" + 
 									"<img src='css/images/" + marker + ".png'>" +
 								"</div>" +
-								'<div class="itemIconContainerInfo" data-title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
+								'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
 							"</div>";
 							}
 						}
