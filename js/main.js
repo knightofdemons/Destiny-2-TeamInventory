@@ -133,6 +133,10 @@ function showSettingsAbout(){
 	aboutFrame.classList.toggle("closed");
 }
 
+function showLoginFrame(){
+	loginFrame.classList.toggle("closed");
+}
+
 function saveSiteSettings(prop, val){
 	if(!userDB['siteSettings'].hasOwnProperty(prop)){
 		userDB['siteSettings'][prop] = {};
@@ -286,12 +290,12 @@ function clickLogout() {
 	document.querySelector(".settingsSubMenu").classList.toggle("open");
 	document.querySelector(".language-options").classList.remove("open");
 	localStorage.removeItem("oauthToken");
-		document.querySelector("#settingsLogin").style.display = 'flex';
-		document.querySelector("#settingsLogout").style.display = 'none';
+	document.querySelector("#settingsLogin").style.display = 'flex';
+	document.querySelector("#settingsLogout").style.display = 'none';
 }
 
 function clickLogin() {
-	location.reload();
+	showLoginFrame();
 }
 
 function showTheme() {
