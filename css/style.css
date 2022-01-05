@@ -1139,21 +1139,21 @@
 		width: 40;
 	}
 	
-	#anchorExo:hover
+	#anchorExo:hover, #anchorExo.selected
 	{
 		cursor: pointer;
 		box-shadow: 0px 0px 9px 9px var(--anchorExo);
 		box-shadow: inset 0px 0px 9px 3px var(--anchorExo);
 	}
 	
-	#anchorInv:hover
+	#anchorInv:hover, #anchorInv.selected
 	{
 		cursor: pointer;
 		box-shadow: 0px 0px 9px 6px var(--anchorInv);
 		box-shadow: inset 0px 0px 9px 6px var(--anchorInv);
 	}
 	
-	#anchorVault:hover
+	#anchorVault:hover, #anchorVault.selected
 	{
 		cursor: pointer;
 		box-shadow: 0px 0px 9px 4px var(--anchorVault);
