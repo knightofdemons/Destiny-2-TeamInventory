@@ -1,0 +1,134 @@
+/******************************************/
+/* View Sections						  */
+/* 		- all					  	      */
+/* 		- viewMain					  	  */								
+/* 		- viewFireteam 					  */
+/******************************************/
+
+/* ALL */
+	
+	.viewMain, .viewFireteam
+	{
+		display: grid;
+		width: 100%;
+		padding-top: 1rem;
+		z-index: 1;
+		transition: all 0.5s ease;
+		position: absolute;
+	}
+	
+	.viewMain, .viewFireteam, #main
+	{
+		display: grid;
+		width: 100%;
+		padding-top: 1rem;
+		z-index: 1;
+		transition: 1s;
+		position: absolute;
+	}
+	
+	.viewMain.open ~ .viewFireteam, .viewFireteam.open ~ .viewMain, .viewFireteam.open ~ .viewMain, .viewMain.open ~ .viewFireteam
+	{
+		top: 0;
+		height: 100%;
+	}
+	
+
+/* VIEW MAIN */
+
+	.viewMain.open
+	{
+		display: grid;
+		height: 100%;
+	}
+
+	.viewMain
+	{
+		display: none;
+		height: 0%;
+	}
+
+	.main-content
+	{
+		display: grid;
+		width: calc(100% - var(--sidebar-width));
+		left: var(--sidebar-width);		
+		right: 0;
+		height: 100%;		
+		z-index: 0;
+		transition: 1s;
+		position: absolute;
+	}
+	
+
+/* VIEW FIRETEAM */
+
+	.viewFireteam
+	{
+		display: none;
+		height: 0%;
+	}
+	
+	.viewFireteam
+	{
+		display: flex;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+	}
+	
+	.viewFireteam.open
+	{
+		display: grid;
+		height: 100%;
+	}
+	
+	.viewFireteam [id^='acc']
+	{
+		display: block;
+		width: 33%;
+		padding-top: 1rem;
+		z-index: 1;
+		transition: all 0.5s ease;
+		position: absolute;
+	}
+	
+	.timerBar
+	{
+		display: flex;
+		position: fixed;
+		padding: 0 2px 2px 2px;
+		top: 0;
+		right: 0;
+		background-color: #000;
+		border-radius: 0 0 0 12px;
+		z-index: 99;
+	}
+	
+	.timerBar .bx
+	{
+		cursor: pointer;
+		line-height: 25px;
+		font-size: 1.5rem;
+		transition-duration: 1s;
+		transition-property: transform;
+	}
+	
+	.timerBar .bx:hover
+	{
+		color: var(--hovercolor);
+		transform: rotate(360deg);
+		-webkit-transform: rotate(360deg);
+	}
+	
+	#livedot{
+		color: red;
+		font-size: 1.2rem;
+		line-height: 20px;
+	}
+	
+	#offdot{
+		color: grey;
+		font-size: 1.2rem;
+		line-height: 20px;
+	}
