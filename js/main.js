@@ -276,6 +276,32 @@ function menuBtnChange() {
   }
 }
 
+// toggle navigation button appearance
+/*
+function anchBtnChange() {
+	if (window.location.hash.substr(1) == 'anch-vault') {
+		anchorVault.classList.add("selected");
+		anchorInv.classList.remove("selected");
+		anchorExo.classList.remove("selected");
+	} else if (window.location.hash.substr(1) == 'anch-equip') {
+		anchorInv.classList.add("selected");
+		anchorVault.classList.remove("selected");
+		anchorExo.classList.remove("selected");
+	} else {
+		anchorExo.classList.add("selected");
+		anchorVault.classList.remove("selected");
+		anchorInv.classList.remove("selected");
+	}		
+}
+*/
+
+function anchBtnChange(anch) {
+	anchorVault.classList.remove("selected");
+	anchorInv.classList.remove("selected");
+	anchorExo.classList.remove("selected");
+	document.getElementById(anch).classList.add("selected");
+}
+
 // Language
 // toggle language when clicking on icon
     langBtn.addEventListener("click", () => {
