@@ -378,7 +378,7 @@ async function getPlayer(memberID, memberType){
 /*********************************************************************************/
 function generatePlayerHTML(cP){
 	// add HTML
-	HTML = "<div class='playerMain' id='acc-" + cP.membershipId[0] + "'>" +
+	HTML = "<div class='playerMain'>" +
 				// player header
 				"<div class='playerHeaderFrame'>" +
 					"<div class='playerHeader'>" +
