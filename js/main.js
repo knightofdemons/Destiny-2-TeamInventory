@@ -97,9 +97,6 @@ document.onkeydown = (e)=> {
 /*********************************************************************************/
 
 async function switchPlayer(){
-	viewMain.innerHTML = placeholderHTML;
-	refreshPlayer(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]['membershipId'][0]);
-	document.getElementById("placeholder").remove();
 	viewMain.innerHTML = generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]);
 }
 
@@ -179,7 +176,7 @@ async function savePlayer(cP){
 		}
 		if(!userDB['loadedPlayers'].hasOwnProperty(cP.membershipId)){
 			userDB['loadedPlayers'][cP.membershipId[0]] = cP;
-			console.log("saved " + cP.membershipId + " to local player storage");
+			console.log("saved " + cP.membershipId[0] + " to local player storage");
 			updateUserDB();
 			showPlayer(cP.membershipId[0]);
 			document.getElementById("playerBucket").innerHTML += "<li id='acc-"+ cP.membershipId[0] + "'>" +

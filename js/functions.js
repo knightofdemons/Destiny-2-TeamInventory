@@ -281,13 +281,13 @@ async function InitData(){
 		await getDefinitions();
 	}
 
-	// load recent players from db
-	if(userDB['loadedPlayers']){
+ 	// load recent players from db #### muss neu gemacht werden ####
+/*	if(userDB['loadedPlayers']){
 		refreshPlayer(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]['membershipId'][0]);
 		viewMain.innerHTML += generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]);
 	}
-	//console.log(userDB); Object.keys(userDB.siteSettings.lang)
 	localStorage.setItem("userDB", JSON.stringify(userDB));
+*/
 }
 
 
