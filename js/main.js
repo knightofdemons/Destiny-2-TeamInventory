@@ -103,6 +103,13 @@ async function switchPlayer(){
 	viewMain.innerHTML = generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]);
 }
 
+function showPlayer(membershipId){
+	cursor = Object.keys(userDB['loadedPlayers']).indexOf(membershipId);
+	userDB['siteSettings']['userDBcursor'] = cursor;
+	updateUserDB();
+	switchPlayer();
+}
+
 function countDown(time, callback) {
     fireteamInterval = setInterval(function() {
 		if(fireteamCounter == -1){
@@ -137,38 +144,33 @@ function showLoginFrame(){
 	loginFrame.classList.toggle("closed");
 }
 
+function updateUserDB() {
+// updates userDB in storage from internal userDB
+	userDBtmp = Object.assign({},userDB);
+	delete userDBtmp.loadedPlayers;
+	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
+	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
+}
+
 function saveSiteSettings(prop, val){
 	if(!userDB['siteSettings'].hasOwnProperty(prop)){
 		userDB['siteSettings'][prop] = {};
 	}
 	userDB['siteSettings'][prop] = val;
-	userDBtmp = Object.assign({},userDB);
-	delete userDBtmp.loadedPlayers;
-	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
-	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
+	updateUserDB();
 }
 
 async function refreshPlayer(membershipId){
 	currentPlayer = await getPlayer(userDB['loadedPlayers'][membershipId]['membershipId'][0], userDB['loadedPlayers'][membershipId]['platformType'][0]);
 	userDB['loadedPlayers'][membershipId] = currentPlayer;
-	userDBtmp = Object.assign({},userDB);
-	delete userDBtmp.loadedPlayers;
-	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
-	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
-	console.log("refreshed player " + membershipId);
+	updateUserDB();
 }
 
-function deletePlayer(membershipId){
-	HTML = document.getElementsByClassName("acc-" + membershipId);
-	while (HTML[0]){
-		HTML[0].remove(); //has to be index0 because element also gets deleted from array for whatever reason
-	}
-	delete userDB['loadedPlayers'][membershipId];
-	console.log("deleting " + membershipId + " from local player storage");
-	userDBtmp = Object.assign({},userDB);
-	delete userDBtmp.loadedPlayers;
-	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
-	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
+function deletePlayer(membershipID){
+	document.getElementById("acc-" + membershipID).remove();
+	delete userDB['loadedPlayers'][membershipID];
+	console.log("deleted " + membershipID + " from local player storage");
+	updateUserDB();
 }
 
 async function savePlayer(cP){
@@ -177,12 +179,11 @@ async function savePlayer(cP){
 		}
 		if(!userDB['loadedPlayers'].hasOwnProperty(cP.membershipId)){
 			userDB['loadedPlayers'][cP.membershipId[0]] = cP;
-			userDBtmp = Object.assign({},userDB);
-			delete userDBtmp.loadedPlayers;
-			userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
-			localStorage.setItem("userDB", JSON.stringify(userDBtmp));
-			document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
-																		"<a href='#acc-" + cP.membershipId[0] + "'>" +
+			console.log("saved " + cP.membershipId + " to local player storage");
+			updateUserDB();
+			showPlayer(cP.membershipId[0]);
+			document.getElementById("playerBucket").innerHTML += "<li id='acc-"+ cP.membershipId[0] + "'>" +
+																		"<a onclick=\"showPlayer('" + cP.membershipId[0] + "')\">" +
 																			"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
 																			"<span class='links_name'>" + cP.platformName[0] + "</span>" +
 																			"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
@@ -320,10 +321,7 @@ function setLang(lang) {
 	document.getElementById(lang).classList.toggle("act",true);
 	langBtn.classList.replace(langBtn.classList.item(1), "flag-icon-"+lang);
 	userDB['siteSettings']['lang'] = lang;
-	userDBtmp = Object.assign({},userDB);
-	delete userDBtmp.loadedPlayers;
-	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
-	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
+	updateUserDB();
 	location.reload();
 }
 
