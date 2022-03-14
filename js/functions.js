@@ -10,7 +10,6 @@ async function getData(url, useApiKey = true) {
 		return response.json();
 }
 
-
 async function postData(url = '', data = {}, UseJSON = true) {
 	var tmpHead = new Headers();
 	let tmpData = {};

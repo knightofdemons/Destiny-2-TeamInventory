@@ -504,15 +504,29 @@
 		margin: 0 10px 0 10px;
 	}
 	
-	.sidebar #autocom-box
+	.search-input.active .autocom-box
 	{
+		display: block;
+		position: absolute;
+		height: 10rem;
+		width: 95%;
+		overflow-y: scroll;
+		scrollbar-color: var(--grad1) var(--grad2);
+		scrollbar-width: thin;
+		background-color: var(--grad1);
 		z-index: 101;
+	}
+	
+	.search-input .autocom-box
+	{
+		display: none;
 	}
 	
 	.sresult:hover
 	{
 		cursor: pointer;
-		background-color: var(--grad2);
+		background-color: black;
+		border-radius: 6px;
 		user-select: none;
 	}
 
