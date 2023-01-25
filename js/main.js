@@ -112,6 +112,23 @@ function showPlayer(membershipId){
 	switchPlayer();
 }
 
+function showItemDetails(){
+	// echo "";
+}
+
+function showSuggestions(list){
+    let listData;
+    if (list !== undefined){
+		if(!list.length){
+			userValue = inputBox.value;
+			listData = '<li>${userValue}</li>';
+		}else{
+		  listData = list.join('');
+		}
+		suggBox.innerHTML = listData;
+	}
+}
+
 function countDown(time, callback) {
     fireteamInterval = setInterval(function() {
 		if(fireteamCounter == -1){
@@ -151,7 +168,11 @@ function updateUserDB() {
 	userDBtmp = Object.assign({},userDB);
 	delete userDBtmp.loadedPlayers;
 	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
-	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
+	var jZ = new jsonZipper(JSON.stringify(userDBtmp));
+	jZ.zip();
+	
+	console.log(jZ);
+	localStorage.setItem("userDB", jZ);
 }
 
 function saveSiteSettings(prop, val){
@@ -244,20 +265,6 @@ async function select(element){
 			searchWrapper.classList.remove("active");
 			inputBox.value = "";
     }
-}
-
-
-function showSuggestions(list){
-    let listData;
-    if (list !== undefined){
-		if(!list.length){
-			userValue = inputBox.value;
-			listData = '<li>${userValue}</li>';
-		}else{
-		  listData = list.join('');
-		}
-		suggBox.innerHTML = listData;
-	}
 }
 
 // close sidebar when clicking on menu icon
