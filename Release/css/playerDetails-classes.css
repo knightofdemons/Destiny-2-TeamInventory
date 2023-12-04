@@ -1,0 +1,307 @@
+/******************************************/
+/* Player details classes				  */
+/* 		- emblem 					      */
+/* 		- item styling 					  */
+/* 		- player header					  */
+/* 		- player main					  */
+/* 		- section headlines			  	  */								
+/******************************************/
+
+/* EMBLEM */
+	
+	.charEmblemClass
+	{
+		font-size: calc(1.2rem * var(--sizeMultiplier));
+		font-weight: 400;
+		position: absolute;
+		text-shadow: 0.05rem 0.05rem #11101d;
+		left: 20%;
+		top: 10%;	
+	}
+	
+	.charEmblemImg, .charEmblemImg img
+	{
+		position: relative;
+		width: calc(var(--columWidth) * var(--sizeMultiplier));
+	}
+	
+	.charEmblemLvl
+	{
+		color: #FFFF97;
+		font-size: calc(1.7rem * var(--sizeMultiplier));
+		font-weight: 400;
+		position: absolute;
+		right: 4%;
+		top: 4%;
+		text-shadow: 0.05rem 0.05rem #11101d;
+	}
+	
+	.charList
+	{
+		display:flex;
+		justify-content: space-evenly;
+	}
+	
+	.charStats
+	{
+		background: rgba(200, 200, 200, .1);
+		display: flex;
+		justify-content: center;
+		text-align: center;
+		width: calc(var(--columWidth) * var(--sizeMultiplier));
+		font-size: calc(0.8rem * var(--sizeMultiplier));
+	}
+	
+	.charStats img
+	{
+		vertical-align: middle;
+		cursor: help;
+		height: calc(1.1rem * var(--sizeMultiplier));
+		width: calc(1.1rem * var(--sizeMultiplier));
+		margin-right: 0.1rem;
+	}
+
+
+/* ITEM STYLING */
+
+	.charItems {
+		width: calc(var(--columWidth) * var(--sizeMultiplier));
+	}
+
+	.charItemBucket {
+		display: flex;
+		justify-content: space-evenly;
+		width: 100%;
+		padding-top: 0.5rem;
+	}
+	
+	.charItemBucket:nth-child(2n) {
+		background-color: rgba(255,255,255,0.05);
+	}
+	
+	.charItemsEquip
+	{
+		z-index: 1;
+		position: relative;
+	}
+	
+	.charItemsInv
+	{
+		display: table;
+		max-width: calc(var(--iconSize)*4);
+	}
+	
+	.exo-armor-bucket
+	{
+		display: flex;
+		justify-content: space-evenly;
+	}
+	
+	.exo-armor-class
+	{
+		width: 33%;
+	}
+	
+	.exo-weapons
+	{
+		float: left;
+	}
+	
+	.item-list
+	{
+		float: left;
+		overflow: hidden;
+	}
+	
+	.itemIconContainer
+	{
+		cursor: help;
+		float: left;
+		height: calc(var(--iconSize) + 10);
+		position: relative;
+		width: calc(var(--iconSize) + 10);
+	}
+	
+	.itemIconContainer > img, .itemIconContainer.master > img
+	{
+		border: solid rgba(0,0,0,0.3) 2px;
+		border-radius: 10%;
+		height: var(--iconSize);
+		margin: 5px 5px;
+		vertical-align: middle;
+		width: var(--iconSize);
+	}
+	
+	.itemIconContainer.master > img
+	{
+		border: solid rgba(249,217,92,1) 2px;
+		box-shadow: 0px 0px 4px #ffcb00;
+	}
+	
+	.itemIconContainer > img.cross
+	{
+		opacity: 50%;
+	}
+	
+	.itemIconContainerEnergy
+	{
+		height: 0.85rem;
+		margin-bottom: 2px;
+		vertical-align: middle;
+		width: 0.85rem;
+	}
+	
+	.itemIconContainerInfo
+	{
+		height: var(--iconSize);
+		margin-left: 5px;
+		margin-top: calc(calc(var(--iconSize) + 5px) * -1);
+		position: absolute;
+		width: var(--iconSize);
+	}
+	
+	.itemIconContainerInfo.equipped
+	{
+		border: ridge white;
+		border-radius: 10%;
+	}
+	
+	.itemIconContainerLvl
+	{
+		background-color: rgba(0,0,0,0.5);
+		border-bottom-left-radius: 6.5px;
+		border-bottom-right-radius: 6.5px;
+		font-size: calc(0.7rem * var(--sizeMultiplier));
+		font-weight: 400;
+		margin-left: 5px;
+		padding-left: calc(0.05 * var(--iconSize));
+		position: absolute;
+		transform: translateY(-120%);
+		width: var(--iconSize);
+	}
+	
+	.itemIconStatus
+	{
+		position:absolute;
+		right: 0;
+		top: 0; 
+		z-index: 1;
+	}
+	
+	.itemIconStatus > img
+	{
+		height: calc(20px * var(--sizeMultiplier));
+		width: calc(20px * var(--sizeMultiplier));
+	}
+	
+	.vaultItems
+	{
+		display: inline-block;
+		overflow: hidden;
+	}
+	
+	
+/* PLAYER HEADER */
+
+	.playerHeaderFrame
+	{
+		width: 100%;
+		border-bottom: 1px solid var(--grad1);
+		background: rgba(0, 0, 0, .2);
+	}
+	
+	.playerHeader
+	{
+		color: #fff;
+		font-size: 2rem;
+		font-weight: 400;
+		text-align: center;
+		padding-top: 0.4rem;
+		z-index: 97;
+	}
+	
+	.playerHeader img
+	{
+		width: 50px;
+		height: 50px;
+		margin-right: 20px;
+		vertical-align: middle;
+		
+	}
+	
+	.playerHeaderSub
+	{
+		text-align: center;
+		font-size: 1rem;
+		font-weight: 40;
+		vertical-align: top;
+	}
+	
+	.playerHeaderSub img
+	{
+		width: 20px;
+		height: 20px;
+		margin-left: 5px;
+		vertical-align: top;
+		
+	}
+	
+	.platformLogo
+	{
+		height: 20px;
+		width: 20px;
+	}
+	
+	
+/* PLAYER MAIN */
+	
+	.playerMain
+	{
+		border: 2px solid var(--grad1);
+		border-radius: 10px;
+		background: rgba(0, 0, 0, .2);
+		height: max-content;
+		width: calc(100% - var(--sidbar-width));
+	}
+
+
+/* SECTION HEADLINES */
+
+	.heading {
+		display: flex;
+		position: relative;
+		color: #fff;
+		font-size: calc(1.5rem * var(--sizeMultiplier));
+		font-weight: 400;
+		line-height: calc(3rem * var(--sizeMultiplier));
+		align-items: center;
+		justify-content:center;
+		text-align: center;
+	}
+	
+	.headline-armor-bucket
+	{
+		color: #fff;
+		font-size: calc(1rem * var(--sizeMultiplier));
+		font-weight: 400;
+		line-height: calc(3rem * var(--sizeMultiplier));
+		text-align: left;	
+	}
+	
+	.headline-armor-class
+	{
+		color: #fff;
+		font-size: calc(1.2rem * var(--sizeMultiplier));
+		font-weight: 400;
+		line-height: calc(3rem * var(--sizeMultiplier));
+		text-align: center;
+	}
+	
+	.headline-weapon-bucket
+	{
+		color: #fff;
+		font-size: calc(1.2rem * var(--sizeMultiplier));
+		font-weight: 400;
+		line-height: calc(3rem * var(--sizeMultiplier));
+		text-align: left;	
+	}
