@@ -1,23 +1,20 @@
-# Use the official PHP image as the base image
-FROM php:7.4-apache
-
-# Copy the application files into the container
-COPY . /var/www/html
+# Use the official Node.js image as the base image
+FROM node:18
 
 # Set the working directory in the container
-WORKDIR /var/www/html
+WORKDIR /app
 
-# Install necessary PHP extensions
-RUN apt-get update && apt-get install -y \
-    libicu-dev \
-    libzip-dev \
-    && docker-php-ext-install \
-    intl \
-    zip \
-    && a2enmod rewrite
+# Copy the application files into the working directory
+COPY . /app
 
-# Expose port 80
-EXPOSE 80
+# Install the application dependencies
+RUN npm install
+
+# Build the React application
+RUN npm run build
+
+# Expose port 3000
+EXPOSE 3000
 
 # Define the entry point for the container
-CMD ["apache2-foreground"]
+CMD ["npm", "start"]
