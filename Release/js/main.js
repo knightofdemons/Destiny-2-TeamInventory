@@ -52,10 +52,6 @@ inputBox.onkeyup = (e)=>{
 	searchPlayer(e.target.value);
 }
 
-inputBox.addEventListener('blur', (event) => {
-	searchWrapper.classList.remove("active"); //hide autocomplete box
-});
-
 document.onmousedown = (e)=> {
 	if(!langOpt.contains(e.target) && !settingsSubMenu.contains(e.target) && !settingsThemes.contains(e.target)&& !settingsBtnCog.contains(e.target) && !aboutFrame.contains(e.target)){
 		langOpt.classList.remove("open");
@@ -94,7 +90,6 @@ document.onkeydown = (e)=> {
 		switchPlayer();
 	}
 }
-
 
 /*********************************************************************************/
 /* Element Actions	                                                             */
