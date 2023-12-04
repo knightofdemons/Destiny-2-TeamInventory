@@ -1,0 +1,145 @@
+/*
+Variables and mixins that can be used from any SCSS file
+
+DIM orange and blue, accent colors */
+:root {
+	--sizeMultiplier: 1;
+	--iconSize: calc(50px * var(--sizeMultiplier));
+	--sidebar-width: 20rem;
+	--columWidth: 400px; /* 474px */
+	--hovercolor: gray;
+	--anchorExo: #ffd700;
+	--anchorInv: #663399;
+	--anchorVault: #0a5d00;
+	
+	--orange: #e8a534;
+	--orange2: #00cc68;
+	--blue: #68a0b7;
+	--red: #ff3232; /* For warnings/errors */
+	/* --grad0:hsl(240, 20%, 28%);
+	--grad1:hsl(240, 27%, 12%); */
+	--grad0:#393956;
+	--grad1:#161627;
+	--grad2:linear-gradient(90deg, rgba(100,10,10,0.2) 0%, rgba(57,57,86,0) 90%);
+	--gradient: radial-gradient(
+	  circle at 50% 70px,
+	  var(--grad0) 0%,
+	  var(--grad1) 100%
+	);
+	
+	/* Themes */
+	--themeRedA: #9a1e18;
+	--themeRedB: #080414;
+	--themeBlueA: #115ca7;
+	--themeBlueB: #331b4b;
+	--themeGreenA: #709922;
+	--themeGreenB: #041603;
+	--themeYellowA: #FBDA61;
+	--themeYellowB: #423712;
+	--themeOrangeA: #d78125;
+	--themeOrangeB: #342809;
+	--themePurpleA: #393956;
+	--themePurpleB: #161627;
+	--themeBlackA: #8a8a8a;
+	--themeBlackB: #000000;
+	--themeWhiteA: #f0f0f0;
+	--themeWhiteB: #747474;
+
+	/* Elemental damage types */
+	--arc: #85c5ec;
+	--solar: #f2721b;
+	--void: #814bcf;
+
+	/* Item rarities */
+	--common: #dcdcdc;
+	--uncommon: #366e42;
+	--rare: #5076a3;
+	--legendary: #513065;
+	--exotic: #c3a019;
+
+	/* The color of XP bars */
+	--xp: #5ea16a;
+	/* Border for completed items/quests/bounties */
+	--gold: #f5dc56;
+	--power: --gold;
+
+	/* Color of the item border for masterworks */
+	--masterwork-border-color: #eade8b;
+
+	/* Item tiles' border */
+	--item-border-width: 1px;
+
+	/* Border around equipped items */
+	--equipped-item-border: 1px;
+	--equipped-item-padding: 2px;
+	--equipped-item-total-outset: #{2 * (--equipped-item-border + --equipped-item-padding)};
+}
+/*
+	/* A mixin that allows targeting styles only when in phone-portrait display mode 
+	@mixin phone-portrait {
+	  /* This seems like a good breakpoint for portrait based on https://material.io/devices/
+		 We can't use orientation:portrait because Android Chrome messes up when the keyboard is shown: https://www.chromestatus.com/feature/5656077370654720 
+	  @media (max-width: 540px) {
+		@content;
+	  }
+	}
+
+	/* Position something directly below the header 
+	@mixin below-header {
+	  top: var(--header-height);
+	}
+
+	/* The tallest a "full screen" sheet should be 
+	@mixin max-sheet-height {
+	  max-height: calc(var(--viewport-height) - var(--header-height) - 92px);
+	}
+
+	/* A header for items or perks that matches the in-game display 
+	@mixin destiny-header {
+	  text-transform: uppercase;
+	  font-weight: 600;
+	  font-family: Helvetica, Arial, sans-serif;
+	}
+
+	@mixin draggable-hover-border {
+	  outline: 1px solid #ddd;
+
+	  @include phone-portrait {
+		outline: none;
+	  }
+	}
+
+	/* Apply spacing between children 
+	@mixin vertical-space-children(--space) {
+	  > *:nth-last-child(n + 2) {
+		margin-bottom: --space;
+	  }
+	}
+
+	/* Apply spacing between children 
+	@mixin horizontal-space-children(--space) {
+	  > *:nth-last-child(n + 2) {
+		margin-right: --space;
+	  }
+	}
+
+	/* Show visible scrollbars when scrollable, even if the OS (e.g. macOS) prefers hidden scrollbars 
+	@mixin visible-scrollbars {
+	  &::-webkit-scrollbar-track {
+		background: #555;
+	  }
+
+	  &::-webkit-scrollbar-thumb {
+		background: #e4e4e4;
+		border-radius: 3px;
+	  }
+
+	  &::-webkit-scrollbar {
+		width: 10px;
+
+		&:horizontal {
+		  height: 10px;
+		}
+	  }
+	}
+*/
