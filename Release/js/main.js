@@ -2,24 +2,21 @@
 /* Variables & Elements                                                          */
 /*********************************************************************************/
 
-let userDB = new Object();
-userDB = JSON.parse(localStorage.getItem("userDB"));
-let placeholderHTML = 	"<div id='placeholder'><div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div></div>";
-let statDefinitions = new Object();
-let classDefinitions = new Object();
-let itemDefinitions = new Object();
-let itemDefinitionsTmp = new Object();
-let energyDefinitions = new Object();
-let catDefinitions = new Object();
-let playerlist = new Object();
-let siteSettings = new Object();
+let statDefinitions = {};
+let classDefinitions = {};
+let itemDefinitions = {};
+let itemDefinitionsTmp = {};
+let energyDefinitions = {};
+let catDefinitions = {};
 let lang = '';
+let playerlist = {};
 let charStatOrder = [2996146975,392767087,1943323491,1735777505,144602215,4244567218];
 let buckets = [1498876634,2465295065,953998645,3448274439,3551918588,14239492,20886954,1585787867];
 let vendorHashList = [1037843411, 3989934776, 864211278];
 let fireteamInterval;
 let fireteamCounter;
 let fireteamTimer = 60;
+let siteSettings = {};
 
 let searchWrapper = document.querySelector(".search-input");
 let inputBox = searchWrapper.querySelector("#searchAcc");
@@ -81,13 +78,17 @@ document.onkeydown = (e)=> {
 		viewFireteam.classList.add("open");
 		countDown(fireteamTimer, getFireteam());
 		
-	//Playerscrolling
-	}else if(keycode == 37 && viewMain.classList.contains("open") && userDB['siteSettings']['userDBcursor'] > 0){
-		userDB['siteSettings']['userDBcursor']--;
-		switchPlayer();
-	}else if(keycode == 39 && viewMain.classList.contains("open") && userDB['siteSettings']['userDBcursor'] < (Object.keys(userDB['loadedPlayers']).length - 1)){
-		userDB['siteSettings']['userDBcursor']++;
-		switchPlayer();
+	//DIM
+	}else if(keycode == 39 && viewDIM.classList.contains("open")){
+		sidebar.style.display = "none";
+		sidebar.classList.toggle("open");
+		viewMain.classList.remove("open");
+		viewDIM.classList.add("open");
+	}else if(keycode == 37 && viewMain.classList.contains("open")){
+		sidebar.style.display = "none";
+		sidebar.classList.toggle("open");
+		viewMain.classList.remove("open");
+		viewDIM.classList.add("open");
 	}
 }
 
@@ -95,16 +96,6 @@ document.onkeydown = (e)=> {
 /* Element Actions	                                                             */
 /*********************************************************************************/
 
-async function switchPlayer(){
-	viewMain.innerHTML = generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]);
-}
-
-function showPlayer(membershipId){
-	cursor = Object.keys(userDB['loadedPlayers']).indexOf(membershipId);
-	userDB['siteSettings']['userDBcursor'] = cursor;
-	updateUserDB();
-	switchPlayer();
-}
 
 function countDown(time, callback) {
     fireteamInterval = setInterval(function() {
@@ -136,64 +127,28 @@ function showSettingsAbout(){
 	aboutFrame.classList.toggle("closed");
 }
 
-function showLoginFrame(){
-	loginFrame.classList.toggle("closed");
-}
 
-function updateUserDB() {
-// updates userDB in storage from internal userDB
-	userDBtmp = Object.assign({},userDB);
-	delete userDBtmp.loadedPlayers;
-	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
-	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
-}
-
-function saveSiteSettings(prop, val){
-	if(!userDB['siteSettings'].hasOwnProperty(prop)){
-		userDB['siteSettings'][prop] = {};
+function deletePlayer(membershipId){
+	document.getElementById("acc-" + membershipId).parentNode.removeChild(document.getElementById("acc-" + membershipId));
+	HTML = document.getElementsByClassName("acc-" + membershipId);
+	while (HTML[0]){
+		HTML[0].remove(); //has to be index0 because element also gets deleted from array for whatever reason
 	}
-	userDB['siteSettings'][prop] = val;
-	updateUserDB();
-}
-
-async function refreshPlayer(membershipId){
-	currentPlayer = await getPlayer(userDB['loadedPlayers'][membershipId]['membershipId'][0], userDB['loadedPlayers'][membershipId]['platformType'][0]);
-	userDB['loadedPlayers'][membershipId] = currentPlayer;
-	updateUserDB();
-}
-
-function deletePlayer(membershipID){
-	document.getElementById("acc-" + membershipID).remove();
-	delete userDB['loadedPlayers'][membershipID];
-	console.log("deleted " + membershipID + " from local player storage");
-	updateUserDB();
-}
-
-async function savePlayer(cP){
-	if(!userDB.hasOwnProperty('loadedPlayers')){
-			userDB['loadedPlayers'] = {};
-		}
-		if(!userDB['loadedPlayers'].hasOwnProperty(cP.membershipId)){
-			userDB['loadedPlayers'][cP.membershipId[0]] = cP;
-			console.log("saved " + cP.membershipId[0] + " to local player storage");
-			updateUserDB();
-			showPlayer(cP.membershipId[0]);
-			document.getElementById("playerBucket").innerHTML += "<li id='acc-"+ cP.membershipId[0] + "'>" +
-																		"<a onclick=\"showPlayer('" + cP.membershipId[0] + "')\">" +
-																			"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
-																			"<span class='links_name'>" + cP.platformName[0] + "</span>" +
-																			"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
-																		"</a>";
-																	"</li>";
-		}else{
-			console.log("already existing player");
-		}
+	let storageTmp = JSON.parse(localStorage.getItem("loadedPlayers"));
+	let index = storageTmp.findIndex(function(toBeDeleted) {
+		return toBeDeleted.membershipId[0] == membershipId;
+	});
+	storageTmp.splice(index, 1);
+	console.log("deleting " + membershipId + " from local player storage");
+	localStorage.setItem("loadedPlayers", JSON.stringify(storageTmp));
 }
 
 
-function clearData() {
-	localStorage.clear();
-	location.reload();
+function addPlayerToStorage(data){
+	let storageTmp = JSON.parse(localStorage.getItem("loadedPlayers"));
+	(storageTmp = storageTmp || []).push(data);
+	console.log("saving " + data.platformName + " to local player storage");
+	localStorage.setItem("loadedPlayers", JSON.stringify(storageTmp));
 }
 
 
@@ -225,6 +180,7 @@ async function searchPlayer(inputData){
 	
 }
 
+
 async function select(element){
     let selectData = element.textContent;
 	suggBox.innerHTML = "";
@@ -233,10 +189,16 @@ async function select(element){
 		selectedAttribute = element.firstChild.firstChild.alt;
         membershipType = (selectedAttribute.split('|'))[1];
         membershipId = (selectedAttribute.split('|'))[0];
+		//checks if div-container is already existing for current player & add player if not
+		if(!document.getElementById("acc-" + membershipId)){
 			currentPlayer = await getPlayer(membershipId, membershipType);
-			savePlayer(currentPlayer);
+			addPlayer(currentPlayer, "viewMain");
+			addPlayerToStorage(currentPlayer);
 			searchWrapper.classList.remove("active");
 			inputBox.value = "";
+		}else{
+			console.log("already existing player");
+		}
     }
 }
 
@@ -273,32 +235,6 @@ function menuBtnChange() {
   }
 }
 
-// toggle navigation button appearance
-/*
-function anchBtnChange() {
-	if (window.location.hash.substr(1) == 'anch-vault') {
-		anchorVault.classList.add("selected");
-		anchorInv.classList.remove("selected");
-		anchorExo.classList.remove("selected");
-	} else if (window.location.hash.substr(1) == 'anch-equip') {
-		anchorInv.classList.add("selected");
-		anchorVault.classList.remove("selected");
-		anchorExo.classList.remove("selected");
-	} else {
-		anchorExo.classList.add("selected");
-		anchorVault.classList.remove("selected");
-		anchorInv.classList.remove("selected");
-	}		
-}
-*/
-
-function anchBtnChange(anch) {
-	anchorVault.classList.remove("selected");
-	anchorInv.classList.remove("selected");
-	anchorExo.classList.remove("selected");
-	document.getElementById(anch).classList.add("selected");
-}
-
 // Language
 // toggle language when clicking on icon
     langBtn.addEventListener("click", () => {
@@ -316,8 +252,32 @@ function setLang(lang) {
 	}
 	document.getElementById(lang).classList.toggle("act",true);
 	langBtn.classList.replace(langBtn.classList.item(1), "flag-icon-"+lang);
-	userDB['siteSettings']['lang'] = lang;
-	updateUserDB();
+	// remove output & local storage that depends on language (otherwise new values would be pushed to old)
+	document.querySelector(".settingsSubMenu").style.display = "none";
+	document.querySelector(".language-options").style.display = "none";
+	document.getElementById("viewMain").innerHTML = "";
+	document.getElementById("playerBucket").innerHTML ="";
+	localStorage.removeItem("manifestPaths");
+	localStorage.removeItem("statDefinitions");
+	localStorage.removeItem("classDefinitions");
+	localStorage.removeItem("itemDetails");
+	localStorage.removeItem("itemCategoryDetails");
+	localStorage.removeItem("itemBucketDetails");
+	// save lang
+	saveSiteSettings("lang", lang);
+	// reload manifest
+	InitData();
+}
+
+function clearData() {
+	document.querySelector(".settingsSubMenu").classList.toggle("open");
+	document.querySelector(".language-options").classList.remove("open");
+	document.getElementById("viewMain").innerHTML = "";
+	document.getElementById("playerBucket").innerHTML ="";
+	localStorage.clear();
+	// save lang
+	localStorage.setItem("lang", JSON.stringify(lang));
+	// reload page
 	location.reload();
 }
 
@@ -325,12 +285,12 @@ function clickLogout() {
 	document.querySelector(".settingsSubMenu").classList.toggle("open");
 	document.querySelector(".language-options").classList.remove("open");
 	localStorage.removeItem("oauthToken");
-	document.querySelector("#settingsLogin").style.display = 'flex';
-	document.querySelector("#settingsLogout").style.display = 'none';
+		document.querySelector("#settingsLogin").style.display = 'flex';
+		document.querySelector("#settingsLogout").style.display = 'none';
 }
 
 function clickLogin() {
-	showLoginFrame();
+	location.reload();
 }
 
 function showTheme() {
@@ -366,8 +326,6 @@ function setTheme(element) {
 		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeWhiteA'));
 		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeWhiteB'));
 	}
-	saveSiteSettings("ThemeGrad0", getComputedStyle(document.documentElement).getPropertyValue('--grad0'));
-	saveSiteSettings("ThemeGrad1", getComputedStyle(document.documentElement).getPropertyValue('--grad01'));
 }
 
 function setIconsize(val) {
@@ -379,7 +337,29 @@ function setIconsize(val) {
 /*********************************************************************************/
 /* Temp 			                                                             */
 /*********************************************************************************/
-async function buttonClick(mshipId, platType){
-		let cP = await getPlayer(mshipId, platType);
-		savePlayer(cP);
+async function buttonClick(membershipId, platformType){
+		//checks if div-container is already existing for current player & add player if not
+		if(!document.getElementById("acc-" + membershipId)){
+			currentPlayer = await getPlayer(membershipId, platformType); //temporary function to add a player | will be replaced by searchbar-submit
+			addPlayer(currentPlayer, "viewMain");
+			addPlayerToStorage(currentPlayer);
+		}else{
+			console.log("already existing player");
+		}
 }
+
+
+/*
+test ids:
+Hühnchen: 4611686018471653494 (für Umlaute)
+BlackBlotch: 4611686018471477303 (für mehrere Platformen)
+quaithemerald: 4611686018489703844 (für nur zwei character) 
+
+method: 'GET', // *GET, POST, PUT, DELETE, etc.
+mode: 'cors', // no-cors, *cors, same-origin
+cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
+credentials: 'same-origin', // include, *same-origin, omit
+headers: { 'X-API-Key': akey },
+redirect: 'follow', // manual, *follow, error
+referrerPolicy: 'no-referrer', // *no-referrer, no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+*/
