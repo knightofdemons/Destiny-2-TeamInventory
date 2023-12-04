@@ -7,14 +7,15 @@ function openOauthPopup(){
 		popOauth.close();
 		loginFr = document.getElementById("loginFrame");
 		loginFr.parentNode.removeChild(loginFr);
+		settingsLogout.classList.toggle("closed");
 		InitData();
 	}, false);
 }
 
+
 if(localStorage.getItem('oauthToken')){
 		loginFr = document.getElementById("loginFrame");
 		loginFr.parentNode.removeChild(loginFr);
+		settingsLogout.classList.toggle("closed");
 		InitData();
-	}else{
-		openOauthPopup();
 	}

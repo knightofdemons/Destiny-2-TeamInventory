@@ -10,7 +10,6 @@ async function getData(url, useApiKey = true) {
 		return response.json();
 }
 
-
 async function postData(url = '', data = {}, UseJSON = true) {
 	var tmpHead = new Headers();
 	let tmpData = {};
@@ -38,134 +37,57 @@ async function postData(url = '', data = {}, UseJSON = true) {
 
 
 /*********************************************************************************/
-/* Manifest & Miscellaneous													  */
+/* Manifest & Miscellaneous												         */
 /*********************************************************************************/
 async function checkManifestVersion(language) {
-	if(localStorage.getItem("manifestPaths")){
-		var manifestPaths = JSON.parse(localStorage.getItem("manifestPaths"));
-	}else{
-		var manifestPaths = {'statDefinitions':'/oops'};
+	if(!userDB['manifestPaths']){
+		userDB['manifestPaths'] = {stat : '/oops'};
 	}
-	const check = await fetch(manifestPaths.statDefinitions, {method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer',});
+	const check = await fetch(userDB['manifestPaths']['stat'], {method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer',});
 	if (check.status == 404) {
-	// get manifest details
+		// get new manifests
 		rqURL = 'https://www.bungie.net/Platform/Destiny2/Manifest/';
 		const resManifest = await getData(rqURL, false);
-		// store .json-paths in object manifestPaths
-			manifestPaths = {
-				'statDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyStatDefinition'], // like [567] -> resilience
-				'itemDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryItemDefinition'], // like [123] -> xenophage
-				'itemCategoryDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyItemCategoryDefinition'], // like [234] -> kinetic weapon
-				'itemBucketDetails':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'], // like [345] -> leg armor
-				'classDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyClassDefinition'], // like [2] -> warlock
-				'energyDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyEnergyTypeDefinition'], // like [6] -> stasis (for armor)
-				'damageTypeDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyDamageTypeDefinition'], // like [6] -> stasis (for weapons)
-				'vendorDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyVendorDefinition'], // like vault
-				'recordDefinitions':'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyRecordDefinition'] // records like cats
+			userDB['manifestPaths'] = {
+				stat : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyStatDefinition'], // like [567] -> resilience
+				item : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryItemDefinition'], // like [123] -> xenophage
+				itemCategoryDetails : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyItemCategoryDefinition'], // like [234] -> kinetic weapon
+				itemBucketDetails : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'], // like [345] -> leg armor
+				classDef : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyClassDefinition'], // like [2] -> warlock
+				energy : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyEnergyTypeDefinition'], // like [6] -> stasis (for armor)
+				damageType : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyDamageTypeDefinition'], // like [6] -> stasis (for weapons)
+				vendor : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyVendorDefinition'], // like vault
+				record : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyRecordDefinition'] // records like cats
 			};
-			localStorage.setItem("manifestPaths", JSON.stringify(manifestPaths));
+			return true;
 	}else if(check.status == 501){
 		Window.alert("Errorcode: " + check.status + " - Reloading Page");
 		location.reload();
-	}
-	return manifestPaths;
-}
-
-
-function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 0) {
-// sorts object with different arrays at the same time
-// https://gist.github.com/boukeversteegh/3219ffb912ac6ef7282b1f5ce7a379ad
-  let arrayKeys = Object.keys(arrays);
-  let sortableArray = Object.values(arrays)[0];
-  let indexes = Object.keys(sortableArray);
-  let sortedIndexes = indexes.sort((a, b) => comparator(sortableArray[a], sortableArray[b]));
-
-  let sortByIndexes = (array, sortedIndexes) => sortedIndexes.map(sortedIndex => array[sortedIndex]);
-
-  if (Array.isArray(arrays)) {
-	return arrayKeys.map(arrayIndex => sortByIndexes(arrays[arrayIndex], sortedIndexes));
-  } else {
-	let sortedArrays = {};
-	arrayKeys.forEach((arrayKey) => {
-	  sortedArrays[arrayKey] = sortByIndexes(arrays[arrayKey], sortedIndexes);
-	});
-	return sortedArrays;
-  }
-}
-
-
-function saveSiteSettings(target, val) {
-	let obj = {};
-	if(localStorage.getItem("siteSettings")){
-		obj = JSON.parse(localStorage.getItem("siteSettings"));
-	}
-	obj[target] = val;
-	localStorage.setItem("siteSettings", JSON.stringify(obj));
-}
-
-function loadSiteSettings(target) {
-	let obj = JSON.parse(localStorage.getItem("siteSettings"));
-	if(obj){
-		return obj[target];	
 	}else{
-		return null;
+		return false;
 	}
 }
 
+async function getDefinitions(){
+	let statDefinitions = new Object();
+	let itemDefinitions = new Object();
+	let classDefinitions = new Object();
+	let energyDefinitions = new Object();
+	let damageTypeDefinitions = new Object();
+	let vendorDefinitions = new Object();
+	let recordDefinitions = new Object();
 
-/*********************************************************************************/
-/* Get initial data															  */
-/*********************************************************************************/
-async function InitData(){
-	lang = loadSiteSettings("lang");
-	if(lang){
-		document.querySelector("#lang-btn").classList.replace(document.querySelector("#lang-btn").classList.item(1), "flag-icon-"+lang);
-	}else{
-		lang = 'en';
-		saveSiteSettings("lang", lang);
-	}
-	let maniPaths = await checkManifestVersion(lang);
-
-	if(localStorage.getItem("oauthToken")){
-		document.querySelector("#settingsLogin").style.display = 'none';
-		document.querySelector("#settingsLogout").style.display = 'flex';
-	}else{
-		document.querySelector("#settingsLogin").style.display = 'flex';
-		document.querySelector("#settingsLogout").style.display = 'none';
-	}
-	
-	// HTML Prep
-	let val = loadSiteSettings("sizeMultiplier");
-	if(val){
-		document.documentElement.style.setProperty('--sizeMultiplier', val);
-	}else{
-		saveSiteSettings("sizeMultiplier", 1);
-	}
-
-	// load initData from browserstorage
-	if(localStorage.getItem("statDefinitions")){
-		statDefinitions = JSON.parse(localStorage.getItem("statDefinitions"));
-		itemDefinitions = JSON.parse(localStorage.getItem("itemDefinitions"));
-		classDefinitions = JSON.parse(localStorage.getItem("classDefinitions"));
-		energyDefinitions = JSON.parse(localStorage.getItem("energyDefinitions"));
-		damageTypeDefinitions = JSON.parse(localStorage.getItem("damageTypeDefinitions"));
-		vendorDefinitions = JSON.parse(localStorage.getItem("vendorDefinitions"));
-		recordDefinitions = JSON.parse(localStorage.getItem("recordDefinitions"));
+	const resStatDefinitions = await getData(userDB['manifestPaths']['stat'], false);
+	const resClassDefinitions = await getData(userDB['manifestPaths']['classDef'], false);
+	const resEnergyDefinitions = await getData(userDB['manifestPaths']['energy'], false);
+	const resDamageTypeDefinitions = await getData(userDB['manifestPaths']['damageType'], false);
+	const resVendorDefinitions = await getData(userDB['manifestPaths']['vendor'], false);
+	const resRecordDefinitions = await getData(userDB['manifestPaths']['record'], false);
+	const resItemDefinitions = await getData(userDB['manifestPaths']['item'], false);
+	const resItemBucketDetails = await getData(userDB['manifestPaths']['itemBucketDetails'], false);
+	const resItemCategoryDetails = await getData(userDB['manifestPaths']['itemCategoryDetails'], false);
 		
-	}else{
-		// delete (for language change)
-		statDefinitions = {};
-		itemDefinitions = {};
-		itemDefinitionsTmp = {};
-		classDefinitions = {};
-		energyDefinitions = {};
-		damageTypeDefinitions = {};
-		vendorDefinitions = {};
-		recordDefinitions = {};
-		
-		// get details for stats from manifest
-			const resStatDefinitions = await getData(maniPaths.statDefinitions, false);
-			// for every item
+		// get details for stats from manifest for every item
 				for (let resStatDef in resStatDefinitions) {
 					(statDefinitions.name = statDefinitions.name || []).push(resStatDefinitions[resStatDef]['displayProperties']['name']);
 					(statDefinitions.info = statDefinitions.info || []).push(resStatDefinitions[resStatDef]['displayProperties']['description']);
@@ -173,35 +95,27 @@ async function InitData(){
 					(statDefinitions.iconURL = statDefinitions.iconURL || []).push('https://www.bungie.net' + resStatDefinitions[resStatDef]['displayProperties']['icon']);
 				};
 		
-		// get details for classes from manifest
-			const resClassDefinitions = await getData(maniPaths.classDefinitions, false);
-			// for every item
+		// get details for classes from manifest for every item
 				for (let resClassDef in resClassDefinitions) {
 					(classDefinitions.name = classDefinitions.name || []).push(resClassDefinitions[resClassDef]['displayProperties']['name']);
 					(classDefinitions.no = classDefinitions.no || []).push(resClassDefinitions[resClassDef]['classType']);
 				};
 				
-		// get details for energy types from manifest
-			const resEnergyDefinitions = await getData(maniPaths.energyDefinitions, false);
-			// for every item
+		// get details for energy types from manifest for every item
 				for (let resEnergyDef in resEnergyDefinitions) {
 					(energyDefinitions.name = energyDefinitions.name || []).push(resEnergyDefinitions[resEnergyDef]['displayProperties']['name']);
 					(energyDefinitions.iconURL = energyDefinitions.iconURL || []).push('https://www.bungie.net' + resEnergyDefinitions[resEnergyDef]['transparentIconPath']);
 					(energyDefinitions.no = energyDefinitions.no || []).push(resEnergyDefinitions[resEnergyDef]['enumValue']);
 				};
 				
-		// get details for damage types from manifest
-			const resDamageTypeDefinitions = await getData(maniPaths.damageTypeDefinitions, false);
-			// for every item
+		// get details for damage types from manifest for every item
 				for (let resDamageTypeDef in resDamageTypeDefinitions) {
 					(damageTypeDefinitions.name = damageTypeDefinitions.name || []).push(resDamageTypeDefinitions[resDamageTypeDef]['displayProperties']['name']);
 					(damageTypeDefinitions.iconURL = damageTypeDefinitions.iconURL || []).push('https://www.bungie.net' + resDamageTypeDefinitions[resDamageTypeDef]['transparentIconPath']);
 					(damageTypeDefinitions.no = damageTypeDefinitions.no || []).push(resDamageTypeDefinitions[resDamageTypeDef]['enumValue']);
 				};
 		
-		// get details for vendors from manifest (only vault, exotic armor, exotic weapon)
-			const resVendorDefinitions = await getData(maniPaths.vendorDefinitions, false);
-			// for every item
+		// get details for vendors from manifest (only vault, exotic armor, exotic weapon) for every item
 				for (i = 0; i < 3; i++) {
 					(vendorDefinitions.name = vendorDefinitions.name || []).push(resVendorDefinitions[vendorHashList[i]]['displayProperties']['name']);
 					if (resVendorDefinitions[vendorHashList[i]]['displayProperties']['smallTransparentIcon'] !== undefined) {
@@ -212,9 +126,7 @@ async function InitData(){
 					(vendorDefinitions.hash = vendorDefinitions.hash || []).push(resVendorDefinitions[vendorHashList[i]]['hash']);
 				};
 				
-		// get details for records from manifest (only objectiveHashes)
-			const resRecordDefinitions = await getData(maniPaths.recordDefinitions, false);
-			// for every item
+		// get details for records from manifest (only objectiveHashes) for every item
 				for (let resRecordDef in resRecordDefinitions) {
 					if (resRecordDefinitions[resRecordDef]['objectiveHashes'] !== undefined && resRecordDefinitions[resRecordDef]['objectiveHashes'][0] !== undefined) {
 						for (let i=0; i<resRecordDefinitions[resRecordDef]['objectiveHashes'].length; i++) {
@@ -224,10 +136,6 @@ async function InitData(){
 					}
 				};
 		
-		// get details for items from manifest
-			const resItemDefinitions = await getData(maniPaths.itemDefinitions, false);
-			const resItemBucketDetails = await getData(maniPaths.itemBucketDetails, false);
-			const resItemCategoryDetails = await getData(maniPaths.itemCategoryDetails, false);
 			// get details for catalysts
 			for (let resItemDef in resItemDefinitions) {
 				if (resItemDefinitions[resItemDef]['inventory']['bucketTypeHash'] === 2422292810 && resItemDefinitions[resItemDef]['inventory']['recoveryBucketTypeHash'] === 215593132 && resItemDefinitions[resItemDef]['inventory']['tierTypeName'] === "Exotic" && resItemDefinitions[resItemDef]['perks'][0] !== undefined && resItemDefinitions[resItemDef]['perks'][0]['perkHash'] !== undefined && resItemDefinitions[resItemDef]['itemType'] === 19) {
@@ -236,7 +144,7 @@ async function InitData(){
 				}
 			}
 			var tmpObjectiveNo = 0;
-			// for every item
+		// get details for items from manifest for every item
 				for (let resItemDef in resItemDefinitions) {
 					// filter only exotic weapons & every item once; otherwise, resItemDefinitions[resItemDef].itemCategoryHashes can be undefined
 					if (resItemDefinitions[resItemDef]['equippingBlock'] !== undefined) {
@@ -275,7 +183,7 @@ async function InitData(){
 													resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'][resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'].length-1]['plugItemHash']]['objectives']['objectiveHashes'];
 								} catch(err) {
 									console.log(err);
-								}			
+								}		
 								if (recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1]) > 0) {								
 									(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(recordDefinitions.hash[recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1])]);
 								} else {
@@ -290,44 +198,102 @@ async function InitData(){
 						}						
 					}
 				};
-		
-			// sort itemDefinitionsTmp by .type
-				let type = itemDefinitionsTmp.type;
-				let name = itemDefinitionsTmp.name;
-				let id = itemDefinitionsTmp.id;
-				let iconURL = itemDefinitionsTmp.iconURL;
-				let collectibleID = itemDefinitionsTmp.collectibleID;
-				let bucketHash = itemDefinitionsTmp.bucketHash;
-				let bucket = itemDefinitionsTmp.bucket;
-				let bucketOrder = itemDefinitionsTmp.bucketOrder;
-				let categoryHash = itemDefinitionsTmp.categoryHash;
-				let category = itemDefinitionsTmp.category;
-				let subcategoryHash = itemDefinitionsTmp.subcategoryHash;
-				let subcategory = itemDefinitionsTmp.subcategory;
-				let exo = itemDefinitionsTmp.exo;
-				let catHash = itemDefinitionsTmp.catHash;
-				itemDefinitions = sortArrays({type,name,id,iconURL,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory,exo,catHash});
-		
-		
-		
-		// save all initData to browserstorage
-		localStorage.setItem("statDefinitions", JSON.stringify(statDefinitions));
-		localStorage.setItem("itemDefinitions", JSON.stringify(itemDefinitions));
-		localStorage.setItem("classDefinitions", JSON.stringify(classDefinitions));
-		localStorage.setItem("energyDefinitions", JSON.stringify(energyDefinitions));
-		localStorage.setItem("damageTypeDefinitions", JSON.stringify(damageTypeDefinitions));
-		localStorage.setItem("vendorDefinitions", JSON.stringify(vendorDefinitions));
-		localStorage.setItem("recordDefinitions", JSON.stringify(recordDefinitions));
+
+		// sort itemDefinitionsTmp by .type
+		let type = itemDefinitionsTmp.type;
+		let name = itemDefinitionsTmp.name;
+		let id = itemDefinitionsTmp.id;
+		let iconURL = itemDefinitionsTmp.iconURL;
+		let collectibleID = itemDefinitionsTmp.collectibleID;
+		let bucketHash = itemDefinitionsTmp.bucketHash;
+		let bucket = itemDefinitionsTmp.bucket;
+		let bucketOrder = itemDefinitionsTmp.bucketOrder;
+		let categoryHash = itemDefinitionsTmp.categoryHash;
+		let category = itemDefinitionsTmp.category;
+		let subcategoryHash = itemDefinitionsTmp.subcategoryHash;
+		let subcategory = itemDefinitionsTmp.subcategory;
+		let exo = itemDefinitionsTmp.exo;
+		let catHash = itemDefinitionsTmp.catHash;
+		itemDefinitions = sortArrays({type,name,id,iconURL,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory,exo,catHash});
+
+	// save all initData to browserstorage
+	userDB['Definitions'] = {
+		stat : statDefinitions,
+		item : itemDefinitions,
+		classDef : classDefinitions,
+		energy : energyDefinitions,
+		damageType : damageTypeDefinitions,
+		vendor : vendorDefinitions,
+		record : recordDefinitions,
+		};
+}
+
+
+function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 0) {
+// sorts object with different arrays at the same time
+// https://gist.github.com/boukeversteegh/3219ffb912ac6ef7282b1f5ce7a379ad
+  let arrayKeys = Object.keys(arrays);
+  let sortableArray = Object.values(arrays)[0];
+  let indexes = Object.keys(sortableArray);
+  let sortedIndexes = indexes.sort((a, b) => comparator(sortableArray[a], sortableArray[b]));
+
+  let sortByIndexes = (array, sortedIndexes) => sortedIndexes.map(sortedIndex => array[sortedIndex]);
+
+  if (Array.isArray(arrays)) {
+	return arrayKeys.map(arrayIndex => sortByIndexes(arrays[arrayIndex], sortedIndexes));
+  } else {
+	let sortedArrays = {};
+	arrayKeys.forEach((arrayKey) => {
+	  sortedArrays[arrayKey] = sortByIndexes(arrays[arrayKey], sortedIndexes);
+	});
+	return sortedArrays;
+  }
+}
+
+
+/*********************************************************************************/
+/* Get initial data															  */
+/*********************************************************************************/
+async function InitData(){
+	// load settings from db
+	if(userDB){
+		document.querySelector("#lang-btn").classList.replace(document.querySelector("#lang-btn").classList.item(1), "flag-icon-"+userDB['siteSettings']['lang']);
+		document.documentElement.style.setProperty('--sizeMultiplier', userDB['siteSettings']['sizeMultiplier']);
+		document.documentElement.style.setProperty('--grad0', userDB['siteSettings']['ThemeGrad0']);
+		document.documentElement.style.setProperty('--grad1', userDB['siteSettings']['ThemeGrad1']);
+	}else{
+		userDB = {siteSettings: {
+			lang: 'en',
+			sizeMultiplier: 1,
+			userDBcursor: 0,
+			ThemeGrad0: getComputedStyle(document.documentElement).getPropertyValue('--grad0'),
+			ThemeGrad1: getComputedStyle(document.documentElement).getPropertyValue('--grad1')
+		}};
+	}
+	
+	if(localStorage.getItem("oauthToken")){
+		document.querySelector("#settingsLogin").style.display = 'none';
+		document.querySelector("#settingsLogout").style.display = 'flex';
+	}else{
+		document.querySelector("#settingsLogin").style.display = 'flex';
+		document.querySelector("#settingsLogout").style.display = 'none';
+	}
+	
+	// load manifests from db
+	let tmpManifestCheck = await checkManifestVersion(userDB['siteSettings']['lang']);
+	if(tmpManifestCheck){
+		await getDefinitions();
 	}
 
-// load recent players from browserstorage
-	if(localStorage.getItem("loadedPlayers")){
-		const loadedPlayers = JSON.parse(localStorage.getItem("loadedPlayers"));
-		for (let i in loadedPlayers){
-			currentPlayer = await getPlayer(loadedPlayers[i].membershipId[0], loadedPlayers[i].platformType[0]);
-			addPlayer(currentPlayer, "viewMain");
-		}
-	}		
+ 	// load recent players from db #### muss neu gemacht werden ####
+/*	if(userDB['loadedPlayers']){
+		refreshPlayer(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]['membershipId'][0]);
+		viewMain.innerHTML += generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]);
+	}
+	localStorage.setItem("userDB", JSON.stringify(userDB));
+*/
+		
+		showLoadingFrame();
 }
 
 
@@ -335,20 +301,16 @@ async function InitData(){
 /* getPlayer Function (create PlayerObject with details from fetch results)	  */
 /*********************************************************************************/
 async function getPlayer(memberID, memberType){
-	let HTML = 	"<div id='placeholder'>" +
-					"<div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div>" +
-				"</div>";
-	document.getElementById("viewMain").innerHTML += HTML;
 	
 	let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + memberID + '/LinkedProfiles/?getAllMemberships=true';
 	let temp = await getData(rqURL);
 		memberID = temp["Response"]["profiles"][0]["membershipId"];
-		memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
+		memberType = temp["Response"]["profiles"][0]["membershipType"];
 	
 	
 	// get player details from memberID & memberType (platform)
 		rqURL = 'https://www.bungie.net/Platform/User/GetMembershipsById/' + memberID + '/All/';
-		const resPlayerDetails = await getData(rqURL);
+		const resPlayerDetails = await getData(rqURL, true);
 		// store info in obj playerDetails 
 			let playerDetails = {
 				'nameCode':resPlayerDetails['Response']['destinyMemberships'][0]['bungieGlobalDisplayNameCode']
@@ -414,17 +376,15 @@ async function getPlayer(memberID, memberType){
 			// charOrder gets index of titan, hunter, warlock (0,1,2)
 			playerDetails.charOrder = [playerDetails.charClass.indexOf(0),playerDetails.charClass.indexOf(1),playerDetails.charClass.indexOf(2)];
 			playerDetails.charOrder = playerDetails.charOrder.filter(no => no >= 0);
-			document.getElementById("placeholder").remove();
 			return playerDetails;
 }
 
-
 /*********************************************************************************/
-/* addPlayer HTML Function													   */
+/* generatePlayerHTML Function												   */
 /*********************************************************************************/
-function addPlayer(cP, htmlTarget){
+function generatePlayerHTML(cP){
 	// add HTML
-	HTML = "<div class='playerMain' id='acc-" + cP.membershipId[0] + "'>" +
+	HTML = "<div class='playerMain'>" +
 				// player header
 				"<div class='playerHeaderFrame'>" +
 					"<div class='playerHeader'>" +
@@ -438,7 +398,7 @@ function addPlayer(cP, htmlTarget){
 					"</div>" +
 				"</div><br>" +
 				"<div id='anch-exos' class='heading'>" + 
-					vendorDefinitions.name[vendorDefinitions.hash.indexOf(vendorHashList[2])] +
+					userDB['Definitions']['vendor'].name[userDB['Definitions']['vendor'].hash.indexOf(vendorHashList[2])] +
 				"</div>" +
 				"<div class='item-list'>";
 				// exotic weapons
@@ -447,16 +407,16 @@ function addPlayer(cP, htmlTarget){
 					var hb = 0; // counter for bucket headline
 	HTML +=			"<div class='exo-weapons'>";
 					// every item...
-					for (let i = 0; i < itemDefinitions.type.length; i++) {
+					for (let i = 0; i < userDB['Definitions']['item'].type.length; i++) {
 						// ... that is exo & matches bucket
-						if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketHash[i] === buckets[b]) {
+						if(userDB['Definitions']['item'].exo[i] === 1 && userDB['Definitions']['item'].bucketHash[i] === buckets[b]) {
 						// make headline for first found item
 						if (hb < 1) {
-	HTML +=					"<div class='headline-weapon-bucket'>" + itemDefinitions.bucket[i] + "</div>";
+	HTML +=					"<div class='headline-weapon-bucket'>" + userDB['Definitions']['item'].bucket[i] + "</div>";
 							hb++;
 						}
 						// check if weapon is achieved and overlay a check mark or cross over the image
-							var checkState = cP.collectibles[itemDefinitions.collectibleID[i]].state;
+							var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
 							var marker = "";
 							// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
 							// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
@@ -467,8 +427,8 @@ function addPlayer(cP, htmlTarget){
 							else {
 								marker="cross";
 							}
-							if (itemDefinitions.catHash[i] > 0 && cP.records[itemDefinitions.catHash[i]] !== undefined) {
-								var checkMaster = cP.records[itemDefinitions.catHash[i]].state;
+							if (userDB['Definitions']['item'].catHash[i] > 0 && cP.records[userDB['Definitions']['item'].catHash[i]] !== undefined) {
+								var checkMaster = cP.records[userDB['Definitions']['item'].catHash[i]].state;
 							} else {
 								var checkMaster = 2;
 							}
@@ -482,11 +442,11 @@ function addPlayer(cP, htmlTarget){
 								master="";
 							}
 	HTML +=				"<div class='itemIconContainer" + master + "'>" +
-							'<img class="' + marker + '" src="' + itemDefinitions.iconURL[i] + '">' +
+							'<img class="' + marker + '" src="' + userDB['Definitions']['item'].iconURL[i] + '">' +
 							"<div class='itemIconStatus'>" + 
 									"<img src='css/images/" + marker + ".png'>" +
 							"</div>" +
-							'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[i] + ' (' + itemDefinitions.type[i] + ')"></div>' +
+							'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
 						"</div>";
 						}
 					}
@@ -495,7 +455,7 @@ function addPlayer(cP, htmlTarget){
 	HTML +=		"</div>" +
 				"<div class='item-list'>" +
 				"<div class='heading'>" + 
-					vendorDefinitions.name[vendorDefinitions.hash.indexOf(vendorHashList[1])] +
+					userDB['Definitions']['vendor'].name[userDB['Definitions']['vendor'].hash.indexOf(vendorHashList[1])] +
 				"</div>";
 				// exotic armor
 				// for every bucket (head, arm, chest, leg)
@@ -508,24 +468,24 @@ function addPlayer(cP, htmlTarget){
 						var hc = 0; // counter for class headline
 	HTML +=				"<div class='exo-armor-class'>";
 						// every item...
-						for (let i = 0; i < itemDefinitions.type.length; i++) {
+						for (let i = 0; i < userDB['Definitions']['item'].type.length; i++) {
 							// ... that is exo, matches bucket & class
-							if(itemDefinitions.exo[i] === 1 && itemDefinitions.bucketHash[i] === buckets[b] && itemDefinitions.categoryHash[i] === charClassHash[c]) {
+							if(userDB['Definitions']['item'].exo[i] === 1 && userDB['Definitions']['item'].bucketHash[i] === buckets[b] && userDB['Definitions']['item'].categoryHash[i] === charClassHash[c]) {
 							// make headline for first found item	
 								if (hc < 1 && b === 3) {
-	HTML +=							"<div class='headline-armor-class'>" + itemDefinitions.category[i] + "</div>";
+	HTML +=							"<div class='headline-armor-class'>" + userDB['Definitions']['item'].category[i] + "</div>";
 									hc++;
 								}
 								if (hb < 1) {
 									if (c === 0) {
-	HTML +=							"<div class='headline-armor-bucket'>" + itemDefinitions.bucket[i] + "</div>";
+	HTML +=							"<div class='headline-armor-bucket'>" + userDB['Definitions']['item'].bucket[i] + "</div>";
 									} else {
 	HTML +=								"<div class='headline-armor-bucket'>&emsp;</div>";	
 									}
 									hb++;
 								}
 							// check if armor is achieved and overlay a check mark or cross over the image
-								var checkState = cP.collectibles[itemDefinitions.collectibleID[i]].state;
+								var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
 								var marker = "";
 								// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
 								// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
@@ -537,11 +497,11 @@ function addPlayer(cP, htmlTarget){
 									marker="cross";
 								}
 	HTML +=					"<div class='itemIconContainer'>" +
-								'<img class=' + marker + ' src="' + itemDefinitions.iconURL[i] + '">' +
+								'<img class=' + marker + ' src="' + userDB['Definitions']['item'].iconURL[i] + '">' +
 								"<div class='itemIconStatus'>" + 
 									"<img src='css/images/" + marker + ".png'>" +
 								"</div>" +
-								'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[i] + ' (' + itemDefinitions.type[i] + ')"></div>' +
+								'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
 							"</div>";
 							}
 						}
@@ -556,13 +516,13 @@ function addPlayer(cP, htmlTarget){
 				for (index in cP.charOrder) {
 	HTML += 		"<div class='charEmblemImg'>" +
 						"<img src='" + cP.charEmblem[cP.charOrder[index]] + "'>" +
-						"<div class='charEmblemClass'>" + classDefinitions.name[classDefinitions.no.indexOf(cP.charClass[cP.charOrder[index]])] + "</div>" +
+						"<div class='charEmblemClass'>" + userDB['Definitions']['classDef'].name[userDB['Definitions']['classDef'].no.indexOf(cP.charClass[cP.charOrder[index]])] + "</div>" +
 						"<div class='charEmblemLvl'> &#10023;" + cP.charLight[cP.charOrder[index]] + "</div>" +
 							// charstats
 							"<div class='charStats'>";
 								for (let i = 0; i < 6; i++) {
-	HTML +=							'<div class="charStatsItem" data-title="' + statDefinitions.info[statDefinitions.hash.indexOf(charStatOrder[i])] + '">' +
-										"<img src='" + statDefinitions.iconURL[statDefinitions.hash.indexOf(charStatOrder[i])] + "'>" +
+	HTML +=							'<div class="charStatsItem" title="' + userDB['Definitions']['stat'].info[userDB['Definitions']['stat'].hash.indexOf(charStatOrder[i])] + '">' +
+										"<img src='" + userDB['Definitions']['stat'].iconURL[userDB['Definitions']['stat'].hash.indexOf(charStatOrder[i])] + "'>" +
 										cP.charStats[cP.charOrder[index]][charStatOrder[i]] + "&emsp;" +
 									'</div>';
 									}	
@@ -583,16 +543,16 @@ function addPlayer(cP, htmlTarget){
 	HTML +=					"<div class='charItemsEquip'>";
 							// for every item
 							for (item in cEquip) {
-								indexItem = itemDefinitions.id.indexOf(cEquip[item].itemHash.toString());
+								indexItem = userDB['Definitions']['item'].id.indexOf(cEquip[item].itemHash.toString());
 								if (cEquip[item].bucketHash === buckets[b]) {
 	HTML +=						"<div class='itemIconContainer'>" +
-									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
+									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')">' +
 									"<div class='itemIconContainerLvl'>";
 									if (cP.itemDetails[cEquip[item].itemInstanceId].energy !== undefined) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType)] + '">' +
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType)] + '">' +
 										" ";								
 									} else if (cP.itemDetails[cEquip[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cEquip[item].itemInstanceId].damageType !== 0) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].damageType)] + '">' +
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].damageType)] + '">' +
 										" ";								
 									}
 									else {
@@ -604,7 +564,7 @@ function addPlayer(cP, htmlTarget){
 	HTML +=								(cP.itemDetails[cEquip[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cEquip[item].itemInstanceId].quality);
 									}
 	HTML +=							"</div>" +
-									'<div class="itemIconContainerInfo equipped" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
+									'<div class="itemIconContainerInfo equipped" title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
 								"</div>";
 								}
 							}
@@ -614,16 +574,16 @@ function addPlayer(cP, htmlTarget){
 							var cInv = cP.charInventory[cP.charOrder[index]];
 							// for every item
 							for (item in cInv) {
-								indexItem = itemDefinitions.id.indexOf(cInv[item].itemHash.toString());
+								indexItem = userDB['Definitions']['item'].id.indexOf(cInv[item].itemHash.toString());
 								if (cInv[item].bucketHash === buckets[b]) {
 	HTML +=						"<div class='itemIconContainer'>" +
-									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
+									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')">' +
 									"<div class='itemIconContainerLvl'>";
 									if (cP.itemDetails[cInv[item].itemInstanceId].energy !== undefined) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType)] + '">' +
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType)] + '">' +
 										" ";								
 									} else if (cP.itemDetails[cInv[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cInv[item].itemInstanceId].damageType !== 0) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].damageType)] + '">' +
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].damageType)] + '">' +
 										" ";								
 									}
 									else {
@@ -635,7 +595,7 @@ function addPlayer(cP, htmlTarget){
 	HTML +=								(cP.itemDetails[cInv[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cInv[item].itemInstanceId].quality);
 									}
 	HTML +=							"</div>" +
-									'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
+									'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
 								"</div>";
 								}
 							}
@@ -647,7 +607,7 @@ function addPlayer(cP, htmlTarget){
 				}
 	HTML +=		"<br style='clear:left'><br>" + 
 				"<div id='anch-vault' class='heading'>" + 
-					vendorDefinitions.name[vendorDefinitions.hash.indexOf(vendorHashList[0])] +
+					userDB['Definitions']['vendor'].name[userDB['Definitions']['vendor'].hash.indexOf(vendorHashList[0])] +
 				"</div>";
 				// vault items
 				// for buckets 2 - 9 (all weapons & armor slots)
@@ -656,16 +616,16 @@ function addPlayer(cP, htmlTarget){
 						// for every item in vault
 						for (item in cP.profileInventory) {
 							if (cP.profileInventory[item] !== undefined) {
-								indexItem = itemDefinitions.id.indexOf(cP.profileInventory[item].itemHash.toString());
-								if (itemDefinitions.bucketHash[indexItem] === buckets[b]) {
+								indexItem = userDB['Definitions']['item'].id.indexOf(cP.profileInventory[item].itemHash.toString());
+								if (userDB['Definitions']['item'].bucketHash[indexItem] === buckets[b]) {
 	HTML +=						"<div class='itemIconContainer'>" +
-									'<img src="' + itemDefinitions.iconURL[indexItem] + '" title="' + itemDefinitions.name[indexItem] + ' (' + itemDefinitions.type[indexItem] + ')">' +
+									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')">' +
 									"<div class='itemIconContainerLvl'>";
 									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy !== undefined) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + energyDefinitions.iconURL[energyDefinitions.no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType)] + '">' +
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType)] + '">' +
 										" ";								
 									} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== 0) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + damageTypeDefinitions.iconURL[damageTypeDefinitions.no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType)] + '">' +
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType)] + '">' +
 										" ";								
 									}
 									else {
@@ -677,7 +637,7 @@ function addPlayer(cP, htmlTarget){
 	HTML +=								(cP.itemDetails[cP.profileInventory[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cP.profileInventory[item].itemInstanceId].quality);
 									}
 	HTML +=							"</div>" +
-									'<div class="itemIconContainerInfo" data-title="' + itemDefinitions.name[indexItem] + " (" + itemDefinitions.type[indexItem] + ')"></div>' +
+									'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
 								"</div>";
 								}
 							}
@@ -685,18 +645,10 @@ function addPlayer(cP, htmlTarget){
 	HTML +=			"</div>";
 					}
 	HTML +=			"</div>" +			
-			"</div><br><br>"; // div playerMain
-	document.getElementById(htmlTarget).innerHTML += HTML;
-	if(htmlTarget == "viewMain"){
-		document.getElementById("playerBucket").innerHTML += "<li class='acc-"+ cP.membershipId[0] + "'>" +
-																	"<a href='#acc-" + cP.membershipId[0] + "'>" +
-																		"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
-																		"<span class='links_name'>" + cP.platformName[0] + "</span>" +
-																		"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
-																	"</a>";
-																"</li>";
-	}
+			"</div><br><br>";
+	return HTML;
 }
+
 
 /*********************************************************************************/
 /* view Fireteam 																 */
@@ -723,9 +675,68 @@ async function getFireteam(){
 					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
 						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
 						let tmpProf = await getData(rqURL);
-						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0]);
-						addPlayer(currentPlayer, "contentFireteam");
+						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0], "contentFireteam");
+						let tmpAdd = generatePlayerHTML(currentPlayer);
+						database['fireteamPlayers'][currentPlayer.membershipId[0]] = currentPlayer;
+						contentFireteam.innerHTML += generatePlayerHTML(currentPlayer);
 					}
 				}		
 	}
 }
+
+
+/*********************************************************************************/
+/* Browser Cache Saving/Reading (IndexedDB API) 								 */
+/*********************************************************************************/
+
+function updateUserDB() {
+// updates userDB in storage from internal userDB
+	userDBtmp = Object.assign({},userDB);
+	delete userDBtmp.loadedPlayers;
+	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
+	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
+}
+
+function saveSiteSettings(prop, val){
+	if(!userDB['siteSettings'].hasOwnProperty(prop)){
+		userDB['siteSettings'][prop] = {};
+	}
+	userDB['siteSettings'][prop] = val;
+	updateUserDB();
+}
+
+async function refreshPlayer(membershipId){
+	currentPlayer = await getPlayer(userDB['loadedPlayers'][membershipId]['membershipId'][0], userDB['loadedPlayers'][membershipId]['platformType'][0]);
+	userDB['loadedPlayers'][membershipId] = currentPlayer;
+	updateUserDB();
+}
+
+function deletePlayer(membershipID){
+	document.getElementById("acc-" + membershipID).remove();
+	delete userDB['loadedPlayers'][membershipID];
+	console.log("deleted " + membershipID + " from local player storage");
+	updateUserDB();
+}
+
+async function savePlayer(cP){
+	if(!userDB.hasOwnProperty('loadedPlayers')){
+			userDB['loadedPlayers'] = {};
+		}
+		if(!userDB['loadedPlayers'].hasOwnProperty(cP.membershipId)){
+			userDB['loadedPlayers'][cP.membershipId[0]] = cP;
+			console.log("saved " + cP.membershipId[0] + " to local player storage");
+			updateUserDB();
+			showPlayer(cP.membershipId[0]);
+			document.getElementById("playerBucket").innerHTML += "<li id='acc-"+ cP.membershipId[0] + "'>" +
+																		"<a onclick=\"showPlayer('" + cP.membershipId[0] + "')\">" +
+																			"<img class='platformLogo' src='css/images/logo" + cP.platformType[0] + ".svg'>" +
+																			"<span class='links_name'>" + cP.platformName[0] + "</span>" +
+																			"<i class='bx bx-bookmark-minus' onclick=\"deletePlayer('" + cP.membershipId[0] + "')\"></i>" +
+																		"</a>";
+																	"</li>";
+		}else{
+			console.log("already existing player");
+		}
+}
+
+const request = window.indexedDB.open("MyTestDatabase", 3);

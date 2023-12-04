@@ -292,6 +292,8 @@ async function InitData(){
 	}
 	localStorage.setItem("userDB", JSON.stringify(userDB));
 */
+		
+		showLoadingFrame();
 }
 
 

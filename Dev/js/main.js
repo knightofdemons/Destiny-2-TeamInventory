@@ -162,6 +162,10 @@ function showLoginFrame(){
 	loginFrame.classList.toggle("closed");
 }
 
+function showLoadingFrame(){
+	loadingFrame.classList.toggle("closed");
+}
+
 
 
 function clearData() {
