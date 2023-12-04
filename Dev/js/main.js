@@ -2,7 +2,6 @@
 /* Variables & Elements                                                          */
 /*********************************************************************************/
 
-const akey = '50a74e4f4f23452c81f7a9cf6a73f124';
 let userDB = new Object();
 userDB = JSON.parse(localStorage.getItem("userDB"));
 let placeholderHTML = 	"<div id='placeholder'><div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div></div>";
