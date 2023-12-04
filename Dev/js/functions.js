@@ -178,7 +178,12 @@ async function getDefinitions(){
 							(itemDefinitionsTmp.exo = itemDefinitionsTmp.exo || []).push(1);
 							// for exo weapons
 							if ([buckets[0], buckets[1], buckets[2]].includes(resItemDefinitions[resItemDef]['inventory']['bucketTypeHash'])) {
-								tmpObjectiveNo = resItemDefinitions[resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'][resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'].length-1]['plugItemHash']]['objectives']['objectiveHashes'];			
+								try {
+									tmpObjectiveNo = resItemDefinitions[resItemDefinitions[resItemDef]['sockets']['socketEntries'][
+													resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'][resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'].length-1]['plugItemHash']]['objectives']['objectiveHashes'];
+								} catch(err) {
+									console.log(err);
+								}		
 								if (recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1]) > 0) {								
 									(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(recordDefinitions.hash[recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1])]);
 								} else {
@@ -303,7 +308,7 @@ async function getPlayer(memberID, memberType){
 	
 	// get player details from memberID & memberType (platform)
 		rqURL = 'https://www.bungie.net/Platform/User/GetMembershipsById/' + memberID + '/All/';
-		const resPlayerDetails = await getData(rqURL);
+		const resPlayerDetails = await getData(rqURL, true);
 		// store info in obj playerDetails 
 			let playerDetails = {
 				'nameCode':resPlayerDetails['Response']['destinyMemberships'][0]['bungieGlobalDisplayNameCode']
@@ -687,11 +692,7 @@ function updateUserDB() {
 	userDBtmp = Object.assign({},userDB);
 	delete userDBtmp.loadedPlayers;
 	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
-	var jZ = new jsonZipper(JSON.stringify(userDBtmp));
-	jZ.zip();
-	
-	console.log(jZ);
-	localStorage.setItem("userDB", jZ);
+	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
 }
 
 function saveSiteSettings(prop, val){
