@@ -1,0 +1,95 @@
+@charset 'UTF-8';
+
+/*********************************************************************************/
+/* Imports																		 */
+/*********************************************************************************/
+
+@import './aboutFrame.css';
+@import './bx-icons.css';
+@import url('https://unpkg.com/boxicons@2.1.0/css/boxicons.min.css');
+@import './conf.css';
+@import './flag-icons.css';
+@import './loginFrame.css';
+@import './playerDetails-classes.css';
+@import './sidebar.css';
+@import './viewSections.css';
+
+
+/*********************************************************************************/
+/* General																		 */
+/*********************************************************************************/
+
+	*
+	{
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		-o-box-sizing: border-box;
+		-ms-box-sizing: border-box;
+		box-sizing: border-box;
+		scroll-behavior:smooth;
+		accent-color: #BA25F6;
+		transition: 1s;
+	}
+	
+	a
+	{
+		color: #fff;
+		color: rgba(255,255,255,0.85);
+	}
+	
+	body, .loader-wrapper
+	{
+		background-position: center top;
+		background: var(--gradient);
+		background-size: cover;
+		color: #fff;
+		font-family: 'Poppins';
+		font-weight: 200;
+		position: relative;
+	}
+	
+	body:after, .loader-wrapper:after
+	{
+		background: url('images/overlay.png');
+		content: '';
+		height: 100%;
+		left: 0;
+		position: absolute;
+		top: 0;
+		width: 100%;		
+	}
+
+	h1
+	{
+		border-bottom-color: white;
+		border-bottom-style: solid;
+		border-bottom-width: thin;
+		color: #fff;
+		font-size: 1.5rem;
+		font-weight: 400;
+		padding-bottom: 1rem;
+		padding-top: 2.5rem;
+		text-align: center; 
+	}
+	
+	h2,h5,h6
+	{
+		color: #fff;
+		font-size: 1.2rem;
+		font-weight: 400;
+		text-align: left;  
+	}
+	
+	h3
+	{
+		color: #fff;
+		font-size: 32px;
+		font-weight: 400;
+		text-align: left;
+		padding-bottom: 1rem;
+	}
+	
+	strong, b
+	{
+		font-weight: 300;
+	}
