@@ -1,0 +1,1398 @@
+@charset 'UTF-8';
+@import './conf.css';
+/*********************************************************************************/
+/* Basic																		 */
+/*********************************************************************************/
+
+	*
+	{
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		-o-box-sizing: border-box;
+		-ms-box-sizing: border-box;
+		box-sizing: border-box;
+		scroll-behavior:smooth;
+		accent-color: #BA25F6;
+		transition: 1s;
+	}
+	
+	body, .loader-wrapper
+	{
+		background-position: center top;
+		background: var(--gradient);
+		background-size: cover;
+		color: #fff;
+		font-family: 'Poppins';
+		font-weight: 200;
+		position: relative;
+	}
+	
+	body:after, .loader-wrapper:after
+		{
+			background: url('images/overlay.png');
+			content: '';
+			height: 100%;
+			left: 0;
+			position: absolute;
+			top: 0;
+			width: 100%;		
+		}
+
+	a
+	{
+		color: #fff;
+		color: rgba(255,255,255,0.85);
+	}
+
+	h1
+	{
+		border-bottom-color: white;
+		border-bottom-style: solid;
+		border-bottom-width: thin;
+		color: #fff;
+		font-size: 1.5rem;
+		font-weight: 400;
+		padding-bottom: 1rem;
+		padding-top: 2.5rem;
+		text-align: center; 
+	}
+	
+	h2,h5,h6
+	{
+		color: #fff;
+		font-size: 1.2rem;
+		font-weight: 400;
+		text-align: left;  
+	}
+	
+	h3
+	{
+		color: #fff;
+		font-size: calc(32px * var(--sizeMultiplier));
+		font-weight: 400;
+		text-align: left;
+		padding-bottom: 1rem;
+	}
+	
+	strong, b
+	{
+		font-weight: 300;
+	}
+	
+	[data-title]:hover:after {
+		opacity: 1;
+		transition: all 0.1s ease 0.5s;
+		visibility: visible;
+	}
+	
+	[data-title]:after {
+		content: attr(data-title);
+		background-color: rgba(0, 0, 0, 0.85);
+		border: #c0c0c0 1px solid;
+		border-radius: 8px;
+		left: 10px;
+		margin: 5px;
+		max-width: 300px;
+		opacity: 0;
+		padding: 5px 20px 5px 5px;
+		position: absolute;
+		text-decoration: none;
+		visibility: hidden;
+		width: max-content;
+		z-index: 99999;
+		
+	}
+	
+	[data-title] {
+		position: relative;
+	}
+	
+	
+/*********************************************************************************/
+/* Classes																	   */
+/*********************************************************************************/
+	
+	.avatar
+	{
+		height: 40px;
+		margin-right: 1rem;
+		width: 40px;
+	}
+	
+	.charItemBucket {
+		display: flex;
+		justify-content: space-evenly;
+		width: 100%;
+		padding-top: 0.5rem;
+	}
+	
+	.charItemBucket:nth-child(2n) {
+		background-color: rgba(255,255,255,0.05);
+	}
+	
+	.charItems {
+		width: calc(var(--columWidth) * var(--sizeMultiplier));
+	}
+	
+	.charList
+	{
+		display:flex;
+		justify-content: space-evenly;
+	}
+
+	.charFrame
+	{
+	}
+	
+	.charEmblemImg, .charEmblemImg img
+	{
+		position: relative;
+		width: calc(var(--columWidth) * var(--sizeMultiplier));
+	}
+	
+	.charEmblemClass
+	{
+		font-size: calc(1.2rem * var(--sizeMultiplier));
+		font-weight: 400;
+		position: absolute;
+		text-shadow: 0.05rem 0.05rem #11101d;
+		left: 20%;
+		top: 10%;	
+	}
+	
+	.charEmblemLvl
+	{
+		color: #FFFF97;
+		font-size: calc(1.7rem * var(--sizeMultiplier));
+		font-weight: 400;
+		position: absolute;
+		right: 4%;
+		top: 4%;
+		text-shadow: 0.05rem 0.05rem #11101d;
+	}
+	
+	.charItemsEquip
+	{
+		z-index: 1;
+		position: relative;
+	}
+	
+	.charItemsInv
+	{
+		display: table;
+		max-width: calc(var(--iconSize)*4);
+	}
+	
+	.charItemsInv:not(.charItemsInv:first-child)
+	{
+	}
+	
+	.charStats
+	{
+		background: rgba(200, 200, 200, .1);
+		display: flex;
+		justify-content: center;
+		text-align: center;
+		width: calc(var(--columWidth) * var(--sizeMultiplier));
+		font-size: calc(0.8rem * var(--sizeMultiplier));
+	}
+	
+	.charStats img
+	{
+		vertical-align: middle;
+		cursor: help;
+		height: calc(1.1rem * var(--sizeMultiplier));
+		width: calc(1.1rem * var(--sizeMultiplier));
+		margin-right: 0.1rem;
+	}
+	
+	.exo-armor-bucket
+	{
+		display: flex;
+		justify-content: space-evenly;
+	}
+	
+	.exo-armor-class
+	{
+		width: 33%;
+	}
+	
+	.exo-weapons
+	{
+		float: left;
+	}
+	
+	.heading {
+		color: #fff;
+		font-size: calc(1.5rem * var(--sizeMultiplier));
+		font-weight: 400;
+		line-height: calc(3rem * var(--sizeMultiplier));
+		text-align: center;
+	}
+	
+	.headline-armor-bucket
+	{
+		color: #fff;
+		font-size: calc(1rem * var(--sizeMultiplier));
+		font-weight: 400;
+		line-height: calc(3rem * var(--sizeMultiplier));
+		text-align: left;	
+	}
+	
+	.headline-armor-class
+	{
+		color: #fff;
+		font-size: calc(1.2rem * var(--sizeMultiplier));
+		font-weight: 400;
+		line-height: calc(3rem * var(--sizeMultiplier));
+		text-align: center;
+	}
+	
+	.headline-weapon-bucket
+	{
+		color: #fff;
+		font-size: calc(1.2rem * var(--sizeMultiplier));
+		font-weight: 400;
+		line-height: calc(3rem * var(--sizeMultiplier));
+		text-align: left;	
+	}
+	
+	.itemIconContainer
+	{
+		cursor: help;
+		float: left;
+		height: calc(var(--iconSize) + 10);
+		position: relative;
+		width: calc(var(--iconSize) + 10);
+	}
+	
+	.itemIconContainer > img, .itemIconContainer.master > img
+	{
+		border: solid rgba(0,0,0,0.3) 2px;
+		border-radius: 10%;
+		height: var(--iconSize);
+		margin: 5px 5px;
+		vertical-align: middle;
+		width: var(--iconSize);
+	}
+	
+	.itemIconContainer.master > img
+	{
+		border: solid rgba(249,217,92,1) 2px;
+		box-shadow: 0px 0px 4px #ffcb00;
+	}
+	
+	.itemIconContainer > img.cross
+	{
+		opacity: 50%;
+	}
+	
+	.itemIconContainerEnergy
+	{
+		height: 0.85rem;
+		margin-bottom: 2px;
+		vertical-align: middle;
+		width: 0.85rem;
+	}
+	
+	.itemIconContainerInfo
+	{
+		height: var(--iconSize);
+		margin-left: 5px;
+		margin-top: calc(calc(var(--iconSize) + 5px) * -1);
+		position: absolute;
+		width: var(--iconSize);
+	}
+	
+	.itemIconContainerInfo.equipped
+	{
+		border: ridge white;
+		border-radius: 10%;
+	}
+	
+	.itemIconContainerLvl
+	{
+		background-color: rgba(0,0,0,0.5);
+		border-bottom-left-radius: 6.5px;
+		border-bottom-right-radius: 6.5px;
+		font-size: calc(0.7rem * var(--sizeMultiplier));
+		font-weight: 400;
+		margin-left: 5px;
+		padding-left: calc(0.05 * var(--iconSize));
+		position: absolute;
+		transform: translateY(-120%);
+		width: var(--iconSize);
+	}
+	
+	.itemIconStatus
+	{
+		position:absolute;
+		right: 0;
+		top: 0; 
+		z-index: 1;
+	}
+	
+	.itemIconStatus > img
+	{
+		 height: calc(20px * var(--sizeMultiplier));
+		 width: calc(20px * var(--sizeMultiplier));
+	}
+	
+	.item-list
+	{
+		float: left;
+		overflow: hidden;
+	}
+	
+	.platformLogo
+	{
+		 height: 20px;
+		 width: 20px;
+	}
+	
+	.playerBucket
+	{
+	}
+	
+	.playerHeaderFrame
+	{
+		width: 100%;
+		border-bottom: 1px solid var(--grad1);
+		background: rgba(0, 0, 0, .2);
+	}
+	
+	.playerHeader
+	{
+		color: #fff;
+		font-size: 2rem;
+		font-weight: 400;
+		text-align: center;
+		padding-top: 0.4rem;
+		z-index: 97;
+	}
+	
+	.playerHeader img
+	{
+		width: 50px;
+		height: 50px;
+		margin-right: 20px;
+		vertical-align: middle;
+		
+	}
+	
+	.playerHeaderSub
+	{
+		text-align: center;
+		font-size: 1rem;
+		font-weight: 40;
+		vertical-align: top;
+	}
+	
+	.playerHeaderSub img
+	{
+		width: 20px;
+		height: 20px;
+		margin-left: 5px;
+		vertical-align: top;
+		
+	}
+	
+	.playerMain
+	{
+		border: 2px solid var(--grad1);
+		border-radius: 10px;
+		background: rgba(0, 0, 0, .2);
+		height: max-content;
+		width: 100%;
+	}
+
+	.vaultItems
+	{
+		display: inline-block;
+		overflow: hidden;
+	}
+	
+/*********************************************************************************/
+/* view Classes																  */
+/*********************************************************************************/
+
+	.viewMain, .viewFireteam, #main
+	{
+		display: grid;
+		width: 100%;
+		padding-top: 1rem;
+		z-index: 1;
+		transition: 1s;
+		position: absolute;
+	}
+	
+	.viewMain.open ~ .viewFireteam
+	{
+		top: 0;
+		height: 100%;
+	}
+	
+	.viewFireteam.open ~ .viewMain
+	{
+		top: 0;
+		height: 100%;
+	}
+
+	.viewMain.open
+	{
+		display: grid;
+		height: 100%;
+	}
+
+	.viewFireteam.open
+	{
+		display: grid;
+		height: 100%;
+	}
+	
+	.viewMain
+	{
+		display: none;
+		height: 0%;
+	}
+
+	.viewFireteam
+	{
+		display: none;
+		height: 0%;
+	}	
+	
+/*********************************************************************************/
+/* Login																		 */
+/*********************************************************************************/
+	
+	.loginFrame
+	{
+		position: fixed;
+		top:0px;
+		/* background: black;  */
+		background: var(--gradient);
+		height: 100%;
+		width: 100%;
+		z-index: 100;
+	}
+	
+	#loginButton 
+	{
+		position: absolute;
+		margin: 15% 40%;
+		display: flex;
+		padding: 25px 30px;
+		transition: 0.5s;
+		user-select: none;
+		cursor: pointer;
+	}
+	
+	#loginButton a, #loginButton i
+	{
+		font-size: 32px;
+		font-family: 'Poppins';
+		color: #fff;
+		text-decoration: none;
+		text-transform: uppercase;
+		letter-spacing: 4px;
+	}
+
+	#loginButton:hover {
+	  background: var(--orange2);
+	  box-shadow: 0 0 2px var(--orange2), 0 0 12px var(--orange2), 0 0 25px var(--orange2), 0 0 100px var(--orange2);
+	  -webkit-box-reflect: below 1px linear-gradient(transparent, #0005);
+	}
+
+	#loginButton:nth-child(1) {
+	  filter: hue-rotate(270deg);
+	}
+
+	#loginButton:nth-child(2) {
+	  filter: hue-rotate(110deg);
+	}
+	
+	#loginButton span {
+	  position: absolute;
+	  display: block;
+	}
+
+	#loginButton span:nth-child(1)
+	{
+	  top: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 2px;
+	  background: linear-gradient(90deg, transparent, var(--orange2));
+	  animation: animate1 1s linear infinite;
+	}
+
+	@keyframes animate1
+	{
+	  0% {
+		left: -100%;
+	  }
+	  50%,
+	  100% {
+		left: 100%;
+	  }
+	}
+
+	#loginButton span:nth-child(2)
+	{
+	  top: -100%;
+	  right: 0;
+	  width: 2px;
+	  height: 100%;
+	  background: linear-gradient(180deg, transparent, var(--orange2));
+	  animation: animate2 1s linear infinite;
+	  animation-delay: 0.25s;
+	}
+
+	@keyframes animate2
+	{
+	  0% {
+		top: -100%;
+	  }
+	  50%,
+	  100% {
+		top: 100%;
+	  }
+	}
+
+	#loginButton span:nth-child(3)
+	{
+	  bottom: 0;
+	  right: 0;
+	  width: 100%;
+	  height: 2px;
+	  background: linear-gradient(270deg, transparent, var(--orange2));
+	  animation: animate3 1s linear infinite;
+	  animation-delay: 0.5s;
+	}
+
+	@keyframes animate3
+	{
+	  0% {
+		right: -100%;
+	  }
+	  50%,
+	  100% {
+		right: 100%;
+	  }
+	}
+
+	#loginButton span:nth-child(4)
+	{
+	  bottom: -100%;
+	  left: 0;
+	  width: 2px;
+	  height: 100%;
+	  background: linear-gradient(360deg, transparent, var(--orange2));
+	  animation: animate4 1s linear infinite;
+	  animation-delay: 0.75s;
+	}
+
+	@keyframes animate4
+	{
+	  0% {
+		bottom: -100%;
+	  }
+	  50%,
+	  100% {
+		bottom: 100%;
+	  }
+	}
+
+
+	
+/*********************************************************************************/
+/* view Main																  */
+/*********************************************************************************/
+
+	.viewMain, .viewFireteam
+	{
+		display: grid;
+		width: 100%;
+		padding-top: 1rem;
+		z-index: 1;
+		transition: all 0.5s ease;
+		position: absolute;
+	}
+	
+	.viewMain.open ~ .viewFireteam, .viewFireteam.open ~ .viewMain
+	{
+		top: 0;
+		height: 100%;
+	}
+
+	.viewMain.open
+	{
+		display: grid;
+		height: 100%;
+	}
+
+	.viewFireteam.open
+	{
+		display: grid;
+		height: 100%;
+	}
+	
+	.viewMain
+	{
+		display: none;
+		height: 0%;
+	}
+
+	.viewFireteam
+	{
+		display: none;
+		height: 0%;
+	}
+	
+	.main-content
+	{
+		display: grid;
+		width: calc(100% - var(--sidebar-width));
+		left: var(--sidebar-width);		
+		right: 0;
+		height: 100%;		
+		z-index: 0;
+		transition: 1s;
+		position: absolute;
+	}
+	
+/*********************************************************************************/
+/* view Fireteam																  */
+/*********************************************************************************/
+
+	.viewFireteam
+	{
+		display: flex;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+	}
+	
+	.viewFireteam [id^='acc']
+	{
+		display: block;
+		width: 33%;
+		padding-top: 1rem;
+		z-index: 1;
+		transition: all 0.5s ease;
+		position: absolute;
+	}
+	
+	.timerBar
+	{
+		display: flex;
+		position: fixed;
+		padding: 0 2px 2px 2px;
+		top: 0;
+		right: 0;
+		background-color: #000;
+		border-radius: 0 0 0 12px;
+		z-index: 99;
+	}
+	
+	.timerBar .bx
+	{
+		cursor: pointer;
+		line-height: 25px;
+		font-size: 1.5rem;
+		transition-duration: 1s;
+		transition-property: transform;
+	}
+	
+	.timerBar .bx:hover
+	{
+		color: var(--hovercolor);
+		transform: rotate(360deg);
+		-webkit-transform: rotate(360deg);
+	}
+	
+	#livedot{
+		color: red;
+		font-size: 1.2rem;
+		line-height: 20px;
+	}
+	
+	#offdot{
+		color: grey;
+		font-size: 1.2rem;
+		line-height: 20px;
+	}
+	
+/*********************************************************************************/
+/* view DIM																  */
+/*********************************************************************************/
+
+	.viewDIM
+	{
+		display: none;
+		width: 100%;
+		height: 100%;
+		padding: 1rem;
+		z-index: 1;
+		transition: all 0.5s ease;
+		position: fixed;
+	}
+	
+	.viewDIM.open
+	{
+		display: grid;
+	}
+		
+/*********************************************************************************/
+/* Settings																		  */
+/*********************************************************************************/
+
+	
+	.settingsBtns
+	{
+		display: flex;
+		justify-content: space-evenly;
+		align-items: flex-end;
+		color: #ffffff;
+		bottom: 0.5rem;
+		left: 0;
+		right: 0;
+		position: fixed;
+		width: var(--sidebar-width);
+	}
+	
+	.settingsSubMenuBtns
+	{
+		display: flex;
+		cursor: pointer;
+		background-color: var(--grad1);
+		padding-bottom: 0.5rem;
+		padding-top: 0.5rem;
+		text-align: left;
+		transition: all 0.5s ease;
+		width: 100%;
+		align-items: center;
+		height: 4rem;
+		z-index: 99;
+	}
+	.settingsSubMenuBtns i
+	{
+		font-size: 28px;
+	}
+	
+	#settingsBtnCog
+	{
+		cursor: pointer;
+		font-size:32px;
+		color: white;
+		overflow: hidden;
+		transition-duration: 1s;
+		transition-property: transform;
+		z-index: 99;
+	}
+	
+	#settingsBtnCog:hover
+	{
+		color: var(--hovercolor);
+		transform: rotate(360deg);
+		-webkit-transform: rotate(360deg);
+	}
+	
+	#settingsiconSizeSlider
+	{
+		width: 70%;
+		accent-color: lightblue;
+	}
+	
+	.settingsLogBtns [id^='settingsLog']
+	{
+		cursor: pointer;
+		font-size:32px;
+		overflow: hidden;
+		transition-duration: 0.8s;
+		transition-property: transform;
+		z-index: 99;
+	}
+	
+	.settingsLogBtns [id^='settingsLog']:hover
+	{
+		color: var(--hovercolor);
+	}
+	
+	.settingsSubMenu
+	{
+		display: none;
+		background-color: var(--grad1);
+		padding: 1rem;
+		border-radius: 12px;
+		bottom: 3rem;
+		color: #ffffff;
+		font-size: 16px;
+		position: fixed;
+		left: 1rem;
+		text-align: left;
+		width: 14rem;
+		z-index: 101;
+		flex-wrap: wrap;
+	}
+	
+	.settingsSubMenu.open
+	{
+		display: flex;
+	}
+	
+	.settingsSubMenu div:not(.settingsSubMenu .language-options):hover 
+	{
+		cursor: pointer;
+		border-radius: 6px;
+		color: var(--hovercolor);
+	}
+	
+	.settingsSubMenu div i
+	{
+		padding-top: 0.1rem;
+	}
+	
+	.language-options
+	{
+		display: none;
+		background-color: var(--grad1);
+		border-radius: 12px;
+		width: max-content;
+		height: max-content;
+		left: 15.5rem;
+		bottom: 3rem;
+		position: fixed;
+		padding: 1rem;
+	}
+	
+	.language-options.open
+	{
+		display: block;
+	}
+	
+	#lang-btn
+	{
+		font-size: 16px;
+	}
+	
+	#lang-btn-div
+	{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+	}
+
+	.settingsThemes
+	{
+		display: none;
+		background-color: var(--grad1);
+		border-radius: 12px;
+		width: 16rem;
+		left: 15.5rem;
+		bottom: 3rem;
+		position: fixed;
+		padding: 1rem;
+	}
+	
+	.settingsThemes #red i
+	{
+		background-color: var(--themeRedA) ;
+		background-image: linear-gradient(19deg, var(--themeRedA) 0%, var(--themeRedB) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #blue i
+	{
+		background-color: var(--themeBlueA);
+		background-image: linear-gradient(62deg, var(--themeBlueA) 0%, var(--themeBlueB) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #green i
+	{
+		background-color: var(--themeGreenA);
+		background-image: linear-gradient(45deg, var(--themeGreenA) 0%, var(--themeGreenB) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #yellow i
+	{
+		background-color: var(--themeYellowA);
+		background-image: linear-gradient(45deg, var(--themeYellowA) 0%, var(--themeYellowB) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #orange i
+	{
+		background-color: var(--themeOrangeA);
+		background-image: linear-gradient(62deg, var(--themeOrangeA) 0%, var(--themeOrangeB) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #purple i
+	{
+		background-color: var(--themePurpleA);
+		background-image: linear-gradient(45deg, var(--themePurpleA) 0%, var(--themePurpleB) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #black i
+	{
+		background: var(--themeBlackA);
+		background: linear-gradient(90deg, var(--themeBlackA) 0%, var(--themeBlackB) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes #white i
+	{
+		background: var(--themeWhiteA);
+		background: linear-gradient(90deg, var(--themeWhiteA) 0%, var(--themeWhiteB) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	
+	.settingsThemes.open
+	{
+		display: flex;
+		flex-wrap: wrap;
+	}
+	
+	.settingsThemes i
+	{
+		cursor: pointer;
+		border-radius: 6px;
+		font-size: 40px;
+		box-shadow:inset 0px 0px 0px 4px #fff;
+		margin: 0.5rem;
+	}
+	
+	.settingsThemes i:hover
+	{
+		box-shadow:inset 0px 0px 0px 4px gray;
+	}
+	
+	#settingsThemesBtn
+	{
+		background: var(--grad0);
+		background: linear-gradient(90deg, var(--grad0) 0%, var(--grad1) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		box-shadow:inset 0px 0px 0px 4px #fff;
+		border-radius: 6px;
+	}
+	
+/*********************************************************************************/
+/* Sidebar																	   */
+/*********************************************************************************/
+	.nav-symbols
+	{
+		display: flex;
+		justify-content: space-evenly;
+	}
+	
+	.sidebarAnchors
+	{
+		cursor: pointer;
+		color: ffffff;
+		border: 1px solid white;
+		border-radius: 6px;
+	}
+	
+	.sidebarAnchors:nth-child(1):hover
+	{
+		box-shadow:0px 0px 9px 3px var(--anchorExo);
+	}
+	
+	.sidebarAnchors:nth-child(2):hover
+	{
+		box-shadow:0px 0px 9px 6px var(--anchorInv);
+	}
+	
+	.sidebarAnchors:nth-child(3):hover
+	{
+		box-shadow:0px 0px 9px 6px var(--anchorVault);
+	}
+	
+	.nav-symbols img
+	{
+		height: 2.5rem;
+		width: 2.5rem;
+	}
+	
+	
+	.sidebar.open ~ #Main
+	{
+		left: var(--sidebar-width);
+		width: calc(100% - var(--sidebar-width));
+	}
+	
+	.sidebar.open .settingsBar
+	{
+		width: var(--sidebar-width);
+	}
+	
+	.settingsSubMenu
+	{
+		display: none;
+	}
+	
+	.sidebar
+	{
+		position: fixed;
+		left: 0%;
+		top: 0%;
+		height: 100%;
+		width: 0;
+		background: var(--grad2);
+		padding: 0px 0px;
+		width: 0;
+		z-index: 99;
+		transition: all 0.3s ease;
+	}
+	
+	.sidebar.open
+	{
+		padding: 2px 8px;
+		width: var(--sidebar-width);
+	}
+	
+	.sidebar .sidebar-content * :not(.sidebar #sidebar-btn)	
+	{
+		opacity: 0;
+	}
+	
+	.sidebar.open .sidebar-content * :not(.sidebar #sidebar-btn)	
+	{
+		opacity: 1;
+	}
+	
+	.sidebar .sidebar-content .sidebar-logo-details
+	{
+		height: 60px;
+		display: flex;
+		align-items: center;
+		position: relative;
+		left: 3rem;
+	}
+	
+	.sidebar-logo_name
+	{
+		color: #fff;
+		font-size: 20px;
+		font-weight: 600;
+	}
+	
+	.sidebar #sidebar-btn
+	{
+		position: absolute;
+		right: 0;
+		font-size: 44px;
+		cursor: pointer;
+		color: fff;
+	}	
+	
+	.sidebar #sidebar-btn:hover
+	{
+		color: var(--blue);
+	}
+	
+	.sidebar.open #sidebar-btn
+	{
+		right: 3rem;
+		font-size: 32px;
+	}
+	
+	.sidebar .sidebar-content i
+	{
+		min-width: 30px;
+		text-align: center;
+	}
+	
+	.sidebar .sidebar-content .nav-list .nav-settings
+	{
+		height: 100%;
+	}
+	
+	.sidebar .sidebar-content ul
+	{
+		padding: 0 0 0 0;
+	}
+	
+	.sidebar .sidebar-content h3
+	{
+		border-bottom-color: white;
+		border-bottom-style: solid;
+		border-bottom-width: thin;
+		text-align: center;
+	}
+	
+	.sidebar .sidebar-content li
+	{
+		margin-top: 0.5rem;
+		list-style: none;
+		width: 100%;
+	}
+	
+	.sidebar .sidebar-content li .tooltip
+	{
+		position: absolute;
+		top: -20px;
+		left: calc(100% + 15px);
+		z-index: 3;
+		background: #fff;
+		box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+		padding: 6px 12px;
+		border-radius: 4px;
+		font-size: 15px;
+		font-weight: 400;
+		white-space: nowrap;
+		pointer-events: none;
+		transition: 0s;
+	}
+	
+	.sidebar .sidebar-content li:hover .tooltip
+	{
+		pointer-events: auto;
+		transition: all 0.4s ease;
+	}
+	
+	.sidebar.open li .tooltip
+	{
+		display: none;
+	}
+	
+	.sidebar .sidebar-content input
+	{
+		font-size: 15px;
+		color: #fff;
+		font-weight: 400;
+		outline: none;
+		height: 50px;
+		width: 100%;
+		border: none;
+		border-radius: 12px;
+		transition: all 0.5s ease;
+		background: var(--grad1);
+	}
+	
+	.sidebar.open input
+	{
+		padding: 0 20px 0 20px;
+		width: 100%;
+	}
+	
+	.sidebar .sidebar-content .bx-search
+	{
+		position: absolute;
+		right: -10px;
+		font-size: 22px;
+		background: var(--grad1);
+		color: #fff;
+	}
+	
+	.bx-search:hover
+	{
+		background: var(--grad1);
+		color: #fff;
+	}
+	
+	
+	.sidebar .sidebar-content li a
+	{
+		display: flex;
+		height: 3rem;
+		width: 100%;
+		border-radius: 12px;
+		align-items: center;
+		text-decoration: none;
+		transition: all 0.4s ease;
+		background: var(--grad1);
+		overflow: hidden;
+	}
+	
+	.sidebar .sidebar-content li a:hover
+	{
+		background: var(--grad2);
+	}
+	
+	.sidebar .sidebar-content li a .links_name
+	{
+		color: #fff;
+		font-size: 15px;
+		font-weight: 400;
+		white-space: nowrap;
+		pointer-events: none;
+		transition: 0.4s;
+	}
+	
+	.sidebar.open li a .links_name
+	{
+		pointer-events: auto;
+	}
+	
+	.sidebar .sidebar-content li a:hover .links_name,
+	.sidebar .sidebar-content li a:hover
+	{
+		cursor: pointer;
+		transition: all 0.5s ease;
+		color: #fff;
+		user-select: none;
+	}
+	
+	.sidebar .sidebar-content li a i:hover
+	{
+		
+		color: var(--red);
+	}
+	
+	.sidebar .sidebar-content li i
+	{
+		height: 50px;
+		line-height: 50px;
+		font-size: 18px;
+		border-radius: 12px;
+	}
+	
+	.sidebar .sidebar-content li img
+	{
+		object-fit: cover;
+		border-radius: 6px;
+		margin: 0 10px 0 10px;
+	}
+	
+	.sidebar.open ~ .main-content
+	{
+		left: 250px;
+		width: calc(100% - 250px);
+	}
+	
+	.sidebar-settings
+	{
+		position: relative;
+		top: 40px;
+		width: 95%;
+	}
+	
+	.sidebar #autocom-box
+	{
+		z-index: 101;
+	}
+	
+	.sresult:hover
+	{
+		cursor: pointer;
+		background-color: var(--grad2);
+		user-select: none;
+	}
+	
+	.bx-bookmark-minus
+	{
+		position: absolute;
+		margin: 0 10px 0 0;
+		right: 0;
+	}
+	
+	.bx-info-circle
+	{
+		cursor: help;
+		font-size: 1.2rem;
+	}
+	.bx-info-circle .info
+	{
+		display: none;
+		z-index: 1;
+	}
+	
+	.bx-info-circle:hover .info
+	{
+		bottom: 2rem;
+		border: solid white 2px;
+		display: block;
+		left: 30vw;
+		position: absolute; 
+	}
+	
+	.bx-search
+	{
+		cursor: pointer;
+		margin: 0 20px 0 0;
+	}
+	
+	#playerBucket .links_name
+	{
+		margin-right: 2rem;
+		overflow: hidden;
+	}
+	
+/*********************************************************************************/
+/* Loading Icon																  */
+/*********************************************************************************/
+	.placeholder
+	{
+		display:flex;
+		position: absolute;
+		height: 10vh;
+		width: 10vw;
+		z-index: 100;
+	}
+	
+	.loader-wrapper
+	{
+		display: flex;
+		height: 108vh;
+		justify-content: center;
+		margin-top: -2%;
+		margin-bottom: -2%;
+		position: fixed;
+		width: 100vw;
+		z-index: 98;
+	}
+	
+	.loader
+	{
+		animation: loader 2s infinite ease;
+		border: 4px solid #Fff;
+		display: inline-block;
+		height: 50px;
+		justify-content: center;
+		margin-top: 50vh;
+		position: sticky;
+		width: 50px;
+	}
+
+	.loader-inner
+	{
+		animation: loader-inner 2s infinite ease-in;
+		background-color: #fff;
+		display: inline-block;
+		vertical-align: top;
+		width: 100%; 
+	}
+
+	@keyframes loader
+	{
+		0% { transform: rotate(0deg);}
+		25% { transform: rotate(180deg);}
+		50% { transform: rotate(180deg);}
+		75% { transform: rotate(360deg);}
+		100% { transform: rotate(360deg);}
+	}
+
+	@keyframes loader-inner
+	{
+		0% { height: 0%;}
+		25% { height: 0%;}
+		50% { height: 100%;}
+		75% { height: 100%;}
+		100% { height: 0%;}
+	}
