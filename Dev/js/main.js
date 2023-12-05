@@ -167,7 +167,7 @@ function showLoginFrame(){
 }
 
 function showLoadingFrame(){
-	loadingFrame.classList.toggle("closed");
+	loadingFrame.classList.add("closed");
 }
 
 
@@ -180,6 +180,8 @@ function clearData() {
 
 async function searchPlayer(inputData){
 	if(inputData){
+		tmpData = inputData.split('#');
+		inputData = tmpData[0];
 		let postJson = new Object();
 		postJson.displayNamePrefix = inputData;
 		let rqURL = "https://www.bungie.net/Platform/User/Search/GlobalName/0/";
@@ -209,15 +211,20 @@ async function searchPlayer(inputData){
 async function select(element){
     let selectData = element.textContent;
     inputBox.value = selectData;
-	suggBox.innerHTML = "";
     if (selectData) {
 		selectedAttribute = element.firstChild.firstChild.alt;
         membershipType = (selectedAttribute.split('|'))[1];
         membershipId = (selectedAttribute.split('|'))[0];
+		try {
 			currentPlayer = await getPlayer(membershipId, membershipType);
 			savePlayer(currentPlayer);
-			searchWrapper.classList.remove("active");
+			suggBox.innerHTML = "";
 			inputBox.value = "";
+		}catch(err){
+			console.log(err.message);
+			inputBox.value = "An error occured...";
+		}
+		searchWrapper.classList.remove("active");
     }
 }
 

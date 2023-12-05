@@ -275,6 +275,7 @@ async function InitData(){
 	if(localStorage.getItem("oauthToken")){
 		document.querySelector("#settingsLogin").style.display = 'none';
 		document.querySelector("#settingsLogout").style.display = 'flex';
+		showLoadingFrame();
 	}else{
 		document.querySelector("#settingsLogin").style.display = 'flex';
 		document.querySelector("#settingsLogout").style.display = 'none';
@@ -655,6 +656,7 @@ function generatePlayerHTML(cP){
 /* view Fireteam 																 */
 /*********************************************************************************/
 async function getFireteam(){
+	getDefinitions();
 	contentFireteam.innerHTML = "<div class='warning'><a>Loading data from Bungie...</a></div>";
 	let temp = JSON.parse(localStorage.getItem("oauthToken"));
 	if(!temp){
@@ -678,7 +680,9 @@ async function getFireteam(){
 						let tmpProf = await getData(rqURL);
 						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0], "contentFireteam");
 						let tmpAdd = generatePlayerHTML(currentPlayer);
-						database['fireteamPlayers'][currentPlayer.membershipId[0]] = currentPlayer;
+						userDB['fireteamPlayers'] =	{
+										currentPlayer: currentPlayer.membershipId[0]
+						};
 						contentFireteam.innerHTML += generatePlayerHTML(currentPlayer);
 					}
 				}		
