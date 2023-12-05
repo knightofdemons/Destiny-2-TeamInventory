@@ -48,11 +48,15 @@ let myInterval;
 /*********************************************************************************/
 /* document KeyInputs                                                            */
 /*********************************************************************************/
-inputBox.onkeyup = (e)=>{
+inputBox.onkeyup, inputBox.onclick = (e)=>{
 	searchPlayer(e.target.value);
 }
 
-inputBox.addEventListener('blur', (event) => {
+suggBox.onclick = (e)=>{
+	console.log(e.target.value);
+}
+
+suggBox.addEventListener('blur', (event) => {
 	searchWrapper.classList.remove("active"); //hide autocomplete box
 });
 
@@ -204,8 +208,8 @@ async function searchPlayer(inputData){
 
 async function select(element){
     let selectData = element.textContent;
-	suggBox.innerHTML = "";
     inputBox.value = selectData;
+	suggBox.innerHTML = "";
     if (selectData) {
 		selectedAttribute = element.firstChild.firstChild.alt;
         membershipType = (selectedAttribute.split('|'))[1];
