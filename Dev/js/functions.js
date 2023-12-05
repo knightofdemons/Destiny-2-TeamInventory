@@ -449,6 +449,7 @@ function generatePlayerHTML(cP){
 								}
 							else {
 								marker="cross";
+							}
 							// check Masterwork
 							if (userDB['Definitions']['item'].catHash[i] > 0 && cP.records[userDB['Definitions']['item'].catHash[i]] !== undefined) {
 								var checkMaster = cP.records[userDB['Definitions']['item'].catHash[i]].state;
