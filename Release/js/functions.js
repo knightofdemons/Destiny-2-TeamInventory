@@ -115,7 +115,7 @@ async function getDefinitions(){
 					(damageTypeDefinitions.no = damageTypeDefinitions.no || []).push(resDamageTypeDefinitions[resDamageTypeDef]['enumValue']);
 				};
 		
-		// get details for vendors from manifest (only vault, exotic armor, exotic weapon) for every item
+		// get details for vendors from manifest (only vault, exotic armor, exotic weapon for icons) for every item
 				for (i = 0; i < 3; i++) {
 					(vendorDefinitions.name = vendorDefinitions.name || []).push(resVendorDefinitions[vendorHashList[i]]['displayProperties']['name']);
 					if (resVendorDefinitions[vendorHashList[i]]['displayProperties']['smallTransparentIcon'] !== undefined) {
@@ -177,21 +177,41 @@ async function getDefinitions(){
 						if (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] !== undefined && resItemDefinitions[resItemDef]['collectibleHash'] !== undefined && (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
 							(itemDefinitionsTmp.exo = itemDefinitionsTmp.exo || []).push(1);
 							// for exo weapons
-						if ([buckets[0], buckets[1], buckets[2]].includes(resItemDefinitions[resItemDef]['inventory']['bucketTypeHash'])) {
-							if (resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1 <= 10) {
-								if (resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'].length > 0) {
-										tmpObjectiveNo = resItemDefinitions[resItemDefinitions[resItemDef]['sockets']['socketEntries'][
-											resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'][resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'].length-1]['plugItemHash']]['objectives']['objectiveHashes'];
-										if (recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1]) > 0) {								
-											(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(recordDefinitions.hash[recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1])]);
-										}} else {
-											(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(0);
-										}
+							if ([buckets[0], buckets[1], buckets[2]].includes(resItemDefinitions[resItemDef]['inventory']['bucketTypeHash'])) {
+								// if len socketEntries = 10 -> last one is Masterwork objective
+								if (resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1 == 10) {
+									tmpSocket = 10;
 								} else {
+									// 9 -> 7
+									if (resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1 < 10) {
+										tmpSocket = resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-3;
+									} else {
+										tmpSocket = resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1;
+									}
+								}
+								if (resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1 <= 10) {
+										// check if socket has reusablePlugItems
+										if (resItemDefinitions[resItemDef]['sockets']['socketEntries'][tmpSocket]['reusablePlugItems'].length > 0) {
+											// check cat for every plugItemHash of every record of exotic Item
+											tmpObjectiveNo = resItemDefinitions[//get plugItemHash (if last object in socketEntires in sockets of item contains something -> has cat)
+																				resItemDefinitions[resItemDef]['sockets']['socketEntries'][tmpSocket]['reusablePlugItems'][
+																							// get last reusablePlugItem of this socketEntry
+																							resItemDefinitions[resItemDef]['sockets']['socketEntries'][tmpSocket]['reusablePlugItems'].length-1
+																							]['plugItemHash'] // get plugItemHash (object id of cat)
+																				]['objectives']['objectiveHashes']; // .length-1?
+											if (recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1]) > 0) {								
+												(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(recordDefinitions.hash[recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1])]);
+											} else {
+												(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(0);
+											}
+										} else {
 											(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(222);
+										}									
+								} else {
+									(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(444);
 								}
 							} else {
-								(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(0);
+								(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(888);
 							}							
 						} else {
 							(itemDefinitionsTmp.exo = itemDefinitionsTmp.exo || []).push(0);
@@ -275,6 +295,7 @@ async function InitData(){
 	if(localStorage.getItem("oauthToken")){
 		document.querySelector("#settingsLogin").style.display = 'none';
 		document.querySelector("#settingsLogout").style.display = 'flex';
+		showLoadingFrame();
 	}else{
 		document.querySelector("#settingsLogin").style.display = 'flex';
 		document.querySelector("#settingsLogout").style.display = 'none';
@@ -399,7 +420,8 @@ function generatePlayerHTML(cP){
 					"</div>" +
 				"</div><br>" +
 				"<div id='anch-exos' class='heading'>" + 
-					userDB['Definitions']['vendor'].name[userDB['Definitions']['vendor'].hash.indexOf(vendorHashList[2])] +
+				// heading
+				userDB['Definitions']['vendor'].name[userDB['Definitions']['vendor'].hash.indexOf(vendorHashList[2])] +
 				"</div>" +
 				"<div class='item-list'>";
 				// exotic weapons
@@ -428,6 +450,7 @@ function generatePlayerHTML(cP){
 							else {
 								marker="cross";
 							}
+							// check Masterwork
 							if (userDB['Definitions']['item'].catHash[i] > 0 && cP.records[userDB['Definitions']['item'].catHash[i]] !== undefined) {
 								var checkMaster = cP.records[userDB['Definitions']['item'].catHash[i]].state;
 							} else {
@@ -655,6 +678,7 @@ function generatePlayerHTML(cP){
 /* view Fireteam 																 */
 /*********************************************************************************/
 async function getFireteam(){
+	getDefinitions();
 	contentFireteam.innerHTML = "<div class='warning'><a>Loading data from Bungie...</a></div>";
 	let temp = JSON.parse(localStorage.getItem("oauthToken"));
 	if(!temp){
@@ -678,7 +702,9 @@ async function getFireteam(){
 						let tmpProf = await getData(rqURL);
 						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0], "contentFireteam");
 						let tmpAdd = generatePlayerHTML(currentPlayer);
-						database['fireteamPlayers'][currentPlayer.membershipId[0]] = currentPlayer;
+						userDB['fireteamPlayers'] =	{
+										currentPlayer: currentPlayer.membershipId[0]
+						};
 						contentFireteam.innerHTML += generatePlayerHTML(currentPlayer);
 					}
 				}		
