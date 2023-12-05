@@ -177,17 +177,18 @@ async function getDefinitions(){
 						if (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] !== undefined && resItemDefinitions[resItemDef]['collectibleHash'] !== undefined && (resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_weapon' || resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] == 'exotic_armor')) {
 							(itemDefinitionsTmp.exo = itemDefinitionsTmp.exo || []).push(1);
 							// for exo weapons
-							if ([buckets[0], buckets[1], buckets[2]].includes(resItemDefinitions[resItemDef]['inventory']['bucketTypeHash'])) {
-								try {
-									tmpObjectiveNo = resItemDefinitions[resItemDefinitions[resItemDef]['sockets']['socketEntries'][
-													resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'][resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'].length-1]['plugItemHash']]['objectives']['objectiveHashes'];
-								} catch(err) {
-									console.log(err);
-								}		
-								if (recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1]) > 0) {								
-									(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(recordDefinitions.hash[recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1])]);
+						if ([buckets[0], buckets[1], buckets[2]].includes(resItemDefinitions[resItemDef]['inventory']['bucketTypeHash'])) {
+							if (resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1 <= 10) {
+								if (resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'].length > 0) {
+										tmpObjectiveNo = resItemDefinitions[resItemDefinitions[resItemDef]['sockets']['socketEntries'][
+											resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'][resItemDefinitions[resItemDef]['sockets']['socketEntries'][resItemDefinitions[resItemDef]['sockets']['socketEntries'].length-1]['reusablePlugItems'].length-1]['plugItemHash']]['objectives']['objectiveHashes'];
+										if (recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1]) > 0) {								
+											(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(recordDefinitions.hash[recordDefinitions.objectiveHash.indexOf(tmpObjectiveNo[tmpObjectiveNo.length-1])]);
+										}} else {
+											(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(0);
+										}
 								} else {
-									(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(0);
+											(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(222);
 								}
 							} else {
 								(itemDefinitionsTmp.catHash = itemDefinitionsTmp.catHash || []).push(0);
