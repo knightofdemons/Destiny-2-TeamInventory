@@ -27,7 +27,19 @@ request.onupgradeneeded = function () {
 
 request.onsuccess = function () {
 	const db = request.result;
+	
+	/* später
+	const db = request.result;
+	const sTransaction = db.transaction("SiteSettings", "readwrite");
+	const mTransaction = db.transaction("manifestPaths", "readwrite");
+	const dTransaction = db.transaction("Definitions", "readwrite");
+	const pTransaction = db.transaction("loadedPlayers", "readwrite");
 
+	const sStoreT = sTransaction.objectStore("SiteSettings");
+	const mStoreT = mTransaction.objectStore("manifestPaths");
+	const dStoreT = dTransaction.objectStore("Definitions");
+	const pStoreT = pTransaction.objectStore("loadedPlayers");
+	*/
 }
 
 
