@@ -18,8 +18,6 @@ request.onupgradeneeded = function () {
 	const mStore = db.createObjectStore("manifestPaths", { keyPath: "id" });
 	const dStore = db.createObjectStore("Definitions", { keyPath: "id" });
 	const pStore = db.createObjectStore("loadedPlayers", { keyPath: "id" });
-	
-
 }
 
 request.onsuccess = function () {
@@ -31,10 +29,10 @@ request.onsuccess = function () {
 	const dStoreT = transaction.objectStore("Definitions");
 	const pStoreT = transaction.objectStore("loadedPlayers");
 
-	sStoreT.put({lang: "en", sizeMultiplier: 1, ThemeGrad0: "#393956", ThemeGrad1: "#161627"});
-	mStoreT.put({stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
-	dStoreT.put({stat: "", item: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
-	pStoreT.put({0: ""});
+	sStoreT.put({id: 1, lang: "en", sizeMultiplier: 1, ThemeGrad0: "#393956", ThemeGrad1: "#161627"});
+	mStoreT.put({id: 1, stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
+	dStoreT.put({id: 1, stat: "", item: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
+	pStoreT.put({id: 1, 0: ""});
 
 }
 
