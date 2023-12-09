@@ -24,17 +24,20 @@ request.onupgradeneeded = function () {
 
 request.onsuccess = function () {
 	const db = request.result;
-	const transaction = db.transaction("userDB", "readwrite");
+	const sTransaction = db.transaction("SiteSettings", "readwrite");
+	const mTransaction = db.transaction("manifestPaths", "readwrite");
+	const dTransaction = db.transaction("Definitions", "readwrite");
+	const pTransaction = db.transaction("loadedPlayers", "readwrite");
 
-	const sStoreT = transaction.objectStore("SiteSettings");
-	const mStoreT = transaction.objectStore("manifestPaths");
-	const dStoreT = transaction.objectStore("Definitions");
-	const pStoreT = transaction.objectStore("loadedPlayers");
+	const sStoreT = sTransaction.objectStore("SiteSettings");
+	const mStoreT = mTransaction.objectStore("manifestPaths");
+	const dStoreT = dTransaction.objectStore("Definitions");
+	const pStoreT = pTransaction.objectStore("loadedPlayers");
 
-	sStoreT.put({lang: "en", sizeMultiplier: 1, ThemeGrad0: "#393956", ThemeGrad1: "#161627"});
-	mStoreT.put({stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
-	dStoreT.put({stat: "", item: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
-	pStoreT.put({0: ""});
+	sStoreT.put({id: "1", lang: "en", sizeMultiplier: 1, ThemeGrad0: "#393956", ThemeGrad1: "#161627"});
+	mStoreT.put({id: "1", stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
+	dStoreT.put({id: "1", stat: "", item: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
+	pStoreT.put({id: "1", 0: ""});
 
 }
 
