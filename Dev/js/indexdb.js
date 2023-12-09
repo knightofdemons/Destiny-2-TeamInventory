@@ -19,6 +19,11 @@ request.onupgradeneeded = function () {
 	const dStore = db.createObjectStore("Definitions", { keyPath: "id" });
 	const pStore = db.createObjectStore("loadedPlayers", { keyPath: "id" });
 	
+
+}
+
+request.onsuccess = function () {
+	const db = request.result;
 	const transaction = db.transaction("userDB", "readwrite");
 
 	const sStoreT = transaction.objectStore("SiteSettings");
@@ -30,11 +35,6 @@ request.onupgradeneeded = function () {
 	mStoreT.put({stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
 	dStoreT.put({stat: "", item: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
 	pStoreT.put({0: ""});
-}
-
-request.onsuccess = function () {
-	const db = request.result;
-
 
 }
 
