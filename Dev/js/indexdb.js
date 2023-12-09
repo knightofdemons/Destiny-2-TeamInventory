@@ -24,6 +24,7 @@ request.onupgradeneeded = function () {
 
 request.onsuccess = function () {
 	const db = request.result;
+<<<<<<< Updated upstream
 	const sTransaction = db.transaction("SiteSettings", "readwrite");
 	const mTransaction = db.transaction("manifestPaths", "readwrite");
 	const dTransaction = db.transaction("Definitions", "readwrite");
@@ -33,6 +34,13 @@ request.onsuccess = function () {
 	const mStoreT = mTransaction.objectStore("manifestPaths");
 	const dStoreT = dTransaction.objectStore("Definitions");
 	const pStoreT = pTransaction.objectStore("loadedPlayers");
+=======
+
+	const sStoreT = db.transaction("SiteSettings", "readwrite").objectStore("SiteSettings");
+	const mStoreT = db.transaction("manifestPaths", "readwrite").objectStore("manifestPaths");
+	const dStoreT = db.transaction("Definitions", "readwrite").objectStore("Definitions");
+	const pStoreT = db.transaction("loadedPlayers", "readwrite").objectStore("loadedPlayers");
+>>>>>>> Stashed changes
 
 	sStoreT.put({id: "1", lang: "en", sizeMultiplier: 1, ThemeGrad0: "#393956", ThemeGrad1: "#161627"});
 	mStoreT.put({id: "1", stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
