@@ -18,20 +18,15 @@ request.onupgradeneeded = function () {
 	const mStore = db.createObjectStore("manifestPaths", { keyPath: "id" });
 	const dStore = db.createObjectStore("Definitions", { keyPath: "id" });
 	const pStore = db.createObjectStore("loadedPlayers", { keyPath: "id" });
+	
+	sStore.put({id: 1, lang: "en", sizeMultiplier: 1, ThemeGrad0: "#393956", ThemeGrad1: "#161627"});
+	mStore.put({id: 1, stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
+	dStore.put({id: 1, stat: "", item: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
+	pStore.put({id: 1, 0: ""});
 }
 
 request.onsuccess = function () {
 	const db = request.result;
-
-	const sStoreT = db.transaction("SiteSettings", "readwrite").objectStore("SiteSettings");
-	const mStoreT = db.transaction("manifestPaths", "readwrite").objectStore("manifestPaths");
-	const dStoreT = db.transaction("Definitions", "readwrite").objectStore("Definitions");
-	const pStoreT = db.transaction("loadedPlayers", "readwrite").objectStore("loadedPlayers");
-
-	sStoreT.put({id: 1, lang: "en", sizeMultiplier: 1, ThemeGrad0: "#393956", ThemeGrad1: "#161627"});
-	mStoreT.put({id: 1, stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
-	dStoreT.put({id: 1, stat: "", item: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
-	pStoreT.put({id: 1, 0: ""});
 
 }
 

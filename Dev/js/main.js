@@ -48,7 +48,7 @@ let myInterval;
 /*********************************************************************************/
 /* document KeyInputs                                                            */
 /*********************************************************************************/
-inputBox.onkeyup, inputBox.onclick = (e)=>{
+inputBox.onkeyup = (e)=>{
 	searchPlayer(e.target.value);
 }
 
