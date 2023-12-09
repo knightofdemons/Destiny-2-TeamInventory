@@ -6,7 +6,7 @@ const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexe
 
 const request = indexedDB.open("userDB", 1);
 
-const idQuery = Sstore.get(1);
+const idQuery = sStore.get(1);
 
 request.onerror = function (event) {
 	console.error("Error (IndexedDB): " + event);
@@ -14,25 +14,25 @@ request.onerror = function (event) {
 
 request.onupgradeneeded = function () {
 	const db = request.result;
-	const Sstore = db.createObjectStore("SiteSettings", { keyPath: "id" });
-	const Mstore = db.createObjectStore("manifestPaths", { keyPath: "id" });
-	const Dstore = db.createObjectStore("Definitions", { keyPath: "id" });
-	const Pstore = db.createObjectStore("loadedPlayers", { keyPath: "id" });
+	const sStore = db.createObjectStore("SiteSettings", { keyPath: "id" });
+	const mStore = db.createObjectStore("manifestPaths", { keyPath: "id" });
+	const dStore = db.createObjectStore("Definitions", { keyPath: "id" });
+	const pStore = db.createObjectStore("loadedPlayers", { keyPath: "id" });
 }
 
 request.onsuccess = function () {
 	const db = request.result;
 	const transaction = db.transaction("userDB", "readwrite");
 
-	const Sstore = transaction.objectStore("userDB");
-	const Mstore = transaction.objectStore("userDB");
-	const Dstore = transaction.objectStore("userDB");
-	const Pstore = transaction.objectStore("userDB");
+	const sStore = transaction.objectStore("userDB");
+	const mStore = transaction.objectStore("userDB");
+	const dStore = transaction.objectStore("userDB");
+	const pStore = transaction.objectStore("userDB");
 
-	Sstore.put({lang: "en", sizeMultiplier: 1, ThemeGrad0: "#393956", ThemeGrad1: "#161627"});
-	Mstore.put({stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
-	Dstore.put({stat: "", item: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
-	Pstore.put({0: ""});
+	sStore.put({lang: "en", sizeMultiplier: 1, ThemeGrad0: "#393956", ThemeGrad1: "#161627"});
+	mStore.put({stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
+	dStore.put({stat: "", item: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
+	pStore.put({0: ""});
 
 }
 
