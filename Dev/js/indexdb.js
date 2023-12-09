@@ -12,21 +12,49 @@ request.onerror = function (event) {
 	console.error("Error (IndexedDB): " + event);
 }
 
-request.onupgradeneeded = function () {
+request.onupgradeneeded = function (event) {
 	const db = request.result;
-	const sStore = db.createObjectStore("SiteSettings");
-	const mStore = db.createObjectStore("manifestPaths", { autoIncrement: true });
-	const dStore = db.createObjectStore("Definitions", { autoIncrement: true });
-	const pStore = db.createObjectStore("loadedPlayers", { autoIncrement: true });
-	
-	sStore.put("en","lang");
-	sStore.put(1,"sizeMultiplier");
-	sStore.put("#393956","ThemeGrad0");
-	sStore.put("#161627","ThemeGrad1");
-	
-	mStore.put({stat: "", item: "", itemCategoryDetails: "", itemBucketDetails: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
-	dStore.put({stat: "", item: "", classDef: "", energy: "", damageType: "", vendor: "", record: ""});
-	pStore.put({0: ""});
+	switch(event.oldVersion) { // existing db version
+		case 0:
+			const sStore = db.createObjectStore("siteSettings");
+			const mStore = db.createObjectStore("manifestPaths", { autoIncrement: true });
+			const dStore = db.createObjectStore("definitions", { autoIncrement: true });
+			const pStore = db.createObjectStore("loadedPlayers", { autoIncrement: true });
+			
+			//Building tables
+			sStore.put("en","lang");
+			sStore.put(1,"sizeMultiplier");
+			sStore.put("#393956","ThemeGrad0");
+			sStore.put("#161627","ThemeGrad1");
+			
+			mStore.put("","stat");
+			mStore.put("","item");
+			mStore.put("","itemCategoryDetails");
+			mStore.put("","itemBucketDetails");
+			mStore.put("","classDef");
+			mStore.put("","energy");
+			mStore.put("","damageType");
+			mStore.put("","vendor");
+			mStore.put("","record");
+
+			dStore.put("","stat");
+			dStore.put("","item");
+			dStore.put("","classDef");
+			dStore.put("","energy");
+			dStore.put("","damageType");
+			dStore.put("","vendor");
+			dStore.put("","record");
+
+			//pStore.put("membershipId,platformType,platformName","id");
+			location.reload();
+		case 1:
+			try{
+				let updateStore = event.currentTarget.transaction.objectStore("siteSettings");
+				//updateStore.put("test","test");
+			}catch(err){
+				console.log(err.message);
+			}
+	  }
 }
 
 request.onsuccess = function () {
@@ -87,7 +115,33 @@ function deletePlayer(membershipID){
 }
 
 async function savePlayer(cP){
-	if(!userDB.hasOwnProperty('loadedPlayers')){
+	req = indexedDB.open("userDB", 1);
+	req.onerror = function (event) {
+		console.error("Error (savePlayer): " + event);
+	}
+	req.onsuccess = function () {
+		db = req.result;
+		transaction = db.transaction("loadedPlayers", "readwrite");
+		store = transaction.objectStore("loadedPlayers");
+		store.put(cP.membershipId[0] + "," + cP.platformType[0] + "," + cP.platformName[0]);
+		db.close();
+
+		/* später
+		const db = request.result;
+		const sTransaction = db.transaction("siteSettings", "readwrite");
+		const mTransaction = db.transaction("manifestPaths", "readwrite");
+		const dTransaction = db.transaction("definitions", "readwrite");
+		const pTransaction = db.transaction("loadedPlayers", "readwrite");
+	
+		const sStoreT = sTransaction.objectStore("siteSettings");
+		const mStoreT = mTransaction.objectStore("manifestPaths");
+		const dStoreT = dTransaction.objectStore("definitions");
+		const pStoreT = pTransaction.objectStore("loadedPlayers");
+		*/
+	}
+}
+
+/*	if(!userDB.hasOwnProperty('loadedPlayers')){
 			userDB['loadedPlayers'] = {};
 		}
 		if(!userDB['loadedPlayers'].hasOwnProperty(cP.membershipId)){
@@ -104,5 +158,4 @@ async function savePlayer(cP){
 																	"</li>";
 		}else{
 			console.log("already existing player");
-		}
-}
+		}*/
