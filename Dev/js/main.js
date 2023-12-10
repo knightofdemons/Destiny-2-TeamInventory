@@ -109,6 +109,8 @@ async function switchPlayer(){
 }
 
 function showPlayer(membershipId){
+	t = readGhostPartition("loadedPlayers",1);
+	console.log(t);
 	cursor = Object.keys(userDB['loadedPlayers']).indexOf(membershipId);
 	userDB['siteSettings']['playerCursor'] = cursor;
 	switchPlayer();
@@ -289,7 +291,7 @@ function setLang(lang) {
 	}
 	document.getElementById(lang).classList.toggle("act",true);
 	langBtn.classList.replace(langBtn.classList.item(1), "flag-icon-"+lang);
-	saveSiteSettings("lang", lang);
+	writeGhostPartition("siteSettings","lang", lang);
 	location.reload();
 }
 
@@ -309,42 +311,20 @@ function showTheme() {
 	document.querySelector(".settingsThemes").classList.toggle("open")
 }
 
-function setTheme(element) {
-	document.querySelector(".theme-opt.act").classList.remove("act");
-	element.classList.add("act");
-	
-	if(element.id == "red"){
-		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeRedA'));
-		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeRedB'));		
-	}else if(element.id == "blue"){
-		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeBlueA'));
-		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeBlueB'));		
-	}else if(element.id == "green"){
-		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeGreenA'));
-		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeGreenB'));
-	}else if(element.id == "yellow"){
-		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeYellowA'));
-		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeYellowB'));
-	}else if(element.id == "orange"){
-		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeOrangeA'));
-		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeOrangeB'));
-	}else if(element.id == "purple"){
-		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themePurpleA'));
-		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themePurpleB'));
-	}else if(element.id == "black"){
-		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeBlackA'));
-		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeBlackB'));
-	}else if(element.id == "white"){
-		document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeWhiteA'));
-		document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeWhiteB'));
-	}
-	saveSiteSettings("ThemeGrad0", getComputedStyle(document.documentElement).getPropertyValue('--grad0'));
-	saveSiteSettings("ThemeGrad1", getComputedStyle(document.documentElement).getPropertyValue('--grad01'));
+function setTheme(color0,color1) {
+	//document.querySelector(".theme-opt.act").classList.remove("act");
+	//element.classList.add("act");
+	grad0 = getComputedStyle(document.documentElement).getPropertyValue(color0);
+	grad1 = getComputedStyle(document.documentElement).getPropertyValue(color1);
+	writeGhostPartition("siteSettings","ThemeGrad0", grad0);
+	writeGhostPartition("siteSettings","ThemeGrad1", grad1);
+	document.documentElement.style.setProperty('--grad0',grad0);
+	document.documentElement.style.setProperty('--grad1',grad1);
 }
 
 function setIconsize(val) {
 	document.documentElement.style.setProperty('--sizeMultiplier', val);
-	saveSiteSettings("sizeMultiplier", val);
+	writeGhostPartition("siteSettings","sizeMultiplier", val);
 }
 
 

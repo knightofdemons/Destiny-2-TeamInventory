@@ -109,7 +109,7 @@ request.onsuccess = function () {
 }
 
 
-async function readGhostPartition(ghostTable, item){
+function readGhostPartition(ghostTable, item){
 	req = indexedDB.open("ghostPartition", 1);
 	req.onerror = function (event) {
 		console.error("Error (ghostPartition|read): " + event);
@@ -119,8 +119,8 @@ async function readGhostPartition(ghostTable, item){
 		store = db.transaction(ghostTable, "readonly").objectStore(ghostTable);
 		query = store.get(item);
 		query.onsuccess = function () {
-			console.log("test" + query.result);
-			db.close();
+			//console.log(query);
+			return query.result;
 		}
 	}
 }
@@ -137,7 +137,7 @@ function updateUserDB() {
 }
 
 
-function readwriteGhostPartition(storeName, key, val) {
+function writeGhostPartition(storeName, key, val) {
 	req = indexedDB.open("ghostPartition", 1);
 	req.onerror = function (event) {
 		console.error("Error in ghostPartition|readwrite: " + event);
@@ -151,13 +151,8 @@ function readwriteGhostPartition(storeName, key, val) {
 		}
 		query.onsuccess = function () {
 			console.log("ghostPartition|" + storeName + ": " + key + " updated to: " + val);
-		}
-		db.close();
+		}		
 	}
-}
-
-function saveSiteSettings(prop, val) {
-	readwriteGhostPartition("siteSettings",prop,val);
 }
 
 
@@ -183,7 +178,7 @@ async function savePlayer(cP){
 		db = req.result;
 		transaction = db.transaction("loadedPlayers", "readwrite");
 		store = transaction.objectStore("loadedPlayers");
-		store.add(cP.membershipId[0] + "," + cP.platformType[0] + "," + cP.platformName[0]);
+		store.put(cP.membershipId[0] + "," + cP.platformType[0] + "," + cP.platformName[0]);
 		db.close();
 	}
 }
