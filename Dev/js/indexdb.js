@@ -3,7 +3,7 @@
 /*********************************************************************************/
 
 const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.shimIndexedDB;
-const request = indexedDB.open("userDB", 1);
+const request = indexedDB.open("ghostPartition", 1);
 
 //const idQuery = Sstore.get(1);
 
@@ -102,16 +102,19 @@ request.onsuccess = function () {
 }
 
 
-function readGhostPartition(ghostTable, item){
+async function readGhostPartition(ghostTable, item){
 	req = indexedDB.open("ghostPartition", 1);
 	req.onerror = function (event) {
 		console.error("Error (ghostPartition|read): " + event);
 	}
 	req.onsuccess = function () {
-		db = request.result;
+		db = req.result;
 		store = db.transaction(ghostTable, "readonly").objectStore(ghostTable);
-		return store.get(item);
-		db.close();
+		store.get(item);
+		store.onsuccess = function () {
+			console.log("test" + store.result);
+			db.close();
+		}
 	}
 }
 

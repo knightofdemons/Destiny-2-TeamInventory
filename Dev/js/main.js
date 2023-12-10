@@ -109,7 +109,6 @@ async function switchPlayer(){
 }
 
 function showPlayer(membershipId){
-	readGhostPartition("loadedPlayers",0);
 	cursor = Object.keys(userDB['loadedPlayers']).indexOf(membershipId);
 	userDB['siteSettings']['playerCursor'] = cursor;
 	switchPlayer();
