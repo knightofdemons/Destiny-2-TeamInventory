@@ -123,21 +123,8 @@ async function savePlayer(cP){
 		db = req.result;
 		transaction = db.transaction("loadedPlayers", "readwrite");
 		store = transaction.objectStore("loadedPlayers");
-		store.put(cP.membershipId[0] + "," + cP.platformType[0] + "," + cP.platformName[0]);
+		store.add(cP.membershipId[0] + "," + cP.platformType[0] + "," + cP.platformName[0]);
 		db.close();
-
-		/* später
-		const db = request.result;
-		const sTransaction = db.transaction("siteSettings", "readwrite");
-		const mTransaction = db.transaction("manifestPaths", "readwrite");
-		const dTransaction = db.transaction("definitions", "readwrite");
-		const pTransaction = db.transaction("loadedPlayers", "readwrite");
-	
-		const sStoreT = sTransaction.objectStore("siteSettings");
-		const mStoreT = mTransaction.objectStore("manifestPaths");
-		const dStoreT = dTransaction.objectStore("definitions");
-		const pStoreT = pTransaction.objectStore("loadedPlayers");
-		*/
 	}
 }
 
