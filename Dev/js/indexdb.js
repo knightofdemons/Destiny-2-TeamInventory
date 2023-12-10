@@ -4,9 +4,9 @@
 
 const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.shimIndexedDB;
 
-const request = indexedDB.open("userDB", 1);
+const request = indexedDB.open("ghostPartition", 1);
 
-//const idQuery = Sstore.get(1);
+//const idQuery = storeSettings.get(1);
 
 request.onerror = function (event) {
 	console.error("Error (IndexedDB): " + event);
@@ -16,36 +16,62 @@ request.onupgradeneeded = function (event) {
 	const db = request.result;
 	switch(event.oldVersion) { // existing db version
 		case 0:
-			const sStore = db.createObjectStore("siteSettings");
-			const mStore = db.createObjectStore("manifestPaths", { autoIncrement: true });
-			const dStore = db.createObjectStore("definitions", { autoIncrement: true });
-			const pStore = db.createObjectStore("loadedPlayers", { autoIncrement: true });
+			const storeSettings = db.createObjectStore("siteSettings");
+			const storePaths = db.createObjectStore("manifestPaths", { autoIncrement: true });
+			const storeDefStat = db.createObjectStore("statDef");
+			const storeDefItem = db.createObjectStore("itemDef");
+			const storeDefClass = db.createObjectStore("classDef");
+			const storeDefEnergy = db.createObjectStore("energyDef");
+			const storeDefDmg = db.createObjectStore("dmgtypeDef");
+			const storeDefVendor = db.createObjectStore("vendorDef");
+			const storeDefRecord = db.createObjectStore("recordDef");
+			const storePlayer = db.createObjectStore("loadedPlayers", { autoIncrement: true });
 			
 			//Building tables
-			sStore.put("en","lang");
-			sStore.put(1,"sizeMultiplier");
-			sStore.put("#393956","ThemeGrad0");
-			sStore.put("#161627","ThemeGrad1");
+			storeSettings.put("en","lang");
+			storeSettings.put(1,"sizeMultiplier");
+			storeSettings.put("#393956","ThemeGrad0");
+			storeSettings.put("#161627","ThemeGrad1");
 			
-			mStore.put("","stat");
-			mStore.put("","item");
-			mStore.put("","itemCategoryDetails");
-			mStore.put("","itemBucketDetails");
-			mStore.put("","classDef");
-			mStore.put("","energy");
-			mStore.put("","damageType");
-			mStore.put("","vendor");
-			mStore.put("","record");
-
-			dStore.put("","stat");
-			dStore.put("","item");
-			dStore.put("","classDef");
-			dStore.put("","energy");
-			dStore.put("","damageType");
-			dStore.put("","vendor");
-			dStore.put("","record");
-
-			//pStore.put("membershipId,platformType,platformName","id");
+			storeDefStat.put("","name");
+			storeDefStat.put("","info");
+			storeDefStat.put("","hash");
+			storeDefStat.put("","iconURL");
+			
+			storeDefItem.put("","type");
+			storeDefItem.put("","name");
+			storeDefItem.put("","id");
+			storeDefItem.put("","iconURL");
+			storeDefItem.put("","collectibleID");
+			storeDefItem.put("","bucketHash");
+			storeDefItem.put("","bucket");
+			storeDefItem.put("","bucketOrder");
+			storeDefItem.put("","categoryHash");
+			storeDefItem.put("","category");
+			storeDefItem.put("","subcategoryHash");
+			storeDefItem.put("","subcategory");
+			storeDefItem.put("","exo");
+			storeDefItem.put("","catHash");
+			
+			storeDefClass.put("","name");
+			storeDefClass.put("","no");
+			
+			storeDefEnergy.put("","name");
+			storeDefEnergy.put("","iconURL");
+			storeDefEnergy.put("","no");
+			
+			storeDefDmg.put("","name");
+			storeDefDmg.put("","iconURL");
+			storeDefDmg.put("","no");
+			
+			storeDefVendor.put("","name");
+			storeDefVendor.put("","iconURL");
+			storeDefVendor.put("","hash");
+			
+			storeDefRecord.put("","hash");
+			storeDefRecord.put("","objectiveHash");
+			
+			//storePlayer.put("membershipId,platformType,platformName","id");
 			location.reload();
 		case 1:
 			try{
@@ -67,10 +93,10 @@ request.onsuccess = function () {
 	const dTransaction = db.transaction("Definitions", "readwrite");
 	const pTransaction = db.transaction("loadedPlayers", "readwrite");
 
-	const sStoreT = sTransaction.objectStore("SiteSettings");
-	const mStoreT = mTransaction.objectStore("manifestPaths");
+	const storeSettingsT = sTransaction.objectStore("SiteSettings");
+	const storePathsT = mTransaction.objectStore("manifestPaths");
 	const dStoreT = dTransaction.objectStore("Definitions");
-	const pStoreT = pTransaction.objectStore("loadedPlayers");
+	const storePlayerT = pTransaction.objectStore("loadedPlayers");
 	*/
 }
 
@@ -85,37 +111,37 @@ request.onsuccess = function () {
 
 
 
-function updateUserDB() {
-// updates userDB in storage from internal userDB
-	userDBtmp = Object.assign({},userDB);
-	delete userDBtmp.loadedPlayers;
-	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
-	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
+function updateGhostPartition() {
+// updates ghostPartition in Indexed DB
+	ghostPartitionTmp = Object.assign({},ghostPartition);
+	delete ghostPartitionTmp.loadedPlayers;
+	ghostPartitionTmp.loadedPlayers = Object.keys(ghostPartition['loadedPlayers']);
+	localStorage.setItem("ghostPartition", JSON.stringify(ghostPartitionTmp));
 }
 
 function saveSiteSettings(prop, val){
-	if(!userDB['siteSettings'].hasOwnProperty(prop)){
-		userDB['siteSettings'][prop] = {};
+	if(!ghostPartition['siteSettings'].hasOwnProperty(prop)){
+		ghostPartition['siteSettings'][prop] = {};
 	}
-	userDB['siteSettings'][prop] = val;
-	updateUserDB();
+	ghostPartition['siteSettings'][prop] = val;
+	updateGhostPartition();
 }
 
 async function refreshPlayer(membershipId){
-	currentPlayer = await getPlayer(userDB['loadedPlayers'][membershipId]['membershipId'][0], userDB['loadedPlayers'][membershipId]['platformType'][0]);
-	userDB['loadedPlayers'][membershipId] = currentPlayer;
-	updateUserDB();
+	currentPlayer = await getPlayer(ghostPartition['loadedPlayers'][membershipId]['membershipId'][0], ghostPartition['loadedPlayers'][membershipId]['platformType'][0]);
+	ghostPartition['loadedPlayers'][membershipId] = currentPlayer;
+	updateGhostPartition();
 }
 
 function deletePlayer(membershipID){
 	document.getElementById("acc-" + membershipID).remove();
-	delete userDB['loadedPlayers'][membershipID];
+	delete ghostPartition['loadedPlayers'][membershipID];
 	console.log("deleted " + membershipID + " from local player storage");
-	updateUserDB();
+	updateGhostPartition();
 }
 
 async function savePlayer(cP){
-	req = indexedDB.open("userDB", 1);
+	req = indexedDB.open("ghostPartition", 1);
 	req.onerror = function (event) {
 		console.error("Error (savePlayer): " + event);
 	}
@@ -128,13 +154,13 @@ async function savePlayer(cP){
 	}
 }
 
-/*	if(!userDB.hasOwnProperty('loadedPlayers')){
-			userDB['loadedPlayers'] = {};
+/*	if(!ghostPartition.hasOwnProperty('loadedPlayers')){
+			ghostPartition['loadedPlayers'] = {};
 		}
-		if(!userDB['loadedPlayers'].hasOwnProperty(cP.membershipId)){
-			userDB['loadedPlayers'][cP.membershipId[0]] = cP;
+		if(!ghostPartition['loadedPlayers'].hasOwnProperty(cP.membershipId)){
+			ghostPartition['loadedPlayers'][cP.membershipId[0]] = cP;
 			console.log("saved " + cP.membershipId[0] + " to local player storage");
-			updateUserDB();
+			updateGhostPartition();
 			showPlayer(cP.membershipId[0]);
 			document.getElementById("playerBucket").innerHTML += "<li id='acc-"+ cP.membershipId[0] + "'>" +
 																		"<a onclick=\"showPlayer('" + cP.membershipId[0] + "')\">" +
