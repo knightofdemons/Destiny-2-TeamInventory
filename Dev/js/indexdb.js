@@ -3,10 +3,9 @@
 /*********************************************************************************/
 
 const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.shimIndexedDB;
+const request = indexedDB.open("userDB", 1);
 
-const request = indexedDB.open("ghostPartition", 1);
-
-//const idQuery = storeSettings.get(1);
+//const idQuery = Sstore.get(1);
 
 request.onerror = function (event) {
 	console.error("Error (IndexedDB): " + event);
@@ -72,6 +71,7 @@ request.onupgradeneeded = function (event) {
 			storeDefRecord.put("","objectiveHash");
 			
 			//storePlayer.put("membershipId,platformType,platformName","id");
+			db.close();
 			location.reload();
 		case 1:
 			try{
@@ -79,6 +79,7 @@ request.onupgradeneeded = function (event) {
 				//updateStore.put("test","test");
 			}catch(err){
 				console.log(err.message);
+				db.close();
 			}
 	  }
 }
@@ -93,22 +94,26 @@ request.onsuccess = function () {
 	const dTransaction = db.transaction("Definitions", "readwrite");
 	const pTransaction = db.transaction("loadedPlayers", "readwrite");
 
-	const storeSettingsT = sTransaction.objectStore("SiteSettings");
-	const storePathsT = mTransaction.objectStore("manifestPaths");
+	const sStoreT = sTransaction.objectStore("SiteSettings");
+	const mStoreT = mTransaction.objectStore("manifestPaths");
 	const dStoreT = dTransaction.objectStore("Definitions");
-	const storePlayerT = pTransaction.objectStore("loadedPlayers");
+	const pStoreT = pTransaction.objectStore("loadedPlayers");
 	*/
 }
 
 
-
-
-
-
-
-
-
-
+function readGhostPartition(ghostTable, item){
+	req = indexedDB.open("ghostPartition", 1);
+	req.onerror = function (event) {
+		console.error("Error (ghostPartition|read): " + event);
+	}
+	req.onsuccess = function () {
+		db = request.result;
+		store = db.transaction(ghostTable, "readonly").objectStore(ghostTable);
+		return store.get(item);
+		db.close();
+	}
+}
 
 
 function updateGhostPartition() {
@@ -119,25 +124,33 @@ function updateGhostPartition() {
 	localStorage.setItem("ghostPartition", JSON.stringify(ghostPartitionTmp));
 }
 
+function updateUserDB() {
+// updates userDB in storage from internal userDB
+	userDBtmp = Object.assign({},userDB);
+	delete userDBtmp.loadedPlayers;
+	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
+	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
+}
+
 function saveSiteSettings(prop, val){
-	if(!ghostPartition['siteSettings'].hasOwnProperty(prop)){
-		ghostPartition['siteSettings'][prop] = {};
+	if(!userDB['siteSettings'].hasOwnProperty(prop)){
+		userDB['siteSettings'][prop] = {};
 	}
-	ghostPartition['siteSettings'][prop] = val;
-	updateGhostPartition();
+	userDB['siteSettings'][prop] = val;
+	updateUserDB();
 }
 
 async function refreshPlayer(membershipId){
-	currentPlayer = await getPlayer(ghostPartition['loadedPlayers'][membershipId]['membershipId'][0], ghostPartition['loadedPlayers'][membershipId]['platformType'][0]);
-	ghostPartition['loadedPlayers'][membershipId] = currentPlayer;
-	updateGhostPartition();
+	currentPlayer = await getPlayer(userDB['loadedPlayers'][membershipId]['membershipId'][0], userDB['loadedPlayers'][membershipId]['platformType'][0]);
+	userDB['loadedPlayers'][membershipId] = currentPlayer;
+	updateUserDB();
 }
 
 function deletePlayer(membershipID){
 	document.getElementById("acc-" + membershipID).remove();
-	delete ghostPartition['loadedPlayers'][membershipID];
+	delete userDB['loadedPlayers'][membershipID];
 	console.log("deleted " + membershipID + " from local player storage");
-	updateGhostPartition();
+	updateUserDB();
 }
 
 async function savePlayer(cP){
@@ -154,13 +167,13 @@ async function savePlayer(cP){
 	}
 }
 
-/*	if(!ghostPartition.hasOwnProperty('loadedPlayers')){
-			ghostPartition['loadedPlayers'] = {};
+/*	if(!userDB.hasOwnProperty('loadedPlayers')){
+			userDB['loadedPlayers'] = {};
 		}
-		if(!ghostPartition['loadedPlayers'].hasOwnProperty(cP.membershipId)){
-			ghostPartition['loadedPlayers'][cP.membershipId[0]] = cP;
+		if(!userDB['loadedPlayers'].hasOwnProperty(cP.membershipId)){
+			userDB['loadedPlayers'][cP.membershipId[0]] = cP;
 			console.log("saved " + cP.membershipId[0] + " to local player storage");
-			updateGhostPartition();
+			updateUserDB();
 			showPlayer(cP.membershipId[0]);
 			document.getElementById("playerBucket").innerHTML += "<li id='acc-"+ cP.membershipId[0] + "'>" +
 																		"<a onclick=\"showPlayer('" + cP.membershipId[0] + "')\">" +

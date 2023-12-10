@@ -90,11 +90,11 @@ document.onkeydown = (e)=> {
 		countDown(fireteamTimer, getFireteam());
 		
 	//Playerscrolling
-	}else if(keycode == 37 && viewMain.classList.contains("open") && userDB['siteSettings']['userDBcursor'] > 0){
-		userDB['siteSettings']['userDBcursor']--;
+	}else if(keycode == 37 && viewMain.classList.contains("open") && localGhost['playerCursor'] > 0){
+		localGhost['playerCursor']--;
 		switchPlayer();
-	}else if(keycode == 39 && viewMain.classList.contains("open") && userDB['siteSettings']['userDBcursor'] < (Object.keys(userDB['loadedPlayers']).length - 1)){
-		userDB['siteSettings']['userDBcursor']++;
+	}else if(keycode == 39 && viewMain.classList.contains("open") && localGhost['playerCursor'] < (Object.keys(userDB['loadedPlayers']).length - 1)){
+		localGhost['playerCursor']++;
 		switchPlayer();
 	}
 }
@@ -105,13 +105,13 @@ document.onkeydown = (e)=> {
 /*********************************************************************************/
 
 async function switchPlayer(){
-	viewMain.innerHTML = generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]);
+	viewMain.innerHTML = generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['playerCursor']]]);
 }
 
 function showPlayer(membershipId){
+	readGhostPartition("loadedPlayers",0);
 	cursor = Object.keys(userDB['loadedPlayers']).indexOf(membershipId);
-	userDB['siteSettings']['userDBcursor'] = cursor;
-	updateUserDB();
+	userDB['siteSettings']['playerCursor'] = cursor;
 	switchPlayer();
 }
 

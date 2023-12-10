@@ -286,7 +286,7 @@ async function InitData(){
 		userDB = {siteSettings: {
 			lang: 'en',
 			sizeMultiplier: 1,
-			userDBcursor: 0,
+			playerCursor: 0,
 			ThemeGrad0: getComputedStyle(document.documentElement).getPropertyValue('--grad0'),
 			ThemeGrad1: getComputedStyle(document.documentElement).getPropertyValue('--grad1')
 		}};
@@ -309,8 +309,8 @@ async function InitData(){
 
  	// load recent players from db #### muss neu gemacht werden ####
 /*	if(userDB['loadedPlayers']){
-		refreshPlayer(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]['membershipId'][0]);
-		viewMain.innerHTML += generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['userDBcursor']]]);
+		refreshPlayer(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[localGhost['playerCursor']]]['membershipId'][0]);
+		viewMain.innerHTML += generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[localGhost['playerCursor']]]);
 	}
 	localStorage.setItem("userDB", JSON.stringify(userDB));
 */
