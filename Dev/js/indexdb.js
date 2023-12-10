@@ -16,15 +16,15 @@ request.onupgradeneeded = function (event) {
 	switch(event.oldVersion) { // existing db version
 		case 0:
 			const storeSettings = db.createObjectStore("siteSettings");
-			const storePaths = db.createObjectStore("manifestPaths", { autoIncrement: true });
-			const storeDefStat = db.createObjectStore("statDef");
-			const storeDefItem = db.createObjectStore("itemDef");
-			const storeDefClass = db.createObjectStore("classDef");
-			const storeDefEnergy = db.createObjectStore("energyDef");
-			const storeDefDmg = db.createObjectStore("dmgtypeDef");
-			const storeDefVendor = db.createObjectStore("vendorDef");
-			const storeDefRecord = db.createObjectStore("recordDef");
-			const storePlayer = db.createObjectStore("loadedPlayers", { autoIncrement: true });
+			const storePaths = db.createObjectStore("manifestPaths", {autoIncrement: true});
+			const storeDefStat = db.createObjectStore("statDef", {keyPath: "hash"});
+			const storeDefItem = db.createObjectStore("itemDef", {keyPath: "id"});
+			const storeDefClass = db.createObjectStore("classDef", {keyPath: "no"});
+			const storeDefEnergy = db.createObjectStore("energyDef", {keyPath: "no"});
+			const storeDefDmg = db.createObjectStore("dmgtypeDef", {keyPath: "no"});
+			const storeDefVendor = db.createObjectStore("vendorDef", {keyPath: "hash"});
+			const storeDefRecord = db.createObjectStore("recordDef", {keyPath: "hash"});
+			const storePlayer = db.createObjectStore("loadedPlayers", {autoIncrement: true});
 			
 			//Building tables
 			storeSettings.put("en","lang");
@@ -32,45 +32,49 @@ request.onupgradeneeded = function (event) {
 			storeSettings.put("#393956","ThemeGrad0");
 			storeSettings.put("#161627","ThemeGrad1");
 			
-			storeDefStat.put("","name");
-			storeDefStat.put("","info");
-			storeDefStat.put("","hash");
-			storeDefStat.put("","iconURL");
+
+			storeDefStat.createIndex("name","name");
+			storeDefStat.createIndex("info","info");
+			storeDefStat.createIndex("hash","hash", {unique:true});
+			storeDefStat.createIndex("iconURL","iconURL");
+
+			// nur zum testen
+			storeDefStat.add({ info: "asdf", name: "test1", hash: 123, iconurl: "asdf.com" });
+			storeDefStat.add({ info: "wer", name: "test2", hash: 234, iconurl: "wer.com" });
+	
+			storeDefItem.createIndex("type","type");
+			storeDefItem.createIndex("name","name");
+			storeDefItem.createIndex("id","id", {unique:true});
+			storeDefItem.createIndex("iconURL","iconURL");
+			storeDefItem.createIndex("collectibleID","collectibleID");
+			storeDefItem.createIndex("bucketHash","bucketHash");
+			storeDefItem.createIndex("bucket","bucket");
+			storeDefItem.createIndex("bucketOrder","bucketOrder");
+			storeDefItem.createIndex("categoryHash","categoryHash");
+			storeDefItem.createIndex("category","category");
+			storeDefItem.createIndex("subcategoryHash","subcategoryHash");
+			storeDefItem.createIndex("subcategory","subcategory");
+			storeDefItem.createIndex("exo","exo");
+			storeDefItem.createIndex("catHash","catHash");
 			
-			storeDefItem.put("","type");
-			storeDefItem.put("","name");
-			storeDefItem.put("","id");
-			storeDefItem.put("","iconURL");
-			storeDefItem.put("","collectibleID");
-			storeDefItem.put("","bucketHash");
-			storeDefItem.put("","bucket");
-			storeDefItem.put("","bucketOrder");
-			storeDefItem.put("","categoryHash");
-			storeDefItem.put("","category");
-			storeDefItem.put("","subcategoryHash");
-			storeDefItem.put("","subcategory");
-			storeDefItem.put("","exo");
-			storeDefItem.put("","catHash");
+			storeDefClass.createIndex("name","name");
+			storeDefClass.createIndex("no","no", {unique:true});
 			
-			storeDefClass.put("","name");
-			storeDefClass.put("","no");
+			storeDefEnergy.createIndex("name","name");
+			storeDefEnergy.createIndex("iconURL","iconURL");
+			storeDefEnergy.createIndex("no","no", {unique:true});
 			
-			storeDefEnergy.put("","name");
-			storeDefEnergy.put("","iconURL");
-			storeDefEnergy.put("","no");
+			storeDefDmg.createIndex("name","name");
+			storeDefDmg.createIndex("iconURL","iconURL");
+			storeDefDmg.createIndex("no","no", {unique:true});
 			
-			storeDefDmg.put("","name");
-			storeDefDmg.put("","iconURL");
-			storeDefDmg.put("","no");
+			storeDefVendor.createIndex("name","name");
+			storeDefVendor.createIndex("iconURL","iconURL");
+			storeDefVendor.createIndex("hash","hash", {unique:true});
 			
-			storeDefVendor.put("","name");
-			storeDefVendor.put("","iconURL");
-			storeDefVendor.put("","hash");
+			storeDefRecord.createIndex("hash","hash", {unique:true});
+			storeDefRecord.createIndex("objectiveHash","objectiveHash");
 			
-			storeDefRecord.put("","hash");
-			storeDefRecord.put("","objectiveHash");
-			
-			//storePlayer.put("membershipId,platformType,platformName","id");
 			db.close();
 			location.reload();
 		case 1:
