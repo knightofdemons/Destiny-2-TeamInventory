@@ -103,6 +103,9 @@ request.onsuccess = function () {
 	const dStoreT = dTransaction.objectStore("Definitions");
 	const pStoreT = pTransaction.objectStore("loadedPlayers");
 	*/
+	db.transaction.oncomplete = function () {
+		db.close();
+	}
 }
 
 
@@ -114,9 +117,9 @@ async function readGhostPartition(ghostTable, item){
 	req.onsuccess = function () {
 		db = req.result;
 		store = db.transaction(ghostTable, "readonly").objectStore(ghostTable);
-		store.get(item);
-		store.onsuccess = function () {
-			console.log("test" + store.result);
+		query = store.get(item);
+		query.onsuccess = function () {
+			console.log("test" + query.result);
 			db.close();
 		}
 	}
