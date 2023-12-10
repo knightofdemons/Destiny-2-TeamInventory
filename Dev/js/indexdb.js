@@ -128,19 +128,38 @@ async function readGhostPartition(ghostTable, item){
 
 function updateUserDB() {
 // updates userDB in storage from internal userDB
+	/*
 	userDBtmp = Object.assign({},userDB);
 	delete userDBtmp.loadedPlayers;
 	userDBtmp.loadedPlayers = Object.keys(userDB['loadedPlayers']);
 	localStorage.setItem("userDB", JSON.stringify(userDBtmp));
+	*/
 }
 
-function saveSiteSettings(prop, val){
-	if(!userDB['siteSettings'].hasOwnProperty(prop)){
-		userDB['siteSettings'][prop] = {};
+
+function readwriteGhostPartition(storeName, key, val) {
+	req = indexedDB.open("ghostPartition", 1);
+	req.onerror = function (event) {
+		console.error("Error in ghostPartition|readwrite: " + event);
 	}
-	userDB['siteSettings'][prop] = val;
-	updateUserDB();
+	req.onsuccess = function () {
+		db = req.result;
+		store = db.transaction(storeName, "readwrite").objectStore(storeName);
+		query = store.put(val,key);
+		query.onerror = function () {
+			console.error("Error in ghostPartition|" + storeName + ": " + key + " could not be updated to: " + val + ". Please try again.");
+		}
+		query.onsuccess = function () {
+			console.log("ghostPartition|" + storeName + ": " + key + " updated to: " + val);
+		}
+		db.close();
+	}
 }
+
+function saveSiteSettings(prop, val) {
+	readwriteGhostPartition("siteSettings",prop,val);
+}
+
 
 async function refreshPlayer(membershipId){
 	currentPlayer = await getPlayer(userDB['loadedPlayers'][membershipId]['membershipId'][0], userDB['loadedPlayers'][membershipId]['platformType'][0]);

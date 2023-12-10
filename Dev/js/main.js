@@ -289,8 +289,7 @@ function setLang(lang) {
 	}
 	document.getElementById(lang).classList.toggle("act",true);
 	langBtn.classList.replace(langBtn.classList.item(1), "flag-icon-"+lang);
-	userDB['siteSettings']['lang'] = lang;
-	updateUserDB();
+	saveSiteSettings("lang", lang);
 	location.reload();
 }
 
