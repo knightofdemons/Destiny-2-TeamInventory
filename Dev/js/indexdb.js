@@ -126,14 +126,6 @@ async function readGhostPartition(ghostTable, item){
 }
 
 
-function updateGhostPartition() {
-// updates ghostPartition in Indexed DB
-	ghostPartitionTmp = Object.assign({},ghostPartition);
-	delete ghostPartitionTmp.loadedPlayers;
-	ghostPartitionTmp.loadedPlayers = Object.keys(ghostPartition['loadedPlayers']);
-	localStorage.setItem("ghostPartition", JSON.stringify(ghostPartitionTmp));
-}
-
 function updateUserDB() {
 // updates userDB in storage from internal userDB
 	userDBtmp = Object.assign({},userDB);
