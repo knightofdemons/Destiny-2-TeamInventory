@@ -5,7 +5,7 @@ async function getData(url, useApiKey = true) {
 		//fetch json response for getRequests | use false as option to generate a request without using the apikey
 		let tmpHead = new Headers();
 		if(useApiKey){tmpHead.set('X-API-Key', akey);}
-		const fetchOptions = {method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer', headers:tmpHead,};
+		const fetchOptions = {method:'GET', mode:'cors', cache:'default', credentials:'omit',redirect:'follow', referrerPolicy:'no-referrer', headers:tmpHead,};
 		const response = await fetch(url, fetchOptions);
 		return response.json();
 }
@@ -26,7 +26,7 @@ async function postData(url = '', data = {}, UseJSON = true) {
 	method: 'POST', // *GET, POST, PUT, DELETE, etc.
 	mode: 'cors', // no-cors, *cors, same-origin
 	cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-	credentials: 'same-origin', // include, *same-origin, omit
+	credentials: 'omit', // include, *same-origin, omit
 	headers: tmpHead,
 	redirect: 'follow', // manual, *follow, error
 	referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
@@ -40,35 +40,65 @@ async function postData(url = '', data = {}, UseJSON = true) {
 /* Manifest & Miscellaneous												         */
 /*********************************************************************************/
 async function checkManifestVersion(language) {
-	if(!userDB['manifestPaths']){
-		userDB['manifestPaths'] = {stat : '/oops'};
-	}
-	const check = await fetch(userDB['manifestPaths']['stat'], {method:'GET', mode:'cors', cache:'default', credentials:'same-origin',redirect:'follow', referrerPolicy:'no-referrer',});
-	if (check.status == 404) {
-		// get new manifests
-		rqURL = 'https://www.bungie.net/Platform/Destiny2/Manifest/';
-		const resManifest = await getData(rqURL, false);
-			userDB['manifestPaths'] = {
-				stat : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyStatDefinition'], // like [567] -> resilience
-				item : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryItemDefinition'], // like [123] -> xenophage
-				itemCategoryDetails : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyItemCategoryDefinition'], // like [234] -> kinetic weapon
-				itemBucketDetails : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyInventoryBucketDefinition'], // like [345] -> leg armor
-				classDef : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyClassDefinition'], // like [2] -> warlock
-				energy : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyEnergyTypeDefinition'], // like [6] -> stasis (for armor)
-				damageType : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyDamageTypeDefinition'], // like [6] -> stasis (for weapons)
-				vendor : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyVendorDefinition'], // like vault
-				record : 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][language]['DestinyRecordDefinition'] // records like cats
-			};
-			return true;
-	}else if(check.status == 501){
-		Window.alert("Errorcode: " + check.status + " - Reloading Page");
-		location.reload();
-	}else{
-		return false;
-	}
+    try {
+        let manifestPaths = await window.dbOperations.getManifestPaths();
+        
+        if (!manifestPaths) {
+            manifestPaths = { stat: '/oops' };
+        }
+        
+        const check = await fetch(manifestPaths.stat, {
+            method: 'GET', 
+            mode: 'cors', 
+            cache: 'default', 
+            credentials: 'omit',
+            redirect: 'follow', 
+            referrerPolicy: 'no-referrer'
+        });
+        
+        if (check.status == 404) {
+            // Get new manifests
+            const rqURL = 'https://www.bungie.net/Platform/Destiny2/Manifest/';
+            const resManifest = await getData(rqURL, false);
+            
+            // Ensure language is defined, default to 'en' if not
+            const currentLanguage = language || 'en';
+            
+            const newManifestPaths = {
+                stat: 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][currentLanguage]['DestinyStatDefinition'],
+                item: 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][currentLanguage]['DestinyInventoryItemDefinition'],
+                itemCategoryDetails: 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][currentLanguage]['DestinyItemCategoryDefinition'],
+                itemBucketDetails: 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][currentLanguage]['DestinyInventoryBucketDefinition'],
+                classDef: 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][currentLanguage]['DestinyClassDefinition'],
+                energy: 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][currentLanguage]['DestinyEnergyTypeDefinition'],
+                damageType: 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][currentLanguage]['DestinyDamageTypeDefinition'],
+                vendor: 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][currentLanguage]['DestinyVendorDefinition'],
+                record: 'https://www.bungie.net' + resManifest['Response']['jsonWorldComponentContentPaths'][currentLanguage]['DestinyRecordDefinition']
+            };
+            
+            await window.dbOperations.setManifestPaths(newManifestPaths);
+            userDB.manifestPaths = newManifestPaths;
+            return true;
+        } else if (check.status == 501) {
+            window.alert("Errorcode: " + check.status + " - Reloading Page");
+            location.reload();
+        } else {
+            userDB.manifestPaths = manifestPaths;
+            return false;
+        }
+    } catch (error) {
+        console.error("Error checking manifest version:", error);
+        return false;
+    }
 }
 
 async function getDefinitions(){
+	// Check if manifestPaths exist
+	if (!userDB.manifestPaths) {
+		console.error('Manifest paths not available');
+		return;
+	}
+	
 	let statDefinitions = new Object();
 	let itemDefinitions = new Object();
 	let classDefinitions = new Object();
@@ -237,16 +267,24 @@ async function getDefinitions(){
 		let catHash = itemDefinitionsTmp.catHash;
 		itemDefinitions = sortArrays({type,name,id,iconURL,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory,exo,catHash});
 
-	// save all initData to browserstorage
-	userDB['Definitions'] = {
-		stat : statDefinitions,
-		item : itemDefinitions,
-		classDef : classDefinitions,
-		energy : energyDefinitions,
-		damageType : damageTypeDefinitions,
-		vendor : vendorDefinitions,
-		record : recordDefinitions,
-		};
+	// Save all definitions to IndexedDB
+	const definitions = {
+		stat: statDefinitions,
+		item: itemDefinitions,
+		classDef: classDefinitions,
+		energy: energyDefinitions,
+		damageType: damageTypeDefinitions,
+		vendor: vendorDefinitions,
+		record: recordDefinitions,
+	};
+	
+	// Save each definition type to IndexedDB
+	for (const [type, data] of Object.entries(definitions)) {
+		await window.dbOperations.setDefinitions(type, data);
+	}
+	
+	// Update local userDB
+	userDB.Definitions = definitions;
 }
 
 
@@ -275,47 +313,136 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
 /*********************************************************************************/
 /* Get initial data															  */
 /*********************************************************************************/
-async function InitData(){
-	// load settings from db
-	if(userDB){
-		document.querySelector("#lang-btn").classList.replace(document.querySelector("#lang-btn").classList.item(1), "flag-icon-"+userDB['siteSettings']['lang']);
-		document.documentElement.style.setProperty('--sizeMultiplier', userDB['siteSettings']['sizeMultiplier']);
-		document.documentElement.style.setProperty('--grad0', userDB['siteSettings']['ThemeGrad0']);
-		document.documentElement.style.setProperty('--grad1', userDB['siteSettings']['ThemeGrad1']);
-	}else{
-		userDB = {siteSettings: {
-			lang: 'en',
-			sizeMultiplier: 1,
-			playerCursor: 0,
-			ThemeGrad0: getComputedStyle(document.documentElement).getPropertyValue('--grad0'),
-			ThemeGrad1: getComputedStyle(document.documentElement).getPropertyValue('--grad1')
-		}};
-	}
-	
-	if(localStorage.getItem("oauthToken")){
-		document.querySelector("#settingsLogin").style.display = 'none';
-		document.querySelector("#settingsLogout").style.display = 'flex';
-		showLoadingFrame();
-	}else{
-		document.querySelector("#settingsLogin").style.display = 'flex';
-		document.querySelector("#settingsLogout").style.display = 'none';
-	}
-	
-	// load manifests from db
-	let tmpManifestCheck = await checkManifestVersion(userDB['siteSettings']['lang']);
-	if(tmpManifestCheck){
-		await getDefinitions();
-	}
+// Global flag to prevent multiple InitData calls
+let isInitDataRunning = false;
+let hasInitDataCompleted = false;
 
- 	// load recent players from db #### muss neu gemacht werden ####
-/*	if(userDB['loadedPlayers']){
-		refreshPlayer(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[localGhost['playerCursor']]]['membershipId'][0]);
-		viewMain.innerHTML += generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[localGhost['playerCursor']]]);
-	}
-	localStorage.setItem("userDB", JSON.stringify(userDB));
-*/
-		
-		showLoadingFrame();
+async function InitData(){
+    // Prevent multiple simultaneous calls or completed calls
+    if (isInitDataRunning || hasInitDataCompleted) {
+        return;
+    }
+    
+    isInitDataRunning = true;
+    try {
+        // Show loading screen
+        window.loadingManager.show();
+        window.loadingManager.setState(1);
+        
+        // Initialize database
+        await window.dbOperations.initDatabase();
+        await window.loadingManager.animateProgress(20);
+        
+        // Load settings from IndexedDB
+        const settings = await window.dbOperations.getAllSettings();
+        if (settings && Object.keys(settings).length > 0) {
+            userDB.siteSettings = settings;
+            
+            // Apply settings to UI
+            if (settings.lang) {
+                document.querySelector("#lang-btn").classList.replace(
+                    document.querySelector("#lang-btn").classList.item(1), 
+                    "flag-icon-" + settings.lang
+                );
+            }
+            if (settings.sizeMultiplier) {
+                document.documentElement.style.setProperty('--sizeMultiplier', settings.sizeMultiplier);
+            }
+            if (settings.ThemeGrad0) {
+                document.documentElement.style.setProperty('--grad0', settings.ThemeGrad0);
+            }
+            if (settings.ThemeGrad1) {
+                document.documentElement.style.setProperty('--grad1', settings.ThemeGrad1);
+            }
+        } else {
+            // Default settings
+            userDB.siteSettings = {
+                lang: 'en',
+                sizeMultiplier: 1,
+                playerCursor: 0,
+                ThemeGrad0: getComputedStyle(document.documentElement).getPropertyValue('--grad0'),
+                ThemeGrad1: getComputedStyle(document.documentElement).getPropertyValue('--grad1')
+            };
+            
+            // Save default settings
+            for (const [key, value] of Object.entries(userDB.siteSettings)) {
+                await window.dbOperations.setSetting(key, value);
+            }
+        }
+        
+        await window.loadingManager.animateProgress(40);
+        window.loadingManager.setState(2);
+        
+        // Check OAuth token
+        const oauthToken = await window.dbOperations.getOAuthToken();
+        if (oauthToken) {
+            document.querySelector("#settingsLogin").classList.add('closed');
+            document.querySelector("#settingsLogout").classList.remove('closed');
+        } else {
+            document.querySelector("#settingsLogin").classList.remove('closed');
+            document.querySelector("#settingsLogout").classList.add('closed');
+        }
+        
+        await window.loadingManager.animateProgress(60);
+        
+        // Load manifest data
+        let tmpManifestCheck = await checkManifestVersion(userDB.siteSettings.lang);
+        if (tmpManifestCheck) {
+            await getDefinitions();
+        } else {
+            // Load existing definitions from IndexedDB
+            const definitions = await window.dbOperations.getAllDefinitions();
+            if (definitions && Object.keys(definitions).length > 0) {
+                userDB.Definitions = definitions;
+            }
+        }
+        
+        await window.loadingManager.animateProgress(80);
+        window.loadingManager.setState(3);
+        
+        // Load players from IndexedDB
+        const players = await window.dbOperations.getAllPlayers();
+        if (players && Object.keys(players).length > 0) {
+            userDB.loadedPlayers = players;
+            
+            // Populate sidebar with loaded players
+            if (typeof populatePlayerBucket === 'function') {
+                populatePlayerBucket();
+            }
+            
+            // Display first player if available
+            const playerKeys = Object.keys(players);
+            if (playerKeys.length > 0) {
+                const firstPlayer = players[playerKeys[0]];
+                viewMain.innerHTML = generatePlayerHTML(firstPlayer);
+            }
+        }
+        
+        await window.loadingManager.animateProgress(90);
+        window.loadingManager.setState(4);
+        
+        // Verify definitions are loaded
+        if (!userDB.Definitions || !userDB.Definitions.item) {
+            console.warn('Item definitions not loaded, attempting to reload...');
+            await getDefinitions();
+        }
+        
+        await window.loadingManager.animateProgress(100);
+        window.loadingManager.setState(5);
+        
+                // Hide loading screen after a short delay
+        setTimeout(() => {
+            window.loadingManager.hide();
+        }, 1000);
+        
+        hasInitDataCompleted = true;
+        
+    } catch (error) {
+        console.error("Error initializing data:", error);
+        window.loadingManager.showError("Failed to initialize application");
+    } finally {
+        isInitDataRunning = false;
+    }
 }
 
 
@@ -466,7 +593,7 @@ function generatePlayerHTML(cP){
 								master="";
 							}
 	HTML +=				"<div class='itemIconContainer" + master + "'>" +
-							'<img class="' + marker + '" src="' + userDB['Definitions']['item'].iconURL[i] + '">' +
+							'<img class="' + marker + '" src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 							"<div class='itemIconStatus'>" + 
 									"<img src='css/images/" + marker + ".png'>" +
 							"</div>" +
@@ -521,7 +648,7 @@ function generatePlayerHTML(cP){
 									marker="cross";
 								}
 	HTML +=					"<div class='itemIconContainer'>" +
-								'<img class=' + marker + ' src="' + userDB['Definitions']['item'].iconURL[i] + '">' +
+								'<img class=' + marker + ' src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 								"<div class='itemIconStatus'>" + 
 									"<img src='css/images/" + marker + ".png'>" +
 								"</div>" +
@@ -570,7 +697,7 @@ function generatePlayerHTML(cP){
 								indexItem = userDB['Definitions']['item'].id.indexOf(cEquip[item].itemHash.toString());
 								if (cEquip[item].bucketHash === buckets[b]) {
 	HTML +=						"<div class='itemIconContainer'>" +
-									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')">' +
+									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 									"<div class='itemIconContainerLvl'>";
 									if (cP.itemDetails[cEquip[item].itemInstanceId].energy !== undefined) {
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType)] + '">' +
@@ -601,7 +728,7 @@ function generatePlayerHTML(cP){
 								indexItem = userDB['Definitions']['item'].id.indexOf(cInv[item].itemHash.toString());
 								if (cInv[item].bucketHash === buckets[b]) {
 	HTML +=						"<div class='itemIconContainer'>" +
-									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')">' +
+									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 									"<div class='itemIconContainerLvl'>";
 									if (cP.itemDetails[cInv[item].itemInstanceId].energy !== undefined) {
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType)] + '">' +
@@ -643,7 +770,7 @@ function generatePlayerHTML(cP){
 								indexItem = userDB['Definitions']['item'].id.indexOf(cP.profileInventory[item].itemHash.toString());
 								if (userDB['Definitions']['item'].bucketHash[indexItem] === buckets[b]) {
 	HTML +=						"<div class='itemIconContainer'>" +
-									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')">' +
+									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 									"<div class='itemIconContainerLvl'>";
 									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy !== undefined) {
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType)] + '">' +

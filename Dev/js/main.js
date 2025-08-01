@@ -2,9 +2,14 @@
 /* Variables & Elements                                                          */
 /*********************************************************************************/
 
-let userDB = new Object();
-userDB = JSON.parse(localStorage.getItem("userDB"));
-let placeholderHTML = 	"<div id='placeholder'><div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div></div>";
+// Global variables
+let userDB = {
+    loadedPlayers: {},
+    siteSettings: {},
+    Definitions: {},
+    manifestPaths: {}
+};
+let placeholderHTML = "<div id='placeholder'><div class='loader-wrapper'><div class='loader'><div class='loader-inner'></div></div></div></div>";
 let statDefinitions = new Object();
 let classDefinitions = new Object();
 let itemDefinitions = new Object();
@@ -90,11 +95,13 @@ document.onkeydown = (e)=> {
 		countDown(fireteamTimer, getFireteam());
 		
 	//Playerscrolling
-	}else if(keycode == 37 && viewMain.classList.contains("open") && localGhost['playerCursor'] > 0){
-		localGhost['playerCursor']--;
+	}else if(keycode == 37 && viewMain.classList.contains("open") && userDB.siteSettings.playerCursor > 0){
+		userDB.siteSettings.playerCursor--;
+		window.dbOperations.setSetting("playerCursor", userDB.siteSettings.playerCursor);
 		switchPlayer();
-	}else if(keycode == 39 && viewMain.classList.contains("open") && localGhost['playerCursor'] < (Object.keys(userDB['loadedPlayers']).length - 1)){
-		localGhost['playerCursor']++;
+	}else if(keycode == 39 && viewMain.classList.contains("open") && userDB.siteSettings.playerCursor < (Object.keys(userDB.loadedPlayers).length - 1)){
+		userDB.siteSettings.playerCursor++;
+		window.dbOperations.setSetting("playerCursor", userDB.siteSettings.playerCursor);
 		switchPlayer();
 	}
 }
@@ -105,15 +112,28 @@ document.onkeydown = (e)=> {
 /*********************************************************************************/
 
 async function switchPlayer(){
-	viewMain.innerHTML = generatePlayerHTML(userDB['loadedPlayers'][Object.keys(userDB['loadedPlayers'])[userDB['siteSettings']['playerCursor']]]);
+	try {
+		const playerKeys = Object.keys(userDB.loadedPlayers);
+		if (playerKeys.length > 0 && userDB.siteSettings.playerCursor < playerKeys.length) {
+			const currentPlayer = userDB.loadedPlayers[playerKeys[userDB.siteSettings.playerCursor]];
+			viewMain.innerHTML = generatePlayerHTML(currentPlayer);
+		}
+	} catch (error) {
+		console.error("Error switching player:", error);
+	}
 }
 
-function showPlayer(membershipId){
-	t = readGhostPartition("loadedPlayers",1);
-	console.log(t);
-	cursor = Object.keys(userDB['loadedPlayers']).indexOf(membershipId);
-	userDB['siteSettings']['playerCursor'] = cursor;
-	switchPlayer();
+async function showPlayer(membershipId){
+	try {
+		const cursor = Object.keys(userDB.loadedPlayers).indexOf(membershipId);
+		if (cursor !== -1) {
+			userDB.siteSettings.playerCursor = cursor;
+			await window.dbOperations.setSetting("playerCursor", cursor);
+			await switchPlayer();
+		}
+	} catch (error) {
+		console.error("Error showing player:", error);
+	}
 }
 
 function showItemDetails(){
@@ -173,9 +193,13 @@ function showLoadingFrame(){
 
 
 
-function clearData() {
-	localStorage.clear();
-	location.reload();
+async function clearData() {
+	try {
+		await window.dbOperations.clearAllData();
+		location.reload();
+	} catch (error) {
+		console.error("Error clearing data:", error);
+	}
 }
 
 
@@ -218,7 +242,14 @@ async function select(element){
         membershipId = (selectedAttribute.split('|'))[0];
 		try {
 			currentPlayer = await getPlayer(membershipId, membershipType);
-			savePlayer(currentPlayer);
+			await window.dbOperations.savePlayer(currentPlayer);
+			
+			// Update local userDB
+			userDB.loadedPlayers[currentPlayer.membershipId[0]] = currentPlayer;
+			
+			// Display the player
+			viewMain.innerHTML = generatePlayerHTML(currentPlayer);
+			
 			suggBox.innerHTML = "";
 			inputBox.value = "";
 		}catch(err){
@@ -281,26 +312,34 @@ function anchBtnChange(anch) {
     });
 
 
-function setLang(lang) {
-	// close language-window
-	langOpt.classList.toggle("open");
-	// show active language
-	var x = document.getElementsByClassName("lang-opt");
-	for (let i = 0; i<x.length; i++){
-		x[i].classList.toggle("act",false);
+async function setLang(lang) {
+	try {
+		// close language-window
+		langOpt.classList.toggle("open");
+		// show active language
+		var x = document.getElementsByClassName("lang-opt");
+		for (let i = 0; i<x.length; i++){
+			x[i].classList.toggle("act",false);
+		}
+		document.getElementById(lang).classList.toggle("act",true);
+		langBtn.classList.replace(langBtn.classList.item(1), "flag-icon-"+lang);
+		await window.dbOperations.setSetting("lang", lang);
+		location.reload();
+	} catch (error) {
+		console.error("Error setting language:", error);
 	}
-	document.getElementById(lang).classList.toggle("act",true);
-	langBtn.classList.replace(langBtn.classList.item(1), "flag-icon-"+lang);
-	writeGhostPartition("siteSettings","lang", lang);
-	location.reload();
 }
 
-function clickLogout() {
-	document.querySelector(".settingsSubMenu").classList.toggle("open");
-	document.querySelector(".language-options").classList.remove("open");
-	localStorage.removeItem("oauthToken");
-	document.querySelector("#settingsLogin").style.display = 'flex';
-	document.querySelector("#settingsLogout").style.display = 'none';
+async function clickLogout() {
+	try {
+		document.querySelector(".settingsSubMenu").classList.toggle("open");
+		document.querySelector(".language-options").classList.remove("open");
+		await window.dbOperations.deleteOAuthToken();
+		document.querySelector("#settingsLogin").style.display = 'flex';
+		document.querySelector("#settingsLogout").style.display = 'none';
+	} catch (error) {
+		console.error("Error logging out:", error);
+	}
 }
 
 function clickLogin() {
@@ -311,27 +350,159 @@ function showTheme() {
 	document.querySelector(".settingsThemes").classList.toggle("open")
 }
 
-function setTheme(color0,color1) {
-	//document.querySelector(".theme-opt.act").classList.remove("act");
-	//element.classList.add("act");
-	grad0 = getComputedStyle(document.documentElement).getPropertyValue(color0);
-	grad1 = getComputedStyle(document.documentElement).getPropertyValue(color1);
-	writeGhostPartition("siteSettings","ThemeGrad0", grad0);
-	writeGhostPartition("siteSettings","ThemeGrad1", grad1);
-	document.documentElement.style.setProperty('--grad0',grad0);
-	document.documentElement.style.setProperty('--grad1',grad1);
+async function setTheme(color0,color1) {
+	try {
+		//document.querySelector(".theme-opt.act").classList.remove("act");
+		//element.classList.add("act");
+		grad0 = getComputedStyle(document.documentElement).getPropertyValue(color0);
+		grad1 = getComputedStyle(document.documentElement).getPropertyValue(color1);
+		await window.dbOperations.setSetting("ThemeGrad0", grad0);
+		await window.dbOperations.setSetting("ThemeGrad1", grad1);
+		document.documentElement.style.setProperty('--grad0',grad0);
+		document.documentElement.style.setProperty('--grad1',grad1);
+	} catch (error) {
+		console.error("Error setting theme:", error);
+	}
 }
 
-function setIconsize(val) {
-	document.documentElement.style.setProperty('--sizeMultiplier', val);
-	writeGhostPartition("siteSettings","sizeMultiplier", val);
+async function setIconsize(val) {
+	try {
+		document.documentElement.style.setProperty('--sizeMultiplier', val);
+		await window.dbOperations.setSetting("sizeMultiplier", val);
+	} catch (error) {
+		console.error("Error setting icon size:", error);
+	}
 }
 
 
 /*********************************************************************************/
 /* Temp 			                                                             */
 /*********************************************************************************/
-async function buttonClick(mshipId, platType){
-		let cP = await getPlayer(mshipId, platType);
-		savePlayer(cP);
+
+// Function to populate the player bucket in the sidebar
+function populatePlayerBucket() {
+    const playerBucket = document.getElementById('playerBucket');
+    if (!playerBucket) return;
+    
+    // Clear existing content
+    playerBucket.innerHTML = '';
+    
+    // Add each player from userDB.loadedPlayers
+    Object.values(userDB.loadedPlayers).forEach(player => {
+        const membershipId = Array.isArray(player.membershipId) ? player.membershipId[0] : player.membershipId;
+        const playerName = Array.isArray(player.bungieName) ? player.bungieName[0] : player.bungieName;
+        
+        const playerElement = document.createElement('li');
+        playerElement.id = `acc-${membershipId}`;
+        playerElement.className = 'player-item';
+        playerElement.innerHTML = `
+            <div class="player-info" onclick="showPlayer('${membershipId}')">
+                <span class="player-name">${playerName}</span>
+            </div>
+            <div class="player-actions">
+                <i class="bx bx-trash" onclick="deletePlayer('${membershipId}')" title="Remove player"></i>
+            </div>
+        `;
+        
+        playerBucket.appendChild(playerElement);
+    });
 }
+
+// Function to show a specific player
+async function showPlayer(membershipId) {
+    try {
+        const player = userDB.loadedPlayers[membershipId];
+        if (player) {
+            viewMain.innerHTML = generatePlayerHTML(player);
+        }
+    } catch (error) {
+        console.error("Error showing player:", error);
+    }
+}
+
+// Function to delete a player from the database and sidebar
+async function deletePlayer(membershipId) {
+    try {
+        // Remove from database
+        await window.dbOperations.deletePlayer(membershipId);
+        
+        // Remove from local userDB
+        delete userDB.loadedPlayers[membershipId];
+        
+        // Update sidebar
+        populatePlayerBucket();
+        
+        // If this was the currently displayed player, show the first available player
+        if (viewMain.innerHTML.includes(membershipId)) {
+            const playerKeys = Object.keys(userDB.loadedPlayers);
+            if (playerKeys.length > 0) {
+                const firstPlayer = userDB.loadedPlayers[playerKeys[0]];
+                viewMain.innerHTML = generatePlayerHTML(firstPlayer);
+            } else {
+                viewMain.innerHTML = '<div class="no-players">No players loaded. Add a player to get started.</div>';
+            }
+        }
+    } catch (error) {
+        console.error("Error deleting player:", error);
+    }
+}
+
+async function buttonClick(mshipId, platType){
+	try {
+		let cP = await getPlayer(mshipId, platType);
+		await window.dbOperations.savePlayer(cP);
+		
+		// Update local userDB
+		userDB.loadedPlayers[cP.membershipId[0]] = cP;
+		
+		// Update sidebar
+		populatePlayerBucket();
+		
+		// Display the player
+		viewMain.innerHTML = generatePlayerHTML(cP);
+	} catch (error) {
+		console.error("Error adding player:", error);
+	}
+}
+
+// Function to handle scroll-based anchor highlighting
+function handleScrollHighlighting() {
+    const sections = [
+        { id: 'anch-exos', anchor: 'anchorExo' },
+        { id: 'anch-equip', anchor: 'anchorInv' },
+        { id: 'anch-vault', anchor: 'anchorVault' }
+    ];
+    
+    const scrollPosition = window.scrollY + 100; // Offset for better detection
+    
+    // Find which section is currently in view
+    let currentSection = null;
+    
+    for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (element) {
+            const rect = element.getBoundingClientRect();
+            const elementTop = rect.top + window.scrollY;
+            const elementBottom = elementTop + rect.height;
+            
+            if (scrollPosition >= elementTop && scrollPosition < elementBottom) {
+                currentSection = section;
+                break;
+            }
+        }
+    }
+    
+    // Update anchor highlighting
+    if (currentSection) {
+        anchBtnChange(currentSection.anchor);
+    }
+}
+
+// Add scroll event listener when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Add scroll event listener for anchor highlighting
+    window.addEventListener('scroll', handleScrollHighlighting);
+    
+    // Initial call to set correct anchor on page load
+    setTimeout(handleScrollHighlighting, 100);
+});
