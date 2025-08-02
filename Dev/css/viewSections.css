@@ -60,11 +60,13 @@
 	.main-content
 	{
 		display: grid;
-		width: 100%;
+		width: calc(100% - var(--sidebar-width));
+		left: var(--sidebar-width);
+		right: 0;
 		height: 100%;		
 		z-index: 0;
 		transition: 1s;
-		position: relative;
+		position: absolute;
 	}
 	
 

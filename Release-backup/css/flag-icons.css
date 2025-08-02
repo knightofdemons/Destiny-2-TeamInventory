@@ -1,0 +1,53 @@
+.flag-icon {
+  background-size: contain;
+  background-position: 50%;
+  background-repeat: no-repeat;
+  position: relative;
+  display: inline-block;
+  width: 1.33333333em;
+  line-height: 1em;
+}
+.flag-icon:before {
+  content: '\00a0';
+}
+
+
+.flag-icon-de {
+  background-image: url(images/flags/de.svg);
+}
+.flag-icon-en {
+  background-image: url(images/flags/gb.svg);
+}
+.flag-icon-es {
+  background-image: url(images/flags/es.svg);
+}
+.flag-icon-es-mx {
+  background-image: url(images/flags/mx.svg);
+}
+.flag-icon-fr {
+  background-image: url(images/flags/fr.svg);
+}
+.flag-icon-it {
+  background-image: url(images/flags/it.svg);
+}
+.flag-icon-ja {
+  background-image: url(images/flags/jp.svg);
+}
+.flag-icon-ko {
+  background-image: url(images/flags/kr.svg);
+}
+.flag-icon-pl {
+  background-image: url(images/flags/pl.svg);
+}
+.flag-icon-pt-br {
+  background-image: url(images/flags/br.svg);
+}
+.flag-icon-ru {
+  background-image: url(images/flags/ru.svg);
+}
+.flag-icon-zh-chs {
+  background-image: url(images/flags/cn.svg);
+}
+.flag-icon-zh-cht {
+  background-image: url(images/flags/cn.svg);
+}

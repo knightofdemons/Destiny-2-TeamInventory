@@ -74,6 +74,12 @@ document.onmousedown = (e)=> {
 	}
 }
 
+// Pull-to-refresh variables
+let isPulling = false;
+let pullStartY = 0;
+let pullDistance = 0;
+const PULL_THRESHOLD = 100; // Distance needed to trigger refresh
+
 document.onkeydown = (e)=> {
 	var keycode;
 	if (window.event)
@@ -87,15 +93,10 @@ document.onkeydown = (e)=> {
 		clearInterval(fireteamInterval);
 		viewFireteam.classList.remove("open");
 		viewMain.classList.add("open");
-	}else if(keycode == 38 && viewMain.classList.contains("open")){
-		sidebar.style.display = "none";
-		sidebar.classList.toggle("open");
-		viewMain.classList.remove("open");
-		viewFireteam.classList.add("open");
-		countDown(fireteamTimer, getFireteam());
-		
+	}
+	// Removed up arrow key functionality - replaced with pull-to-refresh
 	//Playerscrolling
-	}else if(keycode == 37 && viewMain.classList.contains("open") && userDB.siteSettings.playerCursor > 0){
+	if(keycode == 37 && viewMain.classList.contains("open") && userDB.siteSettings.playerCursor > 0){
 		userDB.siteSettings.playerCursor--;
 		window.dbOperations.setSetting("playerCursor", userDB.siteSettings.playerCursor);
 		switchPlayer();
@@ -104,6 +105,85 @@ document.onkeydown = (e)=> {
 		window.dbOperations.setSetting("playerCursor", userDB.siteSettings.playerCursor);
 		switchPlayer();
 	}
+}
+
+// Pull-to-refresh functionality
+document.addEventListener('touchstart', function(e) {
+	if (viewMain.classList.contains("open")) {
+		pullStartY = e.touches[0].clientY;
+		isPulling = true;
+	}
+});
+
+document.addEventListener('touchmove', function(e) {
+	if (isPulling && viewMain.classList.contains("open")) {
+		pullDistance = e.touches[0].clientY - pullStartY;
+		
+		// Only allow pulling down (positive distance)
+		if (pullDistance > 0 && window.scrollY === 0) {
+			e.preventDefault();
+			
+			// Add visual feedback
+			const pullIndicator = document.getElementById('pull-indicator') || createPullIndicator();
+			const pullProgress = Math.min(pullDistance / PULL_THRESHOLD, 1);
+			pullIndicator.style.transform = `translateY(${pullDistance * 0.3}px)`;
+			pullIndicator.style.opacity = pullProgress;
+			
+			if (pullProgress >= 1) {
+				pullIndicator.textContent = 'Release to refresh';
+			} else {
+				pullIndicator.textContent = 'Pull down to refresh';
+			}
+		}
+	}
+});
+
+document.addEventListener('touchend', function(e) {
+	if (isPulling && viewMain.classList.contains("open")) {
+		if (pullDistance >= PULL_THRESHOLD && window.scrollY === 0) {
+			// Trigger fireteam refresh
+			sidebar.style.display = "none";
+			sidebar.classList.toggle("open");
+			viewMain.classList.remove("open");
+			viewFireteam.classList.add("open");
+			countDown(fireteamTimer, getFireteam());
+		}
+		
+		// Reset pull state
+		isPulling = false;
+		pullDistance = 0;
+		
+		// Hide pull indicator
+		const pullIndicator = document.getElementById('pull-indicator');
+		if (pullIndicator) {
+			pullIndicator.style.transform = 'translateY(-50px)';
+			pullIndicator.style.opacity = '0';
+		}
+	}
+});
+
+// Create pull indicator element
+function createPullIndicator() {
+	const indicator = document.createElement('div');
+	indicator.id = 'pull-indicator';
+	indicator.style.cssText = `
+		position: fixed;
+		top: 20px;
+		left: 50%;
+		transform: translateX(-50%) translateY(-50px);
+		background: rgba(0, 0, 0, 0.8);
+		color: white;
+		padding: 10px 20px;
+		border-radius: 20px;
+		font-size: 14px;
+		z-index: 1000;
+		opacity: 0;
+		transition: all 0.3s ease;
+		pointer-events: none;
+	`;
+	indicator.textContent = 'Pull down to refresh';
+	document.body.appendChild(indicator);
+	return indicator;
 }
 
 
@@ -350,16 +430,38 @@ function showTheme() {
 	document.querySelector(".settingsThemes").classList.toggle("open")
 }
 
-async function setTheme(color0,color1) {
+async function setTheme(element) {
 	try {
-		//document.querySelector(".theme-opt.act").classList.remove("act");
-		//element.classList.add("act");
-		grad0 = getComputedStyle(document.documentElement).getPropertyValue(color0);
-		grad1 = getComputedStyle(document.documentElement).getPropertyValue(color1);
-		await window.dbOperations.setSetting("ThemeGrad0", grad0);
-		await window.dbOperations.setSetting("ThemeGrad1", grad1);
-		document.documentElement.style.setProperty('--grad0',grad0);
-		document.documentElement.style.setProperty('--grad1',grad1);
+		document.querySelector(".theme-opt.act").classList.remove("act");
+		element.classList.add("act");
+		
+		if(element.id == "red"){
+			document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeRedA'));
+			document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeRedB'));		
+		}else if(element.id == "blue"){
+			document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeBlueA'));
+			document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeBlueB'));		
+		}else if(element.id == "green"){
+			document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeGreenA'));
+			document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeGreenB'));
+		}else if(element.id == "yellow"){
+			document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeYellowA'));
+			document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeYellowB'));
+		}else if(element.id == "orange"){
+			document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeOrangeA'));
+			document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeOrangeB'));
+		}else if(element.id == "purple"){
+			document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themePurpleA'));
+			document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themePurpleB'));
+		}else if(element.id == "black"){
+			document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeBlackA'));
+			document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeBlackB'));
+		}else if(element.id == "white"){
+			document.documentElement.style.setProperty('--grad0', getComputedStyle(document.documentElement).getPropertyValue('--themeWhiteA'));
+			document.documentElement.style.setProperty('--grad1', getComputedStyle(document.documentElement).getPropertyValue('--themeWhiteB'));
+		}
+		await window.dbOperations.setSetting("ThemeGrad0", getComputedStyle(document.documentElement).getPropertyValue('--grad0'));
+		await window.dbOperations.setSetting("ThemeGrad1", getComputedStyle(document.documentElement).getPropertyValue('--grad1'));
 	} catch (error) {
 		console.error("Error setting theme:", error);
 	}

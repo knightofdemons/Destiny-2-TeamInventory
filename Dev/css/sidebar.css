@@ -110,6 +110,8 @@
 	{
 		display: flex;
 		align-items: center;
+		justify-content: center;
+		height: 100%;
 	}
 	
 	.player-actions i
@@ -120,6 +122,9 @@
 		transition: all 0.3s ease;
 		padding: 0.5rem;
 		border-radius: 6px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	
 	.player-actions i:hover

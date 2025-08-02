@@ -27,6 +27,15 @@
 		position: absolute;
 	}
 	
+	#Main
+	{
+		position: relative;
+		left: var(--sidebar-width);
+		width: calc(100% - var(--sidebar-width));
+		height: 100vh;
+		transition: 1s;
+	}
+	
 	.viewMain.open ~ .viewFireteam, .viewFireteam.open ~ .viewMain, .viewFireteam.open ~ .viewMain, .viewMain.open ~ .viewFireteam
 	{
 		top: 0;
@@ -52,7 +61,7 @@
 	{
 		display: grid;
 		width: calc(100% - var(--sidebar-width));
-		left: var(--sidebar-width);		
+		left: var(--sidebar-width);
 		right: 0;
 		height: 100%;		
 		z-index: 0;

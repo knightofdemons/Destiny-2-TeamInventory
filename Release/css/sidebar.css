@@ -29,13 +29,13 @@
 		align-items: center;
 		border: 1px solid white;
 		border-radius: 6px;
-		color: ffffff;
+		color: #ffffff;
 		display: flex;
 		fill: #fff;
-		height: 40;
+		height: 40px;
 		justify-content: center;
 		padding: 0.2rem;
-		width: 40;
+		width: 40px;
 	}
 	
 	#anchorExo:hover, #anchorExo.selected
@@ -67,6 +67,71 @@
 		margin-right: 2rem;
 		overflow: hidden;
 	}
+	
+	/* Player item styles */
+	.player-item
+	{
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 3rem;
+		width: 100%;
+		border-radius: 12px;
+		background: var(--grad1);
+		margin-top: 0.5rem;
+		padding: 0 1rem;
+		transition: all 0.4s ease;
+	}
+	
+	.player-item:hover
+	{
+		background: var(--grad2);
+		cursor: pointer;
+	}
+	
+	.player-info
+	{
+		flex: 1;
+		display: flex;
+		align-items: center;
+	}
+	
+	.player-name
+	{
+		color: #fff;
+		font-size: 15px;
+		font-weight: 400;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	
+	.player-actions
+	{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+	}
+	
+	.player-actions i
+	{
+		color: #fff;
+		font-size: 18px;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		padding: 0.5rem;
+		border-radius: 6px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.player-actions i:hover
+	{
+		color: #ff6b6b;
+		background: rgba(255, 107, 107, 0.1);
+	}
 
 
 /* SETTINGS BUTTONS */
@@ -87,7 +152,7 @@
 	#settingsBtnCog
 	{
 		cursor: pointer;
-		font-size:32px;
+		font-size: 32px;
 		color: white;
 		overflow: hidden;
 		transition-duration: 1s;
@@ -105,7 +170,7 @@
 	.settingsLogBtns [id^='settingsLog']
 	{
 		cursor: pointer;
-		font-size:32px;
+		font-size: 32px;
 		overflow: hidden;
 		transition-duration: 0.8s;
 		transition-property: transform;
@@ -115,7 +180,12 @@
 	.settingsLogBtns [id^='settingsLog']:hover
 	{
 		color: var(--hovercolor);
-	}	
+	}
+	
+	.settingsLogBtns [id^='settingsLog'].closed
+	{
+		display: none;
+	}
 	
 
 /* SETTINGS SUBMENU */
@@ -370,7 +440,7 @@
 		right: 0;
 		font-size: 44px;
 		cursor: pointer;
-		color: fff;
+		color: #fff;
 	}	
 	
 	.sidebar #sidebar-btn:hover
