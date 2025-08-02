@@ -14,7 +14,7 @@ This is a Destiny 2 team inventory management application that allows users to v
 ### File Deployment
 - **Source Directory**: `Dev/`
 - **Deployment Command**: `robocopy "Dev" "C:\xampp\htdocs\destiny2-inventory" /E /XO /R:3 /W:1`
-- **Last Deployment**: Saturday, August 2, 2025 11:21:33 PM
+- **Last Deployment**: Saturday, August 2, 2025 11:47:29 PM
 - **Note**: Always deploy to XAMPP directory, only push to Git when explicitly requested
 
 ## Recent Fixes and Improvements
@@ -96,6 +96,23 @@ This is a Destiny 2 team inventory management application that allows users to v
 
 ## Recent Fixes Applied
 
+### ✅ RESOLVED: Scaling Slider and Submenu Text Improvements
+- **Scaling Slider Color**: Changed magenta-like accent color to subtle white (`rgba(255, 255, 255, 0.6)`) for better theme compatibility
+
+### ✅ RESOLVED: Login Frame Implementation and Settings Login Button Fix
+- **Login Frame Structure**: Restructured login frame with overlay and window components for popup behavior
+- **Login Window Size**: Adjusted to 50% of screen width and height
+- **Background Overlay**: Semi-transparent black background (`rgba(0, 0, 0, 0.7)`) that closes frame when clicked
+- **White Animated Stripes**: Changed particle stripes from orange to white (`rgba(255, 255, 255, 0.8)`) with fading effect
+- **Settings Login Button**: Fixed broken `clickLogin()` function call by replacing with `showLoginFrame()` function
+- **Login Flow**: Clicking settings login button opens frame, clicking login button in frame opens OAuth popup
+- **OAuth Error Fix**: Removed problematic DOM removal line that caused `loginFr is null` error after OAuth completion
+- **OAuth Authentication**: Updated `getData` and `postData` functions to include OAuth token authentication when available
+- **API Request Enhancement**: All API requests now use stored OAuth data for authenticated endpoints
+- **Last Deployment**: Saturday, August 2, 2025 11:58:31 PM
+- **Submenu Text**: Changed "Clear cached data" to "Clear Cache" for better readability
+- **Language Options Width**: Added `min-width: 12rem` to ensure all language names display correctly, especially longer ones like "Português (Brasil)" and "Español (México)"
+
 ### ✅ RESOLVED: FT-view Visibility and Manual Add Player Button Alignment
 - **FT-view Visibility**: Fixed conflicting CSS rules in `viewSections.css` that were causing the fireteam view to be visible on the main page
 - **Manual Add Player Buttons**: 
@@ -121,7 +138,36 @@ This is a Destiny 2 team inventory management application that allows users to v
 - ~~Player data not reloaded on language change~~ ✅ RESOLVED (Now reloads existing players instead of clearing them)
 - ~~Arrow key functionality for fireteam view~~ ✅ RESOLVED
 
-## Recent Fixes Applied (August 2, 2025 - 11:07 PM)
+## Recent Fixes Applied (August 2, 2025 - 11:42 PM)
+
+### Latest Fixes:
+
+7. **Login Frame Size Adjustment and Slider Styling Revert**:
+   - **Problem**: User reported "make the login window only 50% of the screen, also it does not close while clicking on login (clicking background works). the slider changed color but now it seems to have a solid background. revert the recent changes and keep the naming change, i guess that will fix it."
+   - **Fix**: 
+     - **Login Window Size**: Changed login window from 75% to 50% of screen size (both width and height)
+     - **Login Button Click Behavior**: Modified `openOauthPopup()` function to call `closeLoginFrame()` first, then open the OAuth popup
+     - **Removed Redundant Function**: Removed `clickLogin()` function since login button now directly calls `openOauthPopup()`
+     - **Slider Styling Revert**: Reverted comprehensive browser-specific slider styling (thumb/track custom styling) while keeping the corrected ID (`settingsIconsizeSlider`) and basic `accent-color` setting
+     - **Simplified Slider CSS**: Kept only the essential styling: width, background, border, border-radius, and accent-color
+   - **Files**: `Dev/css/loginFrame.css`, `Dev/js/oauth.js`, `Dev/js/main.js`, `Dev/css/sidebar.css`
+   - **Result**: Login window is now 50% of screen size, clicking login button properly closes the frame and opens OAuth popup, slider has subtle white color without solid background
+
+6. **Scaling Slider Color Fix and Login Frame Enhancement**:
+   - **Problem**: User reported "the slider still shows magenta. when clicking on login, open the login-frame in a new window that takes 75% of the screen and overlaps the rest of the application with a darkened background. close the login-window while clicking on the darkened background. also close the login-window if someone clicks on login but then also open the popup. keep the current animation but make the stripes/particles white and fading out when reaching the end (if possible, without a new approach. otherwise ignore that)"
+   - **Fix**: 
+     - **Scaling Slider Color**: Fixed ID mismatch between HTML (`settingsIconsizeSlider`) and CSS (`settingsiconSizeSlider`), added comprehensive browser-specific styling with white accent color and custom thumb/track styling
+     - **Login Frame Redesign**: 
+       - Restructured HTML to include overlay and window containers
+       - Added darkened background overlay (75% opacity) that closes frame when clicked
+       - Created centered login window (75% screen size) with rounded corners
+       - Updated JavaScript to handle new close/open behavior
+       - Made stripes/particles white (`rgba(255, 255, 255, 0.8)`) instead of orange
+     - **Enhanced Slider Styling**: Added `-webkit-appearance: none`, custom thumb styling for WebKit and Mozilla browsers, and proper track styling
+   - **Files**: `Dev/css/sidebar.css`, `Dev/index.html`, `Dev/css/loginFrame.css`, `Dev/js/main.js`
+   - **Result**: Slider now shows subtle white color instead of magenta, login frame opens in centered window with darkened background, closes on overlay click, and has white animated stripes
+
+### Previous Fixes:
 
 ### Latest Fixes:
 

@@ -862,7 +862,11 @@ function showSettingsAbout(){
 }
 
 function showLoginFrame(){
-	loginFrame.classList.toggle("closed");
+	loginFrame.classList.remove("closed");
+}
+
+function closeLoginFrame(){
+	loginFrame.classList.add("closed");
 }
 
 function showLoadingFrame(){
@@ -1077,9 +1081,7 @@ async function clickLogout() {
 	}
 }
 
-function clickLogin() {
-	showLoginFrame();
-}
+
 
 function showTheme() {
 	document.querySelector(".settingsThemes").classList.toggle("open")

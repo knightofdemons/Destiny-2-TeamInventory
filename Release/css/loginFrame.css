@@ -24,9 +24,8 @@
 	{
 		display: block;
 		position: fixed;
-		top:0px;
-		/* background: black;  */
-		background: var(--gradient);
+		top: 0;
+		left: 0;
 		height: 100%;
 		width: 100%;
 		z-index: 100;
@@ -37,10 +36,46 @@
 		display: none;
 	}
 	
+	.loginOverlay
+	{
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		background: rgba(0, 0, 0, 0.7);
+		z-index: 101;
+	}
+	
+	.loginWindow
+	{
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 50%;
+		height: 50%;
+		background: var(--gradient);
+		border-radius: 12px;
+		z-index: 102;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+	
+	.loginContent
+	{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+	}
+	
 	#loginButton 
 	{
-		position: absolute;
-		margin: 15% 40%;
+		position: relative;
 		display: flex;
 		padding: 25px 30px;
 		transition: 0.5s;
@@ -83,7 +118,7 @@
 	  left: 0;
 	  width: 100%;
 	  height: 2px;
-	  background: linear-gradient(90deg, transparent, var(--orange2));
+	  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8));
 	  animation: animate1 1s linear infinite;
 	}
 
@@ -104,7 +139,7 @@
 	  right: 0;
 	  width: 2px;
 	  height: 100%;
-	  background: linear-gradient(180deg, transparent, var(--orange2));
+	  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.8));
 	  animation: animate2 1s linear infinite;
 	  animation-delay: 0.25s;
 	}
@@ -126,7 +161,7 @@
 	  right: 0;
 	  width: 100%;
 	  height: 2px;
-	  background: linear-gradient(270deg, transparent, var(--orange2));
+	  background: linear-gradient(270deg, transparent, rgba(255, 255, 255, 0.8));
 	  animation: animate3 1s linear infinite;
 	  animation-delay: 0.5s;
 	}
@@ -148,7 +183,7 @@
 	  left: 0;
 	  width: 2px;
 	  height: 100%;
-	  background: linear-gradient(360deg, transparent, var(--orange2));
+	  background: linear-gradient(360deg, transparent, rgba(255, 255, 255, 0.8));
 	  animation: animate4 1s linear infinite;
 	  animation-delay: 0.75s;
 	}

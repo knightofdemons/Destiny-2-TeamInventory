@@ -5,6 +5,17 @@ async function getData(url, useApiKey = true) {
 		//fetch json response for getRequests | use false as option to generate a request without using the apikey
 		let tmpHead = new Headers();
 		if(useApiKey){tmpHead.set('X-API-Key', akey);}
+		
+		// Add OAuth token if available
+		try {
+			const oauthToken = await window.dbOperations.getOAuthToken();
+			if (oauthToken && oauthToken.access_token) {
+				tmpHead.set('Authorization', `Bearer ${oauthToken.access_token}`);
+			}
+		} catch (error) {
+			console.warn('Could not retrieve OAuth token:', error);
+		}
+		
 		const fetchOptions = {method:'GET', mode:'cors', cache:'default', credentials:'omit',redirect:'follow', referrerPolicy:'no-referrer', headers:tmpHead,};
 		const response = await fetch(url, fetchOptions);
 		return response.json();
@@ -21,6 +32,17 @@ async function postData(url = '', data = {}, UseJSON = true) {
 		tmpData = data;
 	}
 	tmpHead.set('X-API-Key', akey);
+	
+	// Add OAuth token if available
+	try {
+		const oauthToken = await window.dbOperations.getOAuthToken();
+		if (oauthToken && oauthToken.access_token) {
+			tmpHead.set('Authorization', `Bearer ${oauthToken.access_token}`);
+		}
+	} catch (error) {
+		console.warn('Could not retrieve OAuth token:', error);
+	}
+	
   // Default options are marked with *
   const response = await fetch(url, {
 	method: 'POST', // *GET, POST, PUT, DELETE, etc.

@@ -76,10 +76,17 @@
 			<div class="loading-subtext">Destiny 2 Team Inventory</div>
 		</div>
 	</div>
-	<div class="loginFrame closed" id="loginFrame"><div align="center" onclick="openOauthPopup()"><i class="bx bx-id-card" id="loginButton">
-															<span></span><span></span><span></span><span></span><a>Login</a></i></div>
-		<center><i class="bx bx-x" style="font-size:50;" onclick="showLoginFrame();"></i></center>
+	<div class="loginFrame closed" id="loginFrame">
+	<div class="loginOverlay" onclick="closeLoginFrame()"></div>
+	<div class="loginWindow">
+		<div class="loginContent" align="center" onclick="openOauthPopup()">
+			<i class="bx bx-id-card" id="loginButton">
+				<span></span><span></span><span></span><span></span><a>Login</a>
+			</i>
+		</div>
+		<center><i class="bx bx-x" style="font-size:50;" onclick="closeLoginFrame()"></i></center>
 	</div>
+</div>
 	<div class="aboutFrameOuter closed">
 		<div class="aboutFrame">
 			<div>
@@ -200,7 +207,7 @@
 						<div class="lang-opt" id="zh-chs" onclick="setLang('zh-chs')"><span class="flag-icon flag-icon-zh-chs"></span>&nbsp; 简体中文</div>
 						<div class="lang-opt" id="zh-cht" onclick="setLang('zh-cht')"><span class="flag-icon flag-icon-zh-cht"></span>&nbsp; 繁體中文</div>
 					</div>
-				<div class="settingsSubMenuBtns" onClick="clearData()"><i id="settingsClearData" class="bx bxs-trash"></i>&nbsp; Clear cached data</div>
+				<div class="settingsSubMenuBtns" onClick="clearData()"><i id="settingsClearData" class="bx bxs-trash"></i>&nbsp; Clear Cache</div>
 				<div class="settingsSubMenuBtns" onClick="showTheme()"><i id="settingsThemesBtn" class="bx bxs-square-rounded"></i>&nbsp; Themes</div>
 					<div class="settingsThemes">
 						<div class="theme-opt act" id="red" onclick="setTheme(this)"><i class="bx bxs-square-rounded"></i></div>
@@ -222,7 +229,7 @@
 					<i class="bx bx-cog"></i>
 				</div>
 				<div class="settingsLogBtns">
-					<i id="settingsLogin" onClick="clickLogin()" class="bx bx-log-in"></i>
+					<i id="settingsLogin" onClick="showLoginFrame()" class="bx bx-log-in"></i>
 					<i id="settingsLogout" onClick="clickLogout()" class="bx bx-log-out bx-rotate-180 closed"></i>
 				</div>
 			</div>
