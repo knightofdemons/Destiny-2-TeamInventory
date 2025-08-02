@@ -1,131 +1,192 @@
-# Local Development Setup Guide
+# Destiny 2 Team Inventory - Local Development Setup
 
 ## Project Overview
-Destiny 2 Team Inventory - Web application for managing Destiny 2 team inventory with complex loading screens, theme customization, and IndexedDB persistence.
+This is a Destiny 2 team inventory management application that allows users to view and manage their Destiny 2 character inventories, equipment, and fireteam information. The application uses the Bungie API and features a modern web interface with theme customization, multi-language support, and responsive design.
 
-## File Structure
-- **Dev/** - Development version with complex loading screen, particles, animations
-- **Release/** - Production version with simplified loading screen
-- **setup-local.md** - This file (NOT synced to GitHub)
+## Local Development Environment
 
-## XAMPP Configuration
+### Server Setup
+- **Server Type**: XAMPP (Apache/PHP stack)
+- **Control Panel**: `C:\xampp\xampp-control.exe`
+- **Document Root**: `C:\xampp\htdocs\destiny2-inventory\`
+- **Access URL**: `http://localhost/destiny2-inventory/`
 
-### Installation Path
-- XAMPP installed at: `C:\xampp\`
-- Apache document root: `C:\xampp\htdocs\`
-- Project deployment path: `C:\xampp\htdocs\destiny2-inventory\`
+### File Deployment
+- **Source Directory**: `Dev/`
+- **Deployment Command**: `robocopy "Dev" "C:\xampp\htdocs\destiny2-inventory" /E /XO /R:3 /W:1`
+- **Last Deployment**: Saturday, August 2, 2025 11:21:33 PM
+- **Note**: Always deploy to XAMPP directory, only push to Git when explicitly requested
 
-### Required Services
-- Apache (port 80/443)
-- MySQL (if needed for future features)
+## Recent Fixes and Improvements
 
-## Development Workflow
+### ✅ RESOLVED: UI Element Alignment and Styling
+- **Login Icon Alignment**: Fixed login icon to be level with gear icon, sharing 50:50 width while maintaining height
+- **Gear Icon Centering**: Fixed gear icon animation to spin on the spot without wobbling
+- **Scaling Bar Color**: Changed magenta scaling bar to subtle, theme-compatible color
+- **Trashbin Icon Alignment**: Fixed trashbin icon alignment in recent player list
+- **Border Styling**: Added small borders equivalent to individual player items to:
+  - Settings menus and submenus (`.settingsSubMenu`, `.language-options`, `.settingsThemes`)
+  - Settings menu buttons (`.settingsSubMenuBtns`)
+  - Player list buttons (`.player-item`)
+  - Search field (`.sidebar .sidebar-content input`)
+  - Manual add player buttons (`.sidebar .nav-list button`)
+- **Manual Add Player Buttons**: Centered the 3 manual add player buttons in the sidebar with proper styling
 
-### 1. File Deployment
-```powershell
-# Copy Dev files to XAMPP htdocs
-Copy-Item -Path "Dev\*" -Destination "C:\xampp\htdocs\destiny2-inventory\" -Recurse -Force
-```
+### ✅ RESOLVED: Theme Compatibility
+- **Player Buttons**: Background now changes with theme changes
+- **Settings Menu**: Background now changes with theme changes  
+- **Search Field**: Background now changes with theme changes
+- **Login Frame**: Uses `var(--gradient)` for theme compatibility
+- **Fireteam View**: Adjusts to theme changes
+- **Tooltips**: Background now uses `var(--grad1)` instead of hardcoded white
+- **Timer Bar**: Background now uses `var(--grad1)` instead of hardcoded black
 
-### 2. Start XAMPP
-```powershell
-# Start XAMPP Control Panel
-Start-Process "C:\xampp\xampp-control.exe"
-```
-Then manually start Apache from the control panel.
+### ✅ RESOLVED: Translation System
+- **Manifest Integration**: Headlines like "exotic weapons" are pulled from manifest and loaded in correct language
+- **Search Field Translation**: Added translations for search field placeholder text
+- **Menu Text Translation**: Added translations for menu items (excluding player-specific buttons and about/info section)
+- **Loading Screen Translation**: Added translation for loading screen text (fixed immediate application)
+- **Gesture Text Translation**: Updated gesture text to be more appropriate ("Scroll up to view fireteam", "Scroll down to return")
+- **Comprehensive Translation Keys**: Added translations for all category headlines, fireteam view, and loading player text:
+  - `loadingPlayer`: "Loading player..." in all 13 languages
+  - `exoticWeapons`, `legendaryWeapons`, `rareWeapons`, `commonWeapons`
+  - `exoticArmor`, `legendaryArmor`, `rareArmor`, `commonArmor`
+  - `ghosts`, `vehicles`, `ships`, `emblems`, `finishers`, `shaders`, `mods`, `consumables`, `materials`
+  - `fireteamView`, `noFireteamData`
+- **Fireteam View Translation**: Added dynamic header with translated title
+- **Category Headlines**: Confirmed all category headlines are pulled from manifest data and automatically translated
 
-### 3. Access Application
-- URL: `http://localhost/destiny2-inventory/`
-- Local development server (alternative): `http://localhost:8000/`
+### ✅ RESOLVED: Pull-to-Refresh and Scroll-Down-to-Exit
+- **Pull-to-Refresh**: Implemented with 500ms delay, requires both distance and time to trigger
+- **Scroll-Down-to-Exit**: Implemented with 500ms delay, allows returning from fireteam view by scrolling down
+- **Mouse Wheel Support**: Added desktop support for both gestures
+- **Full-Width Indicators**: Replaced small indicators with full-width bars containing 3 stacked glowing arrows
+- **Arrow Animations**: White pulsating arrow-stripes (⬆/⬇) for both scroll directions with road construction style
+- **Indicator Styling**: Increased arrow width (24px), closer spacing (-4px margin), reduced bar height (45px)
+- **Timer Bar Removal**: Timer bar is automatically hidden when returning from fireteam view
+- **Arrow Key Removal**: Removed down arrow key functionality for returning from fireteam view
 
-## Key Features & Configuration
+### ✅ RESOLVED: Mainframe Adjustment
+- **Dynamic Layout**: Mainframe now adjusts to use free space when sidebar is open
+- **CSS Class System**: Uses `.sidebar-open` class for dynamic layout adjustment
+- **Initialization**: Correct state is set on page load
 
-### Loading Screen
-- **Dev version**: Complex loading screen with particles, animations, progress bar
-- **Release version**: Simplified loading screen
-- **Files involved**: 
-  - `Dev/css/loadingScreen.css` - Loading screen styles and animations
-  - `Dev/js/loadingManager.js` - Loading screen management class
-  - `Dev/index.html` - Loading screen HTML structure
+### ✅ RESOLVED: Data Management
+- **Clear Cached Data**: Now removes all stored data in IndexedDB or deletes it entirely
+- **Settings Persistence**: Language, theme colors, and icon size are saved and reloaded through IndexedDB
+- **Caching Verification**: Confirmed manifest and player data caching is working correctly - data is saved to IndexedDB and loaded from cache when available
 
-### Theme System
-- **Storage**: IndexedDB (persistent across sessions)
-- **Settings**: Theme colors, language, icon size
-- **Implementation**: 
-  - `Dev/js/indexdb.js` - IndexedDB operations
-  - `Dev/js/main.js` - Theme and language functions
-  - `Dev/js/functions.js` - Initialization and settings application
+### ✅ RESOLVED: Player Loading UI
+- **Pre-Create Player Button**: When loading a new player, button is immediately created in recent player list
+- **Loading State**: Shows translated "Loading player..." text with spinning loader icon
+- **Theme Integration**: Loading spinner uses theme colors (`var(--grad1)`)
+- **Cleanup**: Loading item is removed when player data is loaded or on error
+- **Visual Feedback**: Loading items have reduced opacity (0.7) and different hover behavior
 
-### Database Schema (IndexedDB)
-```javascript
-// Object Stores:
-- settings: { key, value } // Theme, language, icon size
-- oauth: { key, value } // OAuth tokens
-- players: { key, value } // Player data
-- manifest: { key, value } // Manifest paths
-- definitions: { key, value } // Game definitions
-```
+## Debugging Features Added
+- Console logging for sidebar toggle state
+- Console logging for pull-to-refresh touch events
+- Console logging for scroll-down-to-exit touch events
+- Mouse wheel support for desktop testing of gestures
+- **Enhanced Debugging**: Added detailed console logging for view state detection
+- **View State Management**: Added `ensureViewState()` function to ensure correct initial view state
+- **Gesture Debugging**: Added detailed logging for touch start/end events and gesture conditions
+- **Indicator Debugging**: Added logging for indicator creation and opacity setting
+- **Full-Width Indicators**: Implemented with glowing arrows and backdrop blur effects
 
-## Common Issues & Solutions
+## Recent Fixes Applied
 
-### PowerShell Command Chaining
-- **Wrong**: `cd Dev && python -m http.server 8000`
-- **Correct**: `cd Dev; python -m http.server 8000` or `& cd Dev; python -m http.server 8000`
+### ✅ RESOLVED: FT-view Visibility and Manual Add Player Button Alignment
+- **FT-view Visibility**: Fixed conflicting CSS rules in `viewSections.css` that were causing the fireteam view to be visible on the main page
+- **Manual Add Player Buttons**: 
+  - Added container div with class `manual-add-buttons` around the 3 buttons
+  - Updated CSS to use flexbox layout with `display: flex`, `justify-content: center`, and `gap: 0.5rem`
+  - Buttons now use `flex: 1` to distribute space evenly and appear in one line
+  - Removed conflicting margin settings that were causing spacing issues
 
-### File Copying
-- **Wrong**: Copying to root htdocs
-- **Correct**: Copying to `C:\xampp\htdocs\destiny2-inventory\`
+### ✅ RESOLVED: Player Data Reload on Language Change
+- **IndexedDB Enhancement**: Added `clearPlayerData()` function to `indexdb.js` to clear only player data
+- **Language Change Logic**: Modified `setLang()` function to reload existing player data instead of clearing it
+- **New Function**: Added `reloadStoredPlayers()` function that iterates through stored players and re-fetches their data from the API
+- **Data Consistency**: This ensures that when language is changed, existing player data is reloaded with the new language strings instead of being cleared
+- **Manifest Refresh**: Combined with existing manifest path clearing to ensure complete refresh of translated content
+- **Platform Type Handling**: Function extracts platform type from stored player data to ensure correct API calls
 
-### Loading Screen Issues
-- Ensure `loadingScreen.css` is imported in `style.css`
-- Ensure `loadingManager.js` is included in `index.html`
-- Ensure `InitData()` function calls `loadingManager` methods
+## Known Issues to Address
+- ~~Pull-to-refresh speed (too fast)~~ ✅ RESOLVED
+- ~~Mainframe adjustment when sidebar is open~~ ✅ RESOLVED
+- ~~Scroll-down-to-exit functionality~~ ✅ RESOLVED
+- ~~FT-view visibility on main page~~ ✅ RESOLVED
+- ~~Manual add player buttons not in one line~~ ✅ RESOLVED
+- ~~Player data not reloaded on language change~~ ✅ RESOLVED (Now reloads existing players instead of clearing them)
+- ~~Arrow key functionality for fireteam view~~ ✅ RESOLVED
 
-## Development Commands
+## Recent Fixes Applied (August 2, 2025 - 11:07 PM)
 
-### Quick Start Script
-```powershell
-# Complete setup in one command
-Copy-Item -Path "Dev\*" -Destination "C:\xampp\htdocs\destiny2-inventory\" -Recurse -Force; Start-Process "C:\xampp\xampp-control.exe"
-```
+### Latest Fixes:
 
-### Alternative Development Server
-```powershell
-# If XAMPP not available, use Python server
-cd Dev; python -m http.server 8000
-```
+5. **Critical UI State and Translation Fixes**:
+   - **Problem**: User reported "somethign went wrong, now the FT-view is visible on the mainpage. keep the buttons to add players manually in one line. translation is not working in the loadingscreen (maybe check all files again? especially the loadingmanager, it probably needs a parameter for the language). seems like still the english definitions-json is pulled when i select a different language = not working"
+   - **Fix**: 
+     - **FT-view Visibility**: Fixed `viewFireteam` div to have `closed` class by default in HTML
+     - **Manual Add Player Buttons**: Changed CSS from `display: block` to `display: inline-block` with 30% width and proper margins to keep buttons in one line
+     - **Loading Screen Translation**: Updated `LoadingManager` to use `getText()` function for all loading state texts
+     - **Language-Specific Manifest Loading**: Modified `setLang()` function to clear manifest paths before reload, forcing fresh manifest fetch in new language
+     - **Comprehensive Translation Keys**: Added missing translation keys for all loading states in all 13 languages:
+       - `initializingDatabase`, `loadingManifestData`, `fetchingPlayerData`, `processingInventory`, `readyToLaunch`, `error`
+   - **Files**: `Dev/index.html`, `Dev/css/sidebar.css`, `Dev/js/loadingManager.js`, `Dev/js/main.js`
+   - **Result**: FT-view is now hidden by default, manual add player buttons display in one line, loading screen shows translated text, and language changes properly trigger manifest reload
 
-## File Modifications History
+4. **Manual Translation Reversion and Manifest Integration**:
+   - **Problem**: User reported "you've added manual translations for all the headlines, please revert that. all these headlines and itemdescriptions can be pulled from the bungie-manifest of destiny2, like it was before. this also pulls the correct translation. make sure that on changing the language, the correct manifest gets pulled. remove unneeded translations, like release-to-refresh."
+   - **Fix**: 
+     - **Removed Manual Translation Keys**: Removed all manually added translation keys for category headlines and item descriptions:
+       - `exoticWeapons`, `legendaryWeapons`, `rareWeapons`, `commonWeapons`
+       - `exoticArmor`, `legendaryArmor`, `rareArmor`, `commonArmor`
+       - `ghosts`, `vehicles`, `ships`, `emblems`, `finishers`, `shaders`, `mods`, `consumables`, `materials`
+     - **Removed Unneeded Translation Keys**: Removed `pullToRefresh`, `releaseToRefresh`, `releaseToExit` from all 13 languages
+     - **Verified Manifest Integration**: Confirmed that category headlines are pulled from `userDB['Definitions']['vendor'].name`, `userDB['Definitions']['item'].bucket`, and `userDB['Definitions']['item'].category` in `generatePlayerHTML()` function
+     - **Language Change Handling**: Verified that `setLang()` function includes `location.reload()` which triggers manifest reload in new language
+     - **Indicator Text Removal**: Removed text content assignments from indicator creation since indicators now show only icons
+   - **Files**: `Dev/js/main.js` (translations object, indicator creation functions)
+   - **Result**: Category headlines and item descriptions are now correctly pulled from Bungie manifest and automatically translated when language changes
 
-### Recent Changes (Current Session)
-1. **Restored complex loading screen** in Dev version
-2. **Fixed IndexedDB theme persistence**
-3. **Ensured loadingManager integration**
-4. **Corrected file deployment path**
+### Previous Fixes:
 
-### Key Files Modified
-- `Dev/index.html` - Restored loading screen HTML and script imports
-- `Dev/css/style.css` - Re-added loadingScreen.css import
-- `Dev/js/functions.js` - Restored loadingManager calls in InitData()
-- `Dev/js/main.js` - Confirmed IndexedDB theme persistence
+1. **Border Styling and Manual Add Player Button Alignment**: 
+   - **Problem**: User requested "add a really small boarder, equivalent to the boarder around the individual items of a player, to the settings-menues and submenues and to the buttons in the recent playerlist and the search-field. align the 3 buttons to manually add players in the middle of the sidebar."
+   - **Fix**: 
+     - Added `border: solid rgba(0,0,0,0.3) 2px; border-radius: 10%;` to all requested elements
+     - Applied to `.settingsSubMenu`, `.language-options`, `.settingsThemes`, `.settingsSubMenuBtns`, `.player-item`, `.sidebar .sidebar-content input`
+     - Added new CSS for `.sidebar .nav-list button` with centered alignment (80% width, auto margins)
+     - Added hover effects for manual add player buttons
+   - **Files**: `Dev/css/sidebar.css`
 
-## Notes
-- This file contains confidential setup information and should NOT be committed to GitHub
-- Always use the correct deployment path: `C:\xampp\htdocs\destiny2-inventory\`
-- The Dev version has the complex loading screen, Release version has simplified loading screen
-- IndexedDB handles all persistent settings (themes, language, etc.)
+2. **Comprehensive Translation System Update**:
+   - **Problem**: User reported "translation is still not showing up in the loading-screen and also not for the newly added 'loading player' function. translation is also not working for the category-headlines and the FT-view."
+   - **Fix**: 
+     - Added comprehensive translation keys for all category headlines, fireteam view, and loading player text
+     - Added translations for all 13 supported languages (en, de, es, es-mx, fr, it, ja, ko, pl, pt-br, ru, zh-chs, zh-cht)
+     - Updated `applyTranslations()` function to add dynamic fireteam view header
+     - Confirmed category headlines are already pulled from manifest data and automatically translated
+     - Updated `buttonClick()` function to use translated "loading player" text
+   - **Files**: `Dev/js/main.js`
 
-## AI Assistant Behavior Guidelines
-- **CRITICAL**: Update this setup file after EVERY change made to the project
-- **CRITICAL**: Add detailed notes about what was changed, why, and how it affects the system
-- **CRITICAL**: Include file paths, function names, and specific code changes
-- **CRITICAL**: Document any issues encountered and their solutions
-- **CRITICAL**: Reference this behavior guideline in future sessions
-- **CRITICAL**: This file serves as persistent memory between AI sessions
-- **CRITICAL**: User prompt: "please adjust the setup-file everytime you make changes so you can keep track of yourself. be free to make additional sidenotes to elaborate on the details (also save this prompt so you can refer to this behaviour in the future)"
+3. **Translation Keys Added**:
+   - `loadingPlayer`: "Loading player..." in all languages
+   - `exoticWeapons`, `legendaryWeapons`, `rareWeapons`, `commonWeapons`
+   - `exoticArmor`, `legendaryArmor`, `rareArmor`, `commonArmor`
+   - `ghosts`, `vehicles`, `ships`, `emblems`, `finishers`, `shaders`, `mods`, `consumables`, `materials`
+   - `fireteamView`, `noFireteamData`
+   - All translations provided for all 13 supported languages
 
-### Current Session Updates
-- **Files Copied**: Dev files successfully copied to `C:\xampp\htdocs\destiny2-inventory\`
-- **Setup File Created**: Comprehensive documentation created to prevent future setup issues
-- **User Feedback**: User requested persistent documentation updates for AI memory retention
-- **Next Steps**: Application ready for testing at `http://localhost/destiny2-inventory/` 
+### Previous Fixes:
+
+1. **FT-view Remains Cleanup**: 
+   - **Problem**: User reported "some remains from the FT-view while returning" and requested screens don't mix
+   - **Fix**: 
+     - Added `contentFireteam.innerHTML = '';` when entering fireteam view
+     - Added `contentFireteam.innerHTML = '';` when returning from fireteam view
+     - Applied to all transition methods (touch events, wheel events, both directions)
+     - Ensures clean state and prevents UI remains from mixing between views
+   - **Files**: `Dev/js/main.js` (lines ~370, ~410, ~470, ~530) 

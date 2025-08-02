@@ -86,11 +86,11 @@ class LoadingManager {
             
             // Update text based on state
             const stateTexts = {
-                1: "Initializing Database...",
-                2: "Loading Manifest Data...",
-                3: "Fetching Player Data...",
-                4: "Processing Inventory...",
-                5: "Ready to Launch..."
+                1: getText ? getText('initializingDatabase') : "Initializing Database...",
+                2: getText ? getText('loadingManifestData') : "Loading Manifest Data...",
+                3: getText ? getText('fetchingPlayerData') : "Fetching Player Data...",
+                4: getText ? getText('processingInventory') : "Processing Inventory...",
+                5: getText ? getText('readyToLaunch') : "Ready to Launch..."
             };
             
             const newText = stateTexts[step] || "Loading...";
@@ -133,7 +133,7 @@ class LoadingManager {
 
     // Show error state
     showError(message) {
-        this.updateText(`Error: ${message}`);
+        this.updateText(getText ? `${getText('error')}: ${message}` : `Error: ${message}`);
         if (this.loadingText) {
             this.loadingText.style.color = '#ff6b6b';
         }
@@ -144,7 +144,7 @@ class LoadingManager {
 
     // Show success state
     showSuccess() {
-        this.updateText("Ready to Launch!");
+        this.updateText(getText ? getText('readyToLaunch') : "Ready to Launch!");
         if (this.loadingText) {
             this.loadingText.style.color = '#51cf66';
         }

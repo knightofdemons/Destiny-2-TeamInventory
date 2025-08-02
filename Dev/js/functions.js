@@ -330,6 +330,11 @@ async function InitData(){
         window.loadingManager.setState(1);
         await window.loadingManager.animateProgress(20);
         
+        // Apply translations immediately to ensure loading screen text is translated
+        if (typeof applyTranslations === 'function') {
+            applyTranslations();
+        }
+        
         // Initialize database
         await window.dbOperations.initDatabase();
         
@@ -380,6 +385,26 @@ async function InitData(){
                         }
                         break;
                     }
+                }
+            }
+            
+            // Apply translations to UI
+            if (typeof applyTranslations === 'function') {
+                applyTranslations();
+            }
+            
+            // Initialize sidebar state for mainframe adjustment
+            const sidebar = document.querySelector('.sidebar');
+            const mainElement = document.getElementById('Main');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (sidebar && mainElement && mainContent) {
+                if (sidebar.classList.contains("open")) {
+                    mainElement.classList.add("sidebar-open");
+                    mainContent.classList.add("sidebar-open");
+                } else {
+                    mainElement.classList.remove("sidebar-open");
+                    mainContent.classList.remove("sidebar-open");
                 }
             }
         } else {

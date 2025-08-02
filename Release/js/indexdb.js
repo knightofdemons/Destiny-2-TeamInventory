@@ -406,6 +406,16 @@ async function migrateFromLocalStorage() {
     }
 }
 
+// Clear player data only
+async function clearPlayerData() {
+    try {
+        await dbOperation('players', (store) => store.clear(), 'readwrite');
+        console.log("Player data cleared from IndexedDB");
+    } catch (error) {
+        console.error("Error clearing player data:", error);
+    }
+}
+
 // Clear all data
 async function clearAllData() {
     try {
@@ -448,6 +458,7 @@ window.dbOperations = {
     getPlayer,
     getAllPlayers,
     deletePlayer,
+    clearPlayerData,
     saveOAuthToken,
     getOAuthToken,
     deleteOAuthToken,

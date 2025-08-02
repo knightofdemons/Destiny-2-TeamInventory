@@ -175,9 +175,11 @@
 		</ul>
 		<h3><i class="bx bx-bookmarks"></i></h3>
 		<ul class="nav-list">
-			<button onclick="buttonClick('4611686018471653494', '3')">Add Hühnchen</button> 
-			<button onclick="buttonClick('4611686018489703844', '3')">Add Quaith</button> 
-			<button onclick="buttonClick('4611686018491598431', '3')">Add Drasuk</button>
+			<div class="manual-add-buttons">
+				<button onclick="buttonClick('4611686018471653494', '3')">Add Hühnchen</button> 
+				<button onclick="buttonClick('4611686018489703844', '3')">Add Quaith</button> 
+				<button onclick="buttonClick('4611686018491598431', '3')">Add Drasuk</button>
+			</div>
 			<ul class="playerBucket" id="playerBucket">
 		</ul>  
 		<div class="settingsBar">
@@ -233,7 +235,7 @@
 	<div id="viewPlayerbar" class="viewPlayerbar">
 		
 	</div>
-	<div id="viewFireteam" class="viewFireteam">
+	<div id="viewFireteam" class="viewFireteam closed">
 		<div class="timerBar"></div>
 		<div id="contentFireteam">
 		</div>

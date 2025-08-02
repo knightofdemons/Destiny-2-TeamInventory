@@ -81,12 +81,25 @@
 		margin-top: 0.5rem;
 		padding: 0 1rem;
 		transition: all 0.4s ease;
+		border: solid rgba(0,0,0,0.3) 2px;
 	}
 	
 	.player-item:hover
 	{
 		background: var(--grad2);
 		cursor: pointer;
+	}
+	
+	.player-item.loading-player
+	{
+		opacity: 0.7;
+		background: var(--grad1);
+	}
+	
+	.player-item.loading-player:hover
+	{
+		background: var(--grad1);
+		cursor: default;
 	}
 	
 	.player-info
@@ -139,14 +152,15 @@
 	.settingsBtns
 	{
 		display: flex;
-		justify-content: space-evenly;
-		align-items: flex-end;
+		justify-content: space-between;
+		align-items: center;
 		color: #ffffff;
 		bottom: 0.5rem;
 		left: 0;
 		right: 0;
 		position: fixed;
 		width: var(--sidebar-width);
+		padding: 0 1rem;
 	}
 
 	#settingsBtnCog
@@ -158,6 +172,11 @@
 		transition-duration: 1s;
 		transition-property: transform;
 		z-index: 99;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 50%;
+		height: 100%;
 	}
 	
 	#settingsBtnCog:hover
@@ -167,6 +186,15 @@
 		-webkit-transform: rotate(360deg);
 	}
 	
+	.settingsLogBtns
+	{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 50%;
+		height: 100%;
+	}
+
 	.settingsLogBtns [id^='settingsLog']
 	{
 		cursor: pointer;
@@ -175,6 +203,9 @@
 		transition-duration: 0.8s;
 		transition-property: transform;
 		z-index: 99;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	
 	.settingsLogBtns [id^='settingsLog']:hover
@@ -205,6 +236,7 @@
 		width: 14rem;
 		z-index: 101;
 		flex-wrap: wrap;
+		border: solid rgba(0,0,0,0.3) 2px;
 	}
 	
 	.settingsSubMenu.open
@@ -237,6 +269,8 @@
 		align-items: center;
 		height: 4rem;
 		z-index: 99;
+		border: solid rgba(0,0,0,0.3) 2px;
+		border-radius: 10%;
 	}
 	.settingsSubMenuBtns i
 	{
@@ -247,7 +281,10 @@
 	#settingsiconSizeSlider
 	{
 		width: 70%;
-		accent-color: lightblue;
+		background: var(--grad1);
+		border: 1px solid var(--grad0);
+		border-radius: 4px;
+		accent-color: var(--grad0);
 	}
 
 /* SETTINGS SUBMENU: language */
@@ -263,6 +300,7 @@
 		bottom: 3rem;
 		position: fixed;
 		padding: 1rem;
+		border: solid rgba(0,0,0,0.3) 2px;
 	}
 	
 	.language-options.open
@@ -295,6 +333,7 @@
 		bottom: 3rem;
 		position: fixed;
 		padding: 1rem;
+		border: solid rgba(0,0,0,0.3) 2px;
 	}
 	
 	.settingsThemes #red i
@@ -485,7 +524,8 @@
 		top: -20px;
 		left: calc(100% + 15px);
 		z-index: 3;
-		background: #fff;
+		background: var(--grad1);
+		color: #fff;
 		box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
 		padding: 6px 12px;
 		border-radius: 4px;
@@ -510,10 +550,44 @@
 		outline: none;
 		height: 50px;
 		width: 100%;
-		border: none;
+		border: solid rgba(0,0,0,0.3) 2px;
 		border-radius: 12px;
 		transition: all 0.5s ease;
 		background: var(--grad1);
+	}
+	
+	/* Manual add player buttons container */
+	.manual-add-buttons
+	{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0.5rem 0;
+		width: 100%;
+	}
+	
+	/* Manual add player buttons */
+	.sidebar .nav-list button
+	{
+		display: inline-block;
+		width: 30%;
+		margin: 0;
+		padding: 0.5rem 0.5rem;
+		background: var(--grad1);
+		color: #fff;
+		border: solid rgba(0,0,0,0.3) 2px;
+		border-radius: 10%;
+		cursor: pointer;
+		transition: all 0.4s ease;
+		font-size: 12px;
+		font-weight: 400;
+		flex: 1;
+	}
+	
+	.sidebar .nav-list button:hover
+	{
+		background: var(--grad2);
 	}
 	
 	.sidebar .sidebar-content li a
