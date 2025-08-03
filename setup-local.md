@@ -14,7 +14,7 @@ This is a Destiny 2 team inventory management application that allows users to v
 ### File Deployment
 - **Source Directory**: `Dev/`
 - **Deployment Command**: `robocopy "Dev" "C:\xampp\htdocs\destiny2-inventory" /E /XO /R:3 /W:1`
-- **Last Deployment**: Sunday, August 3, 2025 11:56:59 AM
+- **Last Deployment**: Sunday, August 3, 2025 12:01:55 PM
 - **Note**: Always deploy to XAMPP directory, only push to Git when explicitly requested
 
 ## Recent Fixes and Improvements
@@ -96,7 +96,15 @@ This is a Destiny 2 team inventory management application that allows users to v
 
 ## Recent Fixes Applied
 
-### ✅ RESOLVED: Armor Archetype System Implementation and Exotic Item Availability Logic Fix
+### ✅ RESOLVED: Border Application Logic Fix and Armor Archetype System Implementation
+- **Border Application Logic Fix**: Corrected the application of progress borders to only apply to collection views
+  - **Exotic Weapons Collection**: Catalyst progress borders are correctly applied to exotic weapons in the collection view (top category)
+  - **Exotic Armor Collection**: Armor progress borders are now applied to exotic armor in the collection view (second category)
+  - **Equipped/Inventory/Vault Items**: Removed all progress borders from equipped, inventory, and vault items as requested
+  - **Implementation**: 
+    - Modified `generatePlayerHTML()` function to apply armor progress borders only to exotic armor collection items
+    - Removed armor progress border calculations from equipped, inventory, and vault sections
+    - Maintained archetype icon display for all armor items across all sections
 - **Armor Archetype System Implementation**: Replaced energy type icons with archetype icons for armor items and implemented new progress border system
   - **New Feature**: Armor items now display archetype icons (gunner, brawler, specialist, tank, support, scout) in the bottom left instead of energy type icons
   - **Fallback System**: If archetype is not available, the system falls back to the existing energy/damage type icon system

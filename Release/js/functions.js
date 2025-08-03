@@ -794,7 +794,16 @@ function generatePlayerHTML(cP){
 										unavailable = " unavailable";
 									}
 								}
-	HTML +=					"<div class='itemIconContainer" + unavailable + "'>" +
+								// Calculate armor progress for exotic armor collection
+								var armorData = { classes: "", progression: 0 };
+								// For exotic armor, we can calculate progress based on collection state
+								// If item is available (not unavailable), consider it as progress
+								if (unavailable === "") {
+									armorData = { classes: " armor-progress completed", progression: 100 };
+								} else {
+									armorData = { classes: " armor-progress", progression: 0 };
+								}
+	HTML +=					"<div class='itemIconContainer" + armorData.classes + unavailable + "' style='--armor-progress: " + armorData.progression * 3.6 + "deg'>" +
 								'<img src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 								'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
 							"</div>";
@@ -840,9 +849,7 @@ function generatePlayerHTML(cP){
 							for (item in cEquip) {
 								indexItem = userDB['Definitions']['item'].id.indexOf(cEquip[item].itemHash.toString());
 								if (cEquip[item].bucketHash === buckets[b]) {
-									// Calculate armor progress
-									const armorData = getArmorProgressClasses(cP.itemDetails[cEquip[item].itemInstanceId]);
-	HTML +=						"<div class='itemIconContainer armor-progress" + armorData.classes + "' style='--armor-progress: " + armorData.progression * 3.6 + "deg'>" +
+	HTML +=						"<div class='itemIconContainer'>" +
 									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 									"<div class='itemIconContainerLvl'>";
 									// Check for archetype icon first, then fall back to energy type
@@ -877,9 +884,7 @@ function generatePlayerHTML(cP){
 							for (item in cInv) {
 								indexItem = userDB['Definitions']['item'].id.indexOf(cInv[item].itemHash.toString());
 								if (cInv[item].bucketHash === buckets[b]) {
-									// Calculate armor progress
-									const armorData = getArmorProgressClasses(cP.itemDetails[cInv[item].itemInstanceId]);
-	HTML +=						"<div class='itemIconContainer armor-progress" + armorData.classes + "' style='--armor-progress: " + armorData.progression * 3.6 + "deg'>" +
+	HTML +=						"<div class='itemIconContainer'>" +
 									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 									"<div class='itemIconContainerLvl'>";
 									// Check for archetype icon first, then fall back to energy type
@@ -925,9 +930,7 @@ function generatePlayerHTML(cP){
 							if (cP.profileInventory[item] !== undefined) {
 								indexItem = userDB['Definitions']['item'].id.indexOf(cP.profileInventory[item].itemHash.toString());
 								if (userDB['Definitions']['item'].bucketHash[indexItem] === buckets[b]) {
-									// Calculate armor progress
-									const armorData = getArmorProgressClasses(cP.itemDetails[cP.profileInventory[item].itemInstanceId]);
-	HTML +=						"<div class='itemIconContainer armor-progress" + armorData.classes + "' style='--armor-progress: " + armorData.progression * 3.6 + "deg'>" +
+	HTML +=						"<div class='itemIconContainer'>" +
 									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 									"<div class='itemIconContainerLvl'>";
 									// Check for archetype icon first, then fall back to energy type
