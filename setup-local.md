@@ -14,7 +14,7 @@ This is a Destiny 2 team inventory management application that allows users to v
 ### File Deployment
 - **Source Directory**: `Dev/`
 - **Deployment Command**: `robocopy "Dev" "C:\xampp\htdocs\destiny2-inventory" /E /XO /R:3 /W:1`
-- **Last Deployment**: Sunday, August 3, 2025 12:01:55 PM
+- **Last Deployment**: Sunday, August 3, 2025 12:39:35 PM
 - **Note**: Always deploy to XAMPP directory, only push to Git when explicitly requested
 
 ## Recent Fixes and Improvements
@@ -96,15 +96,75 @@ This is a Destiny 2 team inventory management application that allows users to v
 
 ## Recent Fixes Applied
 
-### ✅ RESOLVED: Border Application Logic Fix and Armor Archetype System Implementation
-- **Border Application Logic Fix**: Corrected the application of progress borders to only apply to collection views
-  - **Exotic Weapons Collection**: Catalyst progress borders are correctly applied to exotic weapons in the collection view (top category)
-  - **Exotic Armor Collection**: Armor progress borders are now applied to exotic armor in the collection view (second category)
-  - **Equipped/Inventory/Vault Items**: Removed all progress borders from equipped, inventory, and vault items as requested
+### ✅ RESOLVED: Catalyst Progression Border Visibility Fix - Border Positioning Adjustment
+- **Issue**: Catalyst progression borders were not visible due to incorrect positioning
+- **Fix**: Adjusted `.catalyst-border` positioning from `2.5px` offsets to `0px` offsets to cover entire container area
+- **Result**: Conic gradient progression is now visible around weapon images
+
+### ✅ RESOLVED: Catalyst Progression Border Refinement - Clean Border Implementation
+- **Issue**: Catalyst borders were blurry due to margin adjustments and complex positioning
+- **Fix**: 
+  - Removed `margin: 3.5px 3.5px` from weapon images in JavaScript
+  - Reverted `.catalyst-border` positioning to `0px` offsets for clean coverage
+  - Simplified CSS to avoid blurry effects
+- **Result**: Clean, sharp 1px bright yellow borders with visible progression fill
+- **Deployment**: Sunday, August 3, 2025 12:46:14 PM (XAMPP), 12:46:18 PM (Release)
+- **Root Cause**: The `.catalyst-border` element was positioned with `top: 2.5px, left: 2.5px, right: 2.5px, bottom: 2.5px`, which placed it exactly where the image was, but the image had `z-index: 2` while the border had `z-index: 1`, causing the image to completely cover the border
+- **Solution**: Changed the catalyst border positioning to `top: 0px, left: 0px, right: 0px, bottom: 0px` so it covers the entire container area and the conic gradient progression is visible around the image
+- **Implementation**: 
+  - Modified `Dev/css/playerDetails-classes.css` to adjust the positioning of `.itemIconContainer[data-catalyst-progress] .catalyst-border`
+  - Deployed fix to both XAMPP and Release directories
+  - Updated documentation with deployment timestamp
+
+### ✅ RESOLVED: Weapon Icon Visibility Fix - Main Weapon Image Z-Index Adjustment
+- **Issue**: Main weapon icons were being covered by the catalyst progression border
+- **Root Cause**: The main weapon image had no z-index specified (defaulting to 0) while the `catalyst-border` element had `z-index: 1`, causing the border to appear above the weapon image
+- **Solution**: Added `z-index: 2` and `position: relative` to the main weapon image in catalyst progress containers to ensure it appears above the catalyst border
+- **Implementation**: 
+  - Modified `Dev/css/playerDetails-classes.css` to add `z-index: 2` and `position: relative` to `.itemIconContainer[data-catalyst-progress] > img`
+  - Deployed fix to both XAMPP and Release directories
+  - Updated documentation with deployment timestamp
+
+### ✅ RESOLVED: Catalyst Progression Border Refinement - Exact 1px Border with Bright Yellow Fill
+- **Border Application Refinement**: Removed armor progress borders and refined weapon borders based on user feedback
+  - **Exotic Weapons Collection**: Catalyst progress borders are applied only to exotic weapons in the collection view (top category)
+  - **Exotic Armor Collection**: Removed all progress borders from exotic armor collection items
+  - **Equipped/Inventory/Vault Items**: No progress borders on equipped, inventory, and vault items
+  - **Border Style Improvements**: 
+    - **Exact 1px Border**: Implemented precise 1px border thickness around item boxes
+    - **Bright Yellow Color**: Used `#ffcb00` for both border and progression fill
+    - **Progression Fill**: Conic gradient overlay shows progression with bright yellow fill
+    - **100% Progress**: Full bright yellow border when catalyst is completed
+  - **Progression Fill Implementation**: 
+    - Image has 1px bright yellow border as base
+    - `::before` pseudo-element positioned above image (`z-index: 1`) shows progression fill
+    - Conic gradient fills clockwise with bright yellow (`#ffcb00`) based on `--catalyst-progress` CSS variable
+    - `pointer-events: none` ensures clicks pass through to the image
+  - Maintained archetype icon display for all armor items across all sections
   - **Implementation**: 
-    - Modified `generatePlayerHTML()` function to apply armor progress borders only to exotic armor collection items
-    - Removed armor progress border calculations from equipped, inventory, and vault sections
-    - Maintained archetype icon display for all armor items across all sections
+    - Modified `generatePlayerHTML()` function to remove armor progress border application from exotic armor collection
+    - Updated CSS in `playerDetails-classes.css` to use exact 1px borders with bright yellow progression fill
+    - Removed unused armor progress border CSS styles
+    - Positioned conic gradient overlay above image for proper progression visualization
+
+### ✅ RESOLVED: Archetype Icon Visibility Fix - Z-Index Adjustment
+- **Issue**: Archetype icons (gunner, brawler, specialist, etc.) were being covered by the catalyst progression border
+- **Root Cause**: The `catalyst-border` element had `z-index: 1` while `itemIconContainerEnergy` (archetype icons) had no z-index specified (defaulting to 0)
+- **Solution**: Added `z-index: 2` to `.itemIconContainerEnergy` CSS class to ensure archetype icons appear above the catalyst border
+- **Implementation**: 
+  - Modified `Dev/css/playerDetails-classes.css` to add `z-index: 2` to `.itemIconContainerEnergy`
+  - Deployed fix to both XAMPP and Release directories
+  - Updated documentation with deployment timestamp
+
+### ✅ RESOLVED: Exotic Armor Collection Archetype Icons - Missing Icon Display
+- **Issue**: Archetype icons were not displaying in the exotic armor collection section (top category)
+- **Root Cause**: The exotic armor collection section was missing the `itemIconContainerLvl` div that contains archetype icons, unlike the equipped/inventory/vault sections
+- **Solution**: Added archetype icon display to the exotic armor collection section using the same logic as other sections
+- **Implementation**: 
+  - Modified `generatePlayerHTML()` function to add `itemIconContainerLvl` div with archetype icons to exotic armor collection items
+  - Added fallback to placeholder icon if archetype is not available
+  - Deployed fix to both XAMPP and Release directories
+  - Updated documentation with deployment timestamp
 - **Armor Archetype System Implementation**: Replaced energy type icons with archetype icons for armor items and implemented new progress border system
   - **New Feature**: Armor items now display archetype icons (gunner, brawler, specialist, tank, support, scout) in the bottom left instead of energy type icons
   - **Fallback System**: If archetype is not available, the system falls back to the existing energy/damage type icon system

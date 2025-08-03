@@ -148,83 +148,35 @@
 		border: none; /* Remove borders from unavailable items */
 	}
 	
-	/* NEW: Catalyst progression border styles */
-	.itemIconContainer.catalyst-progress > img
-	{
-		border: solid rgba(249,217,92,0.6) 2px; /* Dull yellow for incomplete catalysts */
-		box-shadow: 0px 0px 4px rgba(249,217,92,0.3);
-	}
-	
-	.itemIconContainer.catalyst-progress.completed > img
-	{
-		border: solid rgba(249,217,92,1) 2px; /* Full golden border for completed catalysts */
-		box-shadow: 0px 0px 4px #ffcb00;
-	}
-	
-	/* NEW: Progressive catalyst border using conic gradient */
-	.itemIconContainer.catalyst-progress {
+	/* NEW: Catalyst progression border styles - JavaScript-generated border */
+	.itemIconContainer[data-catalyst-progress] {
 		position: relative;
 	}
 	
-	.itemIconContainer.catalyst-progress::before {
-		content: '';
-		position: absolute;
-		top: -2px;
-		left: -2px;
-		right: -2px;
-		bottom: -2px;
-		border-radius: 12%; /* Slightly larger than the image border-radius */
-		background: conic-gradient(
-			from 0deg,
-			rgba(249,217,92,0.8) 0deg,
-			rgba(249,217,92,0.8) var(--catalyst-progress, 0deg),
-			transparent var(--catalyst-progress, 0deg),
-			transparent 360deg
-		);
-		z-index: -1;
+	.itemIconContainer[data-catalyst-progress] > img {
+		border: none;
+		box-shadow: none;
+		z-index: 2; /* Ensure main weapon image appears above catalyst border */
+		position: relative; /* Required for z-index to work */
 	}
 	
-	.itemIconContainer.catalyst-progress.completed::before {
-		background: conic-gradient(
-			from 0deg,
-			rgba(249,217,92,1) 0deg,
-			rgba(249,217,92,1) 360deg
-		);
+	.itemIconContainer[data-catalyst-progress] .catalyst-border {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		bottom: 0px;
+		border-radius: 10%;
+		z-index: 1;
+		pointer-events: none;
+	}
+	
+	/* Completed catalysts get a glow effect */
+	.itemIconContainer[data-catalyst-progress="100"] > img {
 		box-shadow: 0px 0px 4px #ffcb00;
 	}
 	
-	/* NEW: Armor progress border styles */
-	.itemIconContainer.armor-progress {
-		position: relative;
-		border: none !important; /* Remove existing borders */
-	}
-	
-	.itemIconContainer.armor-progress::before {
-		content: '';
-		position: absolute;
-		top: -2px;
-		left: -2px;
-		right: -2px;
-		bottom: -2px;
-		border-radius: 12%; /* Slightly larger than the image border-radius */
-		background: conic-gradient(
-			from 0deg,
-			rgba(249,217,92,0.8) 0deg,
-			rgba(249,217,92,0.8) var(--armor-progress, 0deg),
-			transparent var(--armor-progress, 0deg),
-			transparent 360deg
-		);
-		z-index: -1;
-	}
-	
-	.itemIconContainer.armor-progress.completed::before {
-		background: conic-gradient(
-			from 0deg,
-			rgba(249,217,92,1) 0deg,
-			rgba(249,217,92,1) 360deg
-		);
-		box-shadow: 0px 0px 4px #ffcb00;
-	}
+
 
 	.itemIconContainerEnergy
 	{
@@ -232,6 +184,7 @@
 		margin-bottom: 2px;
 		vertical-align: middle;
 		width: 0.85rem;
+		z-index: 2; /* Ensure archetype icons appear above catalyst border */
 	}
 	
 	.itemIconContainerInfo

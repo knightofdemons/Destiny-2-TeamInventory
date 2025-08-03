@@ -741,9 +741,10 @@ function generatePlayerHTML(cP){
 							if (userDB['Definitions']['item'].catHash[i] > 0 && cP.records[userDB['Definitions']['item'].catHash[i]] !== undefined) {
 								catalystData = getCatalystClasses(cP.records[userDB['Definitions']['item'].catHash[i]]);
 							}
-	HTML +=				"<div class='itemIconContainer" + catalystData.classes + unavailable + "' style='--catalyst-progress: " + catalystData.progression * 3.6 + "deg'>" +
+	HTML +=				"<div class='itemIconContainer" + unavailable + "' data-catalyst-progress='" + catalystData.progression + "'>" +
 							'<img src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 							'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
+							'<div class="catalyst-border" style="background: conic-gradient(from 0deg, #ffcb00 0deg, #ffcb00 ' + (catalystData.progression * 3.6) + 'deg, transparent ' + (catalystData.progression * 3.6) + 'deg, transparent 360deg);"></div>' +
 						"</div>";
 						}
 					}
@@ -794,18 +795,19 @@ function generatePlayerHTML(cP){
 										unavailable = " unavailable";
 									}
 								}
-								// Calculate armor progress for exotic armor collection
-								var armorData = { classes: "", progression: 0 };
-								// For exotic armor, we can calculate progress based on collection state
-								// If item is available (not unavailable), consider it as progress
-								if (unavailable === "") {
-									armorData = { classes: " armor-progress completed", progression: 100 };
-								} else {
-									armorData = { classes: " armor-progress", progression: 0 };
-								}
-	HTML +=					"<div class='itemIconContainer" + armorData.classes + unavailable + "' style='--armor-progress: " + armorData.progression * 3.6 + "deg'>" +
+	HTML +=					"<div class='itemIconContainer" + unavailable + "'>" +
 								'<img src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 								'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
+								"<div class='itemIconContainerLvl'>";
+								// Check for archetype icon first, then fall back to energy type
+								const archetypeIcon = getArchetypeIcon(userDB['Definitions']['item'].archetype[i]);
+								if (archetypeIcon !== "") {
+	HTML +=							'<img class="itemIconContainerEnergy" src="' + archetypeIcon + '">' +
+									" ";								
+								} else {
+	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
+								}
+	HTML +=							"</div>" +
 							"</div>";
 							}
 						}
