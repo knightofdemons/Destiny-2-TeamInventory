@@ -48,17 +48,48 @@ let timerBar = document.querySelector(".timerBar");
 let viewDIM = document.querySelector(".viewDIM");
 let emptyArray = [];
 let myInterval;
+let searchDebounceTimer = null;
 
 
 /*********************************************************************************/
 /* document KeyInputs                                                            */
 /*********************************************************************************/
-inputBox.onkeyup = (e)=>{
-	searchPlayer(e.target.value);
+// Debounced search function
+function debouncedSearch(inputValue) {
+	// Clear existing timer
+	if (searchDebounceTimer) {
+		clearTimeout(searchDebounceTimer);
+	}
+	
+	// Set new timer for 0.8 seconds
+	searchDebounceTimer = setTimeout(() => {
+		searchPlayer(inputValue);
+	}, 800);
 }
 
+// Handle all input changes (typing, pasting, cutting)
+inputBox.addEventListener('input', (e) => {
+	debouncedSearch(e.target.value);
+});
+
+// Handle paste events
+inputBox.addEventListener('paste', (e) => {
+	// Use setTimeout to ensure the paste value is available
+	setTimeout(() => {
+		debouncedSearch(e.target.value);
+	}, 0);
+});
+
+// Handle cut events
+inputBox.addEventListener('cut', (e) => {
+	// Use setTimeout to ensure the cut value is available
+	setTimeout(() => {
+		debouncedSearch(e.target.value);
+	}, 0);
+});
+
 suggBox.onclick = (e)=>{
-	console.log(e.target.value);
+	// Search functionality
 }
 
 suggBox.addEventListener('blur', (event) => {
@@ -94,7 +125,7 @@ const SCROLL_DOWN_DELAY = 500; // Minimum time (ms) to hold scroll before trigge
 const translations = {
 	en: {
 		searchPlaceholder: "Search Destiny-Account...",
-		clearCachedData: "Clear cached data",
+		clearCachedData: "Clear cache",
 		themes: "Themes",
 		scrollDownToExit: "Scroll down to return",
 		loadingScreen: "Loading Destiny 2 Team Inventory...",
@@ -110,7 +141,7 @@ const translations = {
 	},
 	de: {
 		searchPlaceholder: "Destiny-Account suchen...",
-		clearCachedData: "Cache-Daten löschen",
+		clearCachedData: "Cache löschen",
 		themes: "Themen",
 		scrollDownToExit: "Nach unten scrollen zum Zurückkehren",
 		loadingScreen: "Lade Destiny 2 Team Inventar...",
@@ -126,7 +157,7 @@ const translations = {
 	},
 	es: {
 		searchPlaceholder: "Buscar cuenta de Destiny...",
-		clearCachedData: "Borrar datos en caché",
+		clearCachedData: "Limpiar caché",
 		themes: "Temas",
 		scrollDownToExit: "Deslizar hacia abajo para volver",
 		loadingScreen: "Cargando Inventario de Equipo Destiny 2...",
@@ -142,7 +173,7 @@ const translations = {
 	},
 	"es-mx": {
 		searchPlaceholder: "Buscar cuenta de Destiny...",
-		clearCachedData: "Borrar datos en caché",
+		clearCachedData: "Limpiar caché",
 		themes: "Temas",
 		scrollDownToExit: "Deslizar hacia abajo para volver",
 		loadingScreen: "Cargando Inventario de Equipo Destiny 2...",
@@ -158,7 +189,7 @@ const translations = {
 	},
 	fr: {
 		searchPlaceholder: "Rechercher un compte Destiny...",
-		clearCachedData: "Effacer les données en cache",
+		clearCachedData: "Effacer le cache",
 		themes: "Thèmes",
 		scrollDownToExit: "Faire défiler vers le bas pour revenir",
 		loadingScreen: "Chargement de l'Inventaire d'Équipe Destiny 2...",
@@ -174,7 +205,7 @@ const translations = {
 	},
 	it: {
 		searchPlaceholder: "Cerca account Destiny...",
-		clearCachedData: "Cancella dati in cache",
+		clearCachedData: "Cancella cache",
 		themes: "Temi",
 		scrollDownToExit: "Scorri verso il basso per tornare",
 		loadingScreen: "Caricamento Inventario Squadra Destiny 2...",
@@ -190,7 +221,7 @@ const translations = {
 	},
 	ja: {
 		searchPlaceholder: "Destinyアカウントを検索...",
-		clearCachedData: "キャッシュデータをクリア",
+		clearCachedData: "キャッシュをクリア",
 		themes: "テーマ",
 		scrollDownToExit: "下にスクロールして戻る",
 		loadingScreen: "Destiny 2 チームインベントリを読み込み中...",
@@ -206,7 +237,7 @@ const translations = {
 	},
 	ko: {
 		searchPlaceholder: "Destiny 계정 검색...",
-		clearCachedData: "캐시 데이터 지우기",
+		clearCachedData: "캐시 지우기",
 		themes: "테마",
 		scrollDownToExit: "아래로 스크롤하여 돌아가기",
 		loadingScreen: "Destiny 2 팀 인벤토리 로딩 중...",
@@ -222,7 +253,7 @@ const translations = {
 	},
 	pl: {
 		searchPlaceholder: "Szukaj konta Destiny...",
-		clearCachedData: "Wyczyść dane w pamięci podręcznej",
+		clearCachedData: "Wyczyść pamięć podręczną",
 		themes: "Motyw",
 		scrollDownToExit: "Przewiń w dół, aby wrócić",
 		loadingScreen: "Ładowanie Inwentarza Drużyny Destiny 2...",
@@ -238,7 +269,7 @@ const translations = {
 	},
 	"pt-br": {
 		searchPlaceholder: "Pesquisar conta Destiny...",
-		clearCachedData: "Limpar dados em cache",
+		clearCachedData: "Limpar cache",
 		themes: "Temas",
 		scrollDownToExit: "Role para baixo para voltar",
 		loadingScreen: "Carregando Inventário de Equipe Destiny 2...",
@@ -270,7 +301,7 @@ const translations = {
 	},
 	"zh-chs": {
 		searchPlaceholder: "搜索Destiny账户...",
-		clearCachedData: "清除缓存数据",
+		clearCachedData: "清除缓存",
 		themes: "主题",
 		scrollDownToExit: "向下滚动返回",
 		loadingScreen: "正在加载命运2团队库存...",
@@ -286,7 +317,7 @@ const translations = {
 	},
 	"zh-cht": {
 		searchPlaceholder: "搜尋Destiny帳戶...",
-		clearCachedData: "清除快取資料",
+		clearCachedData: "清除快取",
 		themes: "主題",
 		scrollDownToExit: "向下滾動返回",
 		loadingScreen: "正在載入命運2團隊庫存...",
@@ -374,20 +405,16 @@ document.onkeydown = (e)=> {
 
 // Pull-to-refresh functionality
 document.addEventListener('touchstart', function(e) {
-	console.log('Touch start - viewMain open:', viewMain.classList.contains("open"), 'viewFireteam open:', viewFireteam.classList.contains("open"));
 	
 	if (viewMain.classList.contains("open")) {
 		pullStartY = e.touches[0].clientY;
 		pullStartTime = Date.now();
 		isPulling = true;
-		console.log('Touch start detected for pull-to-refresh, isPulling:', isPulling);
 	} else if (viewFireteam.classList.contains("open")) {
 		scrollDownStartY = e.touches[0].clientY;
 		scrollDownStartTime = Date.now();
 		isScrollingDown = true;
-		console.log('Touch start detected for scroll down, isScrollingDown:', isScrollingDown);
 	} else {
-		console.log('Touch start but no view is open - viewMain:', viewMain.classList.contains("open"), 'viewFireteam:', viewFireteam.classList.contains("open"));
 	}
 });
 
@@ -407,11 +434,7 @@ document.addEventListener('touchmove', function(e) {
 			
 			pullIndicator.style.transform = `translateY(${pullDistance * 0.3}px)`;
 			pullIndicator.style.opacity = totalProgress;
-			console.log('Pull indicator opacity set to:', totalProgress);
 			
-			// No text content needed - indicators show only icons
-			
-			console.log('Pulling down, distance:', pullDistance, 'time:', Date.now() - pullStartTime, 'total progress:', totalProgress);
 		}
 	} else if (isScrollingDown && viewFireteam.classList.contains("open")) {
 		scrollDownDistance = scrollDownStartY - e.touches[0].clientY; // Inverted for scroll down
@@ -428,24 +451,17 @@ document.addEventListener('touchmove', function(e) {
 			
 			scrollDownIndicator.style.transform = `translateY(${scrollDownDistance * 0.3}px)`;
 			scrollDownIndicator.style.opacity = totalProgress;
-			console.log('Scroll down indicator opacity set to:', totalProgress);
 			
-			// No text content needed - indicators show only icons
-			
-			console.log('Scrolling down, distance:', scrollDownDistance, 'time:', Date.now() - scrollDownStartTime, 'total progress:', totalProgress);
 		}
 	}
 });
 
 document.addEventListener('touchend', function(e) {
-	console.log('Touch end - isPulling:', isPulling, 'isScrollingDown:', isScrollingDown, 'viewMain open:', viewMain.classList.contains("open"), 'viewFireteam open:', viewFireteam.classList.contains("open"));
 	
 	if (isPulling && viewMain.classList.contains("open")) {
 		const timeElapsed = Date.now() - pullStartTime;
-		console.log('Touch end, pullDistance:', pullDistance, 'threshold:', PULL_THRESHOLD, 'time:', timeElapsed, 'delay:', PULL_DELAY);
 		
 		if (pullDistance >= PULL_THRESHOLD && timeElapsed >= PULL_DELAY && window.scrollY === 0) {
-			console.log('Triggering fireteam refresh');
 			// Trigger fireteam refresh
 			sidebar.style.display = "none";
 			sidebar.classList.toggle("open");
@@ -483,10 +499,8 @@ document.addEventListener('touchend', function(e) {
 		}
 	} else if (isScrollingDown && viewFireteam.classList.contains("open")) {
 		const timeElapsed = Date.now() - scrollDownStartTime;
-		console.log('Touch end for scroll down, scrollDownDistance:', scrollDownDistance, 'threshold:', SCROLL_DOWN_THRESHOLD, 'time:', timeElapsed, 'delay:', SCROLL_DOWN_DELAY);
 		
 		if (scrollDownDistance >= SCROLL_DOWN_THRESHOLD && timeElapsed >= SCROLL_DOWN_DELAY && window.scrollY === 0) {
-			console.log('Triggering return to main view');
 			// Return to main view and remove timer bar
 			sidebar.style.display = "block";
 			sidebar.classList.toggle("open");
@@ -503,7 +517,6 @@ document.addEventListener('touchend', function(e) {
 				timerBar.style.display = 'none';
 			}
 		} else {
-			console.log('Scroll down conditions not met - distance:', scrollDownDistance, 'threshold:', SCROLL_DOWN_THRESHOLD, 'time:', timeElapsed, 'delay:', SCROLL_DOWN_DELAY, 'scrollY:', window.scrollY);
 		}
 		
 		// Reset scroll down state
@@ -524,7 +537,6 @@ document.addEventListener('touchend', function(e) {
 			}, 300);
 		}
 	} else {
-		console.log('Touch end but no gesture detected - isPulling:', isPulling, 'isScrollingDown:', isScrollingDown);
 	}
 });
 
@@ -543,7 +555,6 @@ document.addEventListener('wheel', function(e) {
 				wheelStartTime = Date.now();
 			}
 			wheelDistance += Math.abs(e.deltaY);
-			console.log('Wheel scroll up, distance:', wheelDistance, 'time:', Date.now() - wheelStartTime);
 			
 			// Show pull indicator with opacity based on progress
 			const pullIndicator = document.getElementById('pull-indicator') || createPullIndicator();
@@ -551,10 +562,9 @@ document.addEventListener('wheel', function(e) {
 			const distanceProgress = Math.min(wheelDistance / PULL_THRESHOLD, 1);
 			const totalProgress = (timeProgress + distanceProgress) / 2;
 			pullIndicator.style.opacity = totalProgress;
-			console.log('Pull indicator opacity set to:', totalProgress);
 			
 			if (wheelDistance >= PULL_THRESHOLD && (Date.now() - wheelStartTime) >= PULL_DELAY) {
-				console.log('Triggering fireteam refresh via wheel');
+				// Trigger fireteam refresh via wheel
 				sidebar.style.display = "none";
 				sidebar.classList.toggle("open");
 				viewMain.classList.remove("open");
@@ -599,7 +609,6 @@ document.addEventListener('wheel', function(e) {
 				wheelDownStartTime = Date.now();
 			}
 			wheelDownDistance += e.deltaY;
-			console.log('Wheel scroll down, distance:', wheelDownDistance, 'time:', Date.now() - wheelDownStartTime);
 			
 			// Show scroll down indicator with opacity based on progress
 			const scrollDownIndicator = document.getElementById('scroll-down-indicator') || createScrollDownIndicator();
@@ -607,10 +616,9 @@ document.addEventListener('wheel', function(e) {
 			const distanceProgress = Math.min(wheelDownDistance / SCROLL_DOWN_THRESHOLD, 1);
 			const totalProgress = (timeProgress + distanceProgress) / 2;
 			scrollDownIndicator.style.opacity = totalProgress;
-			console.log('Scroll down indicator opacity set to:', totalProgress);
 			
 			if (wheelDownDistance >= SCROLL_DOWN_THRESHOLD && (Date.now() - wheelDownStartTime) >= SCROLL_DOWN_DELAY) {
-				console.log('Triggering return to main view via wheel');
+				// Trigger return to main view via wheel
 				sidebar.style.display = "block";
 				sidebar.classList.toggle("open");
 				clearInterval(fireteamInterval);
@@ -652,7 +660,6 @@ document.addEventListener('wheel', function(e) {
 
 // Create pull indicator element with full-width design and glowing arrows
 function createPullIndicator() {
-	console.log('Creating pull indicator');
 	const indicator = document.createElement('div');
 	indicator.id = 'pull-indicator';
 	indicator.style.cssText = `
@@ -719,7 +726,6 @@ function createPullIndicator() {
 
 // Create scroll down indicator element with full-width design and glowing arrows
 function createScrollDownIndicator() {
-	console.log('Creating scroll down indicator');
 	const indicator = document.createElement('div');
 	indicator.id = 'scroll-down-indicator';
 	indicator.style.cssText = `
@@ -969,12 +975,17 @@ async function searchPlayer(inputData){
 		if (tmpRes.length > 0) {
 			var tmpR = [];
 			tmpRes.forEach(function(item, index, array) {
-			  IDs = item.destinyMemberships[0].membershipId + "|" + item.destinyMemberships[0].applicableMembershipTypes[0];
-			  t = "<li><div class='sresult'><img class='platformLogo' alt='" + IDs + "' src='css/images/logo" + item.destinyMemberships[0].applicableMembershipTypes[0] + ".svg'>" + item.bungieGlobalDisplayName + "#" + item.bungieGlobalDisplayNameCode + "</div></li>";
-			  tmpR.push(t);
+			  // Check if destinyMemberships exists and has at least one element
+			  if (item.destinyMemberships && item.destinyMemberships.length > 0) {
+				IDs = item.destinyMemberships[0].membershipId + "|" + item.destinyMemberships[0].applicableMembershipTypes[0];
+				t = "<li><div class='sresult'><img class='platformLogo' alt='" + IDs + "' src='css/images/logo" + item.destinyMemberships[0].applicableMembershipTypes[0] + ".svg'>" + item.bungieGlobalDisplayName + "#" + item.bungieGlobalDisplayNameCode + "</div></li>";
+				tmpR.push(t);
+			  }
 			});
 		}
 			searchWrapper.classList.add("active");
+			// Clear previous suggestions before showing new ones
+			suggBox.innerHTML = "";
 			showSuggestions(tmpR);
 			let allList = suggBox.querySelectorAll("li");
 			for (let i = 0; i < allList.length; i++) {
@@ -983,6 +994,8 @@ async function searchPlayer(inputData){
 			}
     }else{
         searchWrapper.classList.remove("active"); //hide autocomplete box
+        // Clear suggestions when input is empty
+        suggBox.innerHTML = "";
     }
 	
 }
@@ -1017,7 +1030,6 @@ async function select(element){
 // close sidebar when clicking on menu icon
     closeBtn.addEventListener("click", () => {
       sidebar.classList.toggle("open");
-      console.log('Sidebar toggled, open state:', sidebar.classList.contains("open"));
       
       // Update mainframe adjustment
       const mainElement = document.getElementById('Main');
@@ -1116,7 +1128,7 @@ async function reloadStoredPlayers() {
 		const storedPlayers = await window.dbOperations.getAllPlayers();
 		
 		if (storedPlayers && Object.keys(storedPlayers).length > 0) {
-			console.log("Reloading stored players with new language...");
+			// Reloading stored players with new language
 			
 			// Iterate through each stored player and reload their data
 			for (const [membershipId, player] of Object.entries(storedPlayers)) {
@@ -1130,7 +1142,7 @@ async function reloadStoredPlayers() {
 					// Save the reloaded player data
 					await window.dbOperations.savePlayer(reloadedPlayer);
 					
-					console.log(`Reloaded player data for ${membershipId}`);
+					// Reloaded player data
 				} catch (error) {
 					console.error(`Error reloading player ${membershipId}:`, error);
 				}
@@ -1279,26 +1291,80 @@ async function deletePlayer(membershipId) {
     }
 }
 
+// Function for individual "add xxxx" buttons (no animation on button, animation in sidebar)
+async function addPlayerDirect(mshipId, platType){
+	await addPlayerWithProgress(mshipId, platType);
+}
+
+// Function for search result buttons (no animation on button, animation in sidebar)
 async function buttonClick(mshipId, platType){
+	await addPlayerWithProgress(mshipId, platType);
+}
+
+// Common function for adding players with progress animation in sidebar
+async function addPlayerWithProgress(mshipId, platType){
 	try {
-		// Pre-create player button in the recent player list
+		// Create fake button in player bucket with progress animation
 		const playerBucket = document.getElementById('playerBucket');
 		if (playerBucket) {
-			const loadingPlayerItem = document.createElement('div');
-			loadingPlayerItem.className = 'player-item loading-player';
-			loadingPlayerItem.id = `loading-player-${mshipId}`;
-			loadingPlayerItem.innerHTML = `
+			const fakeButton = document.createElement('div');
+			fakeButton.className = 'player-item loading-player';
+			fakeButton.id = `loading-player-${mshipId}`;
+			fakeButton.style.position = 'relative';
+			fakeButton.style.overflow = 'hidden';
+			
+			// Create the HTML structure first
+			fakeButton.innerHTML = `
 				<div class="player-info">
-					<div class="player-name">${getText('loadingPlayer')}</div>
+					<div class="player-name">Loading Player... (0/6)</div>
 				</div>
 				<div class="player-actions">
 					<i class="bx bx-loader-alt bx-spin" style="color: var(--grad1);"></i>
 				</div>
+				<div class="button-progress-bar" style="
+					position: absolute;
+					bottom: 0;
+					left: 0;
+					height: 4px;
+					background: var(--grad1);
+					width: 0%;
+					transition: width 0.3s ease;
+					border-radius: 0 0 4px 4px;
+					z-index: 10;
+				"></div>
 			`;
-			playerBucket.appendChild(loadingPlayerItem);
+			
+			playerBucket.appendChild(fakeButton);
 		}
 		
+		// Total steps: 6 (3 requests × 2 steps each - sent and received)
+		const totalSteps = 6;
+		let currentStep = 0;
+		
+		// Override getData function to track progress
+		const originalGetData = window.getData;
+		window.getData = async function(url, useApiKey = true) {
+			// Step 1: Request sent
+			currentStep++;
+			const progress = (currentStep / totalSteps) * 100;
+			updateProgressBar(mshipId, progress, currentStep, totalSteps);
+			
+			// Make the actual request
+			const result = await originalGetData(url, useApiKey);
+			
+			// Step 2: Response received
+			currentStep++;
+			const progressAfterResponse = (currentStep / totalSteps) * 100;
+			updateProgressBar(mshipId, progressAfterResponse, currentStep, totalSteps);
+			
+			return result;
+		};
+		
 		let cP = await getPlayer(mshipId, platType);
+		
+		// Restore original getData function
+		window.getData = originalGetData;
+		
 		await window.dbOperations.savePlayer(cP);
 		
 		// Update local userDB
@@ -1315,12 +1381,37 @@ async function buttonClick(mshipId, platType){
 		
 		// Display the player
 		viewMain.innerHTML = generatePlayerHTML(cP);
+		
 	} catch (error) {
 		console.error("Error adding player:", error);
+		
+		// Restore original getData function on error
+		if (typeof originalGetData !== 'undefined') {
+			window.getData = originalGetData;
+		}
+		
 		// Remove loading player item on error
 		const loadingPlayerItem = document.getElementById(`loading-player-${mshipId}`);
 		if (loadingPlayerItem) {
 			loadingPlayerItem.remove();
+		}
+	}
+}
+
+// Helper function to update progress bar and text
+function updateProgressBar(mshipId, progress, currentStep, totalSteps) {
+	const loadingPlayerItem = document.getElementById(`loading-player-${mshipId}`);
+	if (loadingPlayerItem) {
+		// Update progress bar
+		const progressBar = loadingPlayerItem.querySelector('.button-progress-bar');
+		if (progressBar) {
+			progressBar.style.width = progress + '%';
+		}
+		
+		// Update text
+		const playerName = loadingPlayerItem.querySelector('.player-name');
+		if (playerName) {
+			playerName.textContent = `Loading Player... (${currentStep}/${totalSteps})`;
 		}
 	}
 }
@@ -1372,19 +1463,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to ensure correct view state
 function ensureViewState() {
-    console.log('Ensuring view state - viewMain open:', viewMain.classList.contains("open"), 'viewFireteam open:', viewFireteam.classList.contains("open"));
     
     // If no view is open, open the main view by default
     if (!viewMain.classList.contains("open") && !viewFireteam.classList.contains("open")) {
-        console.log('No view open, opening main view');
         viewMain.classList.add("open");
     }
     
     // Ensure only one view is open at a time
     if (viewMain.classList.contains("open") && viewFireteam.classList.contains("open")) {
-        console.log('Both views open, closing fireteam view');
         viewFireteam.classList.remove("open");
     }
     
-    console.log('Final view state - viewMain open:', viewMain.classList.contains("open"), 'viewFireteam open:', viewFireteam.classList.contains("open"));
 }

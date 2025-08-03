@@ -13,8 +13,7 @@ async function openOauthPopup(){
 			
 			// Show success notification
 			showNotification('Login successful! Welcome to Destiny 2 Team Inventory.', 'success');
-			
-			console.log('OAuth authentication successful');
+			// OAuth authentication successful
 		} catch (error) {
 			console.error('Error saving OAuth token:', error);
 			showNotification('Login failed. Please try again.', 'error');

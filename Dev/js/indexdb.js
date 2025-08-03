@@ -20,7 +20,7 @@ async function initDatabase() {
         
         request.onsuccess = () => {
             db = request.result;
-            console.log("Database opened successfully");
+            // Database opened successfully
             resolve(db);
         };
         
@@ -56,7 +56,7 @@ async function initDatabase() {
                 const fireteamStore = db.createObjectStore('fireteam', { keyPath: 'id' });
             }
             
-            console.log("Database schema created/updated");
+            // console.log("Database schema created/updated");
         };
     });
 }
@@ -349,11 +349,11 @@ async function migrateFromLocalStorage() {
         const hasLocalStorageData = localStorage.getItem("userDB") || localStorage.getItem("oauthToken");
         
         if (!hasLocalStorageData) {
-            console.log("No localStorage data to migrate");
+            // console.log("No localStorage data to migrate");
             return;
         }
         
-        console.log("Starting migration from localStorage...");
+        // console.log("Starting migration from localStorage...");
         
         // Migrate settings
         const userDB = JSON.parse(localStorage.getItem("userDB"));
@@ -395,7 +395,7 @@ async function migrateFromLocalStorage() {
             await setManifestPaths(userDB.manifestPaths);
         }
         
-        console.log("Migration from localStorage completed successfully");
+        // console.log("Migration from localStorage completed successfully");
         
         // Clear localStorage after successful migration
         localStorage.clear();
@@ -410,7 +410,7 @@ async function migrateFromLocalStorage() {
 async function clearPlayerData() {
     try {
         await dbOperation('players', (store) => store.clear(), 'readwrite');
-        console.log("Player data cleared from IndexedDB");
+        // console.log("Player data cleared from IndexedDB");
     } catch (error) {
         console.error("Error clearing player data:", error);
     }
@@ -426,7 +426,7 @@ async function clearAllData() {
         await dbOperation('definitions', (store) => store.clear(), 'readwrite');
         await dbOperation('manifestPaths', (store) => store.clear(), 'readwrite');
         
-        console.log("All data cleared from IndexedDB");
+        // console.log("All data cleared from IndexedDB");
     } catch (error) {
         console.error("Error clearing data:", error);
     }
@@ -437,9 +437,40 @@ async function initializeDatabase() {
     try {
         await initDatabase();
         await migrateFromLocalStorage();
-        console.log("Database initialized successfully");
+        
+        // Check for existing data AFTER database is initialized and migration is complete
+        const existingData = await checkExistingData();
+        
+        // Show appropriate system message based on whether data was found
+        if (existingData.hasData) {
+            // showNotification('Database loaded successfully from browser storage.', 'success', 3000);
+        } else {
+            // showNotification('New database created in browser storage.', 'info', 3000);
+        }
+        
+        // console.log("Database initialized successfully");
     } catch (error) {
         console.error("Database initialization failed:", error);
+        // showNotification('Database initialization failed. Please refresh the page.', 'error', 5000);
+    }
+}
+
+// Check if there's existing data in the database
+async function checkExistingData() {
+    try {
+        // Try to get some data to see if database exists and has content
+        const settings = await getAllSettings();
+        const players = await getAllPlayers();
+        const definitions = await getAllDefinitions();
+        
+        return {
+            hasData: (settings && Object.keys(settings).length > 0) || 
+                     (players && Object.keys(players).length > 0) || 
+                     (definitions && Object.keys(definitions).length > 0)
+        };
+    } catch (error) {
+        // If we can't access the database, assume it's new
+        return { hasData: false };
     }
 }
 

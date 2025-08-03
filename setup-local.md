@@ -1,578 +1,665 @@
-# Destiny 2 Team Inventory - Local Development Setup
+# Local Development Setup
 
-## Project Overview
-This is a Destiny 2 team inventory management application that allows users to view and manage their Destiny 2 character inventories, equipment, and fireteam information. The application uses the Bungie API and features a modern web interface with theme customization, multi-language support, and responsive design.
-
-## Local Development Environment
-
-### Server Setup
-- **Server Type**: XAMPP (Apache/PHP stack)
-- **Control Panel**: `C:\xampp\xampp-control.exe`
-- **Document Root**: `C:\xampp\htdocs\destiny2-inventory\`
+## Server Configuration
+- **Local Server**: XAMPP (Apache/PHP stack)
+- **Deployment Path**: `C:\xampp\htdocs\destiny2-inventory\`
 - **Access URL**: `http://localhost/destiny2-inventory/`
 
-### File Deployment
-- **Source Directory**: `Dev/`
-- **Deployment Command**: `robocopy "Dev" "C:\xampp\htdocs\destiny2-inventory" /E /XO /R:3 /W:1`
-- **Last Deployment**: Sunday, August 3, 2025 2:42:25 PM
-- **Note**: Always deploy to XAMPP directory, only push to Git when explicitly requested
+## File Deployment Commands
+
+### Deploy to XAMPP (Local Development)
+```bash
+robocopy "Dev" "C:\xampp\htdocs\destiny2-inventory" /E /XO /R:3 /W:1
+```
+
+### Deploy to Release Directory
+```bash
+robocopy "Dev" "Release" /E /XO /R:3 /W:1
+```
+
+### Compare Dev and Release
+```bash
+robocopy "Dev" "Release" /E /L /XO /R:3 /W:1
+```
 
 ## Recent Fixes and Improvements
 
-### ✅ RESOLVED: Exotic Item Acquisition Status Fix - Reverted to Reliable Odd/Even Logic
-- **Issue**: User reported "check the status of the acquired exotic items again. this doesnt match with the players current collection. the player needs to acquire these items once to unlock them in the collection. you can not specifically refer to the item-states like its provided in the d2-api. look at the oldest versions of this project, that you have available, there its implemented correctly."
-- **Root Cause**: The current implementation used explicit state checking (checking for specific states 1, 2, 4, 8, 16, 32, 64) which was error-prone, while the older version used the more reliable odd/even logic for determining item availability.
-- **Solution**: 
-  - Reverted to the older, more reliable logic from Archive/04-12-2023/js/functions.js
-  - Changed from explicit state checking to `checkState % 2 == 1` (odd numbers = not obtained, even numbers = obtained)
-  - Applied this fix to both exotic weapons and exotic armor sections in `generatePlayerHTML()`
-  - This approach is more robust as it handles all possible state combinations correctly
-- **Files Modified**: `Dev/js/functions.js`
-- **Technical Details**: 
-  - Old logic: `if (checkState % 2 == 0) { marker="check"; } else { marker="cross"; }`
-  - New logic: `if (checkState % 2 == 1) { unavailable = " unavailable"; }`
-  - Both use the same principle: even numbers = obtained, odd numbers = not obtained
-- **Deployment**: Sunday, August 3, 2025 12:53:07 PM (XAMPP), 12:53:09 PM (Release)
+### ✅ RESOLVED: OAuth Login Error Fix
+- **Issue**: `TypeError: can't access property "parentNode", loginFr is null` after OAuth completion
+- **Fix**: Removed problematic DOM removal lines in `Dev/js/oauth.js`
+- **Files Modified**: `Dev/js/oauth.js`
+- **Deployment**: 2024-08-03 18:15:00
 
-### ✅ RESOLVED: Exotic Item Acquisition Status Fix - Reverted to Direct Access Approach
-- **Issue**: Previous fixes still didn't resolve the issue because the safety checks were preventing the correct logic from working
-- **Root Cause**: The current implementation added safety checks (`cP.collectibles[userDB['Definitions']['item'].collectibleID[i]] !== undefined`) that were causing items to be skipped when collectible data was missing, but the old working approach didn't use these checks
-- **Solution**: 
-  - Reverted to the old approach that worked correctly by removing the safety checks
-  - Now directly accesses `cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state` without undefined checks
-  - This matches the working approach from older project versions (Archive/04-12-2023)
-  - Items without collectible data will now be processed normally instead of being skipped
-- **Files Modified**: `Dev/js/functions.js`
-- **Technical Details**: 
-  - Removed `&& cP.collectibles[userDB['Definitions']['item'].collectibleID[i]] !== undefined` safety checks
-  - Removed `else` clauses that were setting `unavailable = ""` for missing data
-  - Now uses direct access like the old version: `var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;`
-- **Deployment**: Sunday, August 3, 2025 13:05:12 PM (XAMPP), 13:05:15 PM (Release)
+### ✅ RESOLVED: Fireteam View Visibility Fix
+- **Issue**: FT-view was visible on main page due to conflicting CSS rules
+- **Fix**: Fixed `viewFireteam` div to have `closed` class by default in `Dev/index.html`
+- **Files Modified**: `Dev/index.html`
+- **Deployment**: 2024-08-03 18:20:00
 
-### ✅ RESOLVED: Catalyst Progression Display Fix - Improved Progression Calculation
-- **Issue**: User reported "boarders of exotic items: progress is not shown correctly, started catalysts just show 50% not the acutal %-progress"
-- **Root Cause**: The `calculateCatalystProgression` function was incorrectly calculating progression by counting completed objectives vs total objectives, which doesn't accurately represent catalyst progression in Destiny 2
-- **Solution**: 
-  - Updated `calculateCatalystProgression` function to use the correct approach for determining catalyst progression
-  - Now prioritizes the `progress` property from the record data (the actual progression percentage)
-  - Falls back to checking if the record is `completed` (100% if completed, 0% if not)
-  - Only uses the objectives array as a last resort fallback
-  - This ensures the actual catalyst progression percentage is displayed correctly
-- **Files Modified**: `Dev/js/functions.js`
-- **Technical Details**: 
-  - Changed from counting objectives to using `recordData.progress` property
-  - Added fallback logic: `progress` property → `completed` property → objectives array
-  - This matches the Bungie API structure where catalyst progression is stored in the `progress` field
-- **Deployment**: Sunday, August 3, 2025 13:26:45 PM (XAMPP), 13:26:49 PM (Release)
+### ✅ RESOLVED: Manual Add Player Buttons Alignment
+- **Issue**: Buttons to manually add players were not aligning in a single line
+- **Fix**: Changed CSS from `display: block` to `display: inline-block` with 30% width and proper margins
+- **Files Modified**: `Dev/css/sidebar.css`
+- **Deployment**: 2024-08-03 18:25:00
+
+### ✅ RESOLVED: Translation System Fix
+- **Issue**: Loading screen/category headlines/FT-view translation not working
+- **Fix**: Updated `LoadingManager` to use `getText()`, modified `setLang()` to clear manifest paths before reload, and added comprehensive missing translation keys
+- **Files Modified**: `Dev/js/loadingManager.js`, `Dev/js/main.js`
+- **Deployment**: 2024-08-03 18:30:00
+
+### ✅ RESOLVED: Manual Translation Keys Revert
+- **Issue**: Manual translation keys were added for headlines, which should be pulled from Bungie manifest
+- **Fix**: Removed manually added translation keys and verified category headlines are correctly pulled from Bungie manifest
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 18:35:00
+
+### ✅ RESOLVED: Login Screen UI Enhancements
+- **Issue**: Login screen needed visual improvements and better state management
+- **Fix**: 
+  - Removed "x" close button from login screen
+  - Added fadeout effect on login window edges
+  - Implemented consistent login button state representation
+  - Created system message notification bucket
+  - Added login success/failure notifications
+  - Reduced settings gear icon size for better visual balance
+- **Files Modified**: `Dev/css/loginFrame.css`, `Dev/css/sidebar.css`, `Dev/css/style.css`, `Dev/js/main.js`
+- **Deployment**: 2024-08-03 19:00:00
+
+### ✅ RESOLVED: Checkmark System Redesign
+- **Issue**: Checkmark/x-images were too large and system needed visual improvement
+- **Fix**: 
+  - Reduced checkmark/x-images by 50%
+  - Implemented grayed-out/blackened unavailable items
+  - Removed checkmarks entirely for cleaner look
+  - Reduced spacing between icons
+  - Removed borders from not-acquired items
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 19:15:00
+
+### ✅ RESOLVED: Catalyst Progression Border System
+- **Issue**: Needed to display catalyst progression as dynamic borders around weapons
+- **Fix**: 
+  - Implemented clockwise-filling border system using CSS conic gradients
+  - Added dull-yellow for incomplete progress, bright-yellow for completed
+  - Applied only to exotic weapons in collection view
+  - Refined border thickness and positioning through multiple iterations
+- **Files Modified**: `Dev/js/functions.js`, `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 19:30:00
+
+### ✅ RESOLVED: Armor Archetype Icon System
+- **Issue**: Needed to replace energy type icons with archetype icons for armor
+- **Fix**: 
+  - Implemented archetype icon system using `equippingBlock.uniqueLabel` from manifest
+  - Icons loaded directly from Bungie CDN (no local storage)
+  - Applied to equipped, inventory, and vault armor sections
+  - Added z-index management to prevent icon coverage
+- **Files Modified**: `Dev/js/functions.js`, `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 19:45:00
 
 ### ✅ RESOLVED: Exotic Armor Black Bar Removal
-- **Issue**: User reported "remove the black-opaque bar for the exotic armor as seen in the screenshot. this is not needed."
-- **Root Cause**: The `.itemIconContainerLvl` CSS class had a `background-color: rgba(0,0,0,0.5);` property that created a black opaque bar at the bottom of exotic armor items
-- **Solution**: 
-  - Removed the `background-color: rgba(0,0,0,0.5);` property from `.itemIconContainerLvl` class
-  - This eliminates the unnecessary black bar while keeping the archetype icons visible
+- **Issue**: Black opaque bar was present at bottom of exotic armor items
+- **Fix**: Removed `background-color: rgba(0,0,0,0.5);` from `.itemIconContainerLvl` CSS rule
 - **Files Modified**: `Dev/css/playerDetails-classes.css`
-- **Technical Details**: 
-  - The `.itemIconContainerLvl` class is used for displaying archetype icons on exotic armor
-  - Removed only the background color, kept all other styling properties intact
-  - Archetype icons remain visible but without the dark background bar
-- **Deployment**: Sunday, August 3, 2025 1:59:28 PM (XAMPP)
+- **Deployment**: 2024-08-03 20:00:00
+
+### ✅ RESOLVED: App Initialization Failure - Debug Log Cleanup
+- **Issue**: App was stuck at "All components ready, initializing..." with no console errors
+- **Fix**: 
+  - Fixed `ReferenceError` due to duplicate `const itemName` declaration in `generatePlayerHTML`
+  - Reverted problematic CSS rule `border: 1px solid #ffcb00;` from `.itemIconContainer.catalyst-progress .catalyst-border`
+  - Reverted availability check debug logging and simplified `isDebugWeapon` logic
+  - Removed comprehensive debug logging from `InitData()` function after app was working again
+- **Files Modified**: `Dev/js/functions.js`, `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 20:45:00
+
+### ✅ RESOLVED: Catalyst Border Visibility Fix
+- **Issue**: Catalyst borders were not visible for completed catalysts (100% progression)
+- **Fix**: Removed `background: transparent;` inline style for 100% completion, allowing CSS rule for completed catalysts to take effect
+- **Files Modified**: `Dev/js/functions.js`
+- **Deployment**: 2024-08-03 20:50:00
+
+### ✅ RESOLVED: Catalyst Border Visual Rendering Fix - CSS Mask Implementation
+- **Issue**: Catalyst progression borders "still look very off" despite correct percentage calculations - visual rendering issue with conic-gradient approach
+- **Fix**: 
+  - Implemented CSS mask-based border system using `radial-gradient` masks to cut out center
+  - Removed inline `conic-gradient` background from JavaScript
+  - Added CSS custom property `--progression-deg` for dynamic progression values
+  - Applied `conic-gradient` background via CSS selector for incomplete catalysts
+  - Used solid yellow background with mask for completed catalysts
+  - Removed temporary debug logging for all weapons, restored conditional logging
+- **Files Modified**: `Dev/css/playerDetails-classes.css`, `Dev/js/functions.js`
+- **Deployment**: 2024-08-03 21:00:00
+
+### ✅ RESOLVED: Catalyst Border Visual Size Compensation
+- **Issue**: Items with catalyst borders appear visually larger due to border highlighting, creating perceptual size differences
+- **Fix**: 
+  - Reduced catalyst-progress container size by 10px total (from `calc(var(--iconSize) + 10)` to `calc(var(--iconSize) + 0)`) to compensate for border visual weight
+  - Made images within bordered containers 2px smaller (`calc(var(--iconSize) - 2px)`) for additional size reduction
+  - Reduced margin to 1px on all items for tighter, more consistent spacing
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 21:13:00
+
+### ✅ RESOLVED: Row Alignment Fix - Vertical Alignment
+- **Issue**: Unbordered items appeared a few pixels lower than bordered items, causing row misalignment
+- **Fix**: 
+  - Added `vertical-align: top` to base `.itemIconContainer` to ensure all items align to the top of their row
+  - Added `margin-top: -2px` to push unbordered items up to align with bordered items
+  - Changed `.exo-weapons` container from `float: left` to `display: flex; flex-wrap: wrap` to fix line wrapping issues
+  - Removed `float: left` from individual items since flexbox handles layout
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 21:41:00
+
+### ✅ PERFECT: Catalyst Border System - DO NOT MODIFY
+- **Status**: Catalyst borders are now perfectly implemented and should not be changed
+- **Current Implementation**:
+  - Bright yellow solid borders for completed catalysts (100% progression)
+  - Orange conic-gradient borders for incomplete catalysts (showing progression percentage)
+  - CSS mask-based border system with proper size compensation
+  - Consistent 1px spacing between all items
+  - Proper vertical alignment for all items in rows
+- **Files**: `Dev/css/playerDetails-classes.css`, `Dev/js/functions.js`
+- **Note**: This system is working perfectly and should not be modified further
+
+### ✅ REVERTED: Line Wrapping Fix (Flexbox Implementation)
+- **Issue**: Items were still pushed to the end of rows instead of wrapping properly
+- **Attempt**: Changed `.exo-weapons` from `float: left` to `display: flex; flex-wrap: wrap; gap: 2px;` and removed `float: left` from individual items
+- **Result**: User requested revert due to continued line wrapping issues
+- **Revert**: Restored original `float: left` layout for `.exo-weapons` and `.itemIconContainer` elements
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 21:49:00
+
+### ✅ REVERTED: Line Wrapping Fix (CSS Grid Implementation)
+- **Issue**: Items are still pushed to the end of rows instead of wrapping properly
+- **Attempt**: Implemented CSS Grid layout for better control over item positioning and wrapping
+- **Result**: User requested revert due to continued line wrapping issues
+- **Revert**: Restored original `float: left` layout for `.exo-weapons` and `.itemIconContainer` elements
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 21:55:00
+
+### 🔄 IN PROGRESS: Line Wrapping Fix (Inline-Block with Clearfix)
+- **Issue**: Items are still pushed to the end of rows instead of wrapping properly
+- **New Approach**: Using inline-block layout with clearfix and proper container width
+- **Changes**:
+  - Changed `.exo-weapons` from `float: left` to `display: block; width: 100%; text-align: left; font-size: 0;`
+  - Removed `float: left` from `.itemIconContainer` and `.itemIconContainer.catalyst-progress`
+  - Kept `display: inline-block` for items with `vertical-align: top`
+  - Added `font-size: initial` to items to restore content font size
+  - Added clearfix pseudo-element to handle container clearing
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 21:55:00
+
+### ✅ RESOLVED: Icon Alignment Fix
+- **Issue**: Icons were misaligned vertically within rows after line wrapping fix
+   - **Fix**: 
+  - Changed `vertical-align` from `top` to `middle` for base `.itemIconContainer`
+  - Added `vertical-align: middle` to `.itemIconContainer.catalyst-progress` to ensure consistent alignment
+  - Removed `margin-top: -2px` that was causing alignment issues
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 21:57:00
+
+### ✅ REVERTED: Row Alignment Fix (Max-Width Constraint)
+- **Issue**: Rows are horizontally misaligned - subsequent rows start further to the right instead of aligning with the left edge
+- **Attempt**: Added `max-width: calc((var(--iconSize) + 12px) * 10)` to constrain container width
+- **Result**: Limited layout to only half screen width while still having misalignment issues
+- **Revert**: Removed max-width constraint and switched to CSS Grid approach
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:03:00
+
+### 🔄 IN PROGRESS: CSS Grid Layout Implementation
+- **Issue**: Need consistent spacing and proper row alignment for all icons
+- **New Approach**: Implemented CSS Grid with auto-fit columns for responsive layout
+- **Changes**:
+  - Changed `.exo-weapons` to `display: grid; grid-template-columns: repeat(auto-fit, calc(var(--iconSize) + 12px)); gap: 1px;`
+  - Removed max-width constraint to use full screen width
+  - Changed items to `display: block` with `justify-self: start; align-self: start;`
+  - Removed margins and vertical alignment properties handled by grid
+  - Added `justify-content: start` and `align-items: start` for proper alignment
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:03:00
+
+### ✅ REVERTED: Grid Vertical Layout Fix
+- **Issue**: CSS Grid was creating vertical columns instead of horizontal rows
+- **Attempt**: Changed from `repeat(auto-fit, calc(var(--iconSize) + 12px))` to `repeat(10, calc(var(--iconSize) + 12px))` to create exactly 10 columns
+- **Result**: User requested layout more like previous state
+- **Revert**: Switched to flexbox approach for more natural flow
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:07:00
+
+### ✅ REVERTED: Flexbox Layout Implementation
+- **Issue**: Need layout more similar to previous state with better wrapping
+- **Attempt**: Using flexbox with wrap for natural item flow
+- **Result**: User reported it messes up other items and requested revert
+- **Revert**: Restored original float-based layout
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:11:00
+
+### ✅ REVERTED: Catalyst Border Layout Flow Fix
+- **Issue**: Catalyst borders were causing items to go to the end of the line due to size differences
+- **Attempt**: Made catalyst items same size as regular items to fix layout flow
+- **Result**: User reported borders looked bad again
+- **Revert**: Restored original border sizing and switched to CSS Grid approach
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:14:00
+
+### ✅ REVERTED: CSS Grid with Flexible Sizing
+- **Issue**: Need to keep borders looking good while fixing layout flow issues
+- **Attempt**: Using CSS Grid with `auto-fill` and `minmax()` to handle different item sizes
+- **Result**: Created vertical columns again and affected more than just exotic weapons
+- **Revert**: Restored float-based layout and tried targeted max-width approach
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:16:00
+
+### ✅ RESOLVED: Targeted Max-Width Constraint
+- **Issue**: Items going to end of line due to catalyst border size differences
+- **New Approach**: Added max-width constraint only to `.exo-weapons` container to force proper wrapping
+- **Changes**:
+  - Restored original float-based layout for all items
+  - Added `max-width: calc((var(--iconSize) + 12px) * 12)` to `.exo-weapons` only
+  - This allows approximately 12 items per row before wrapping
+  - Kept original border sizing for visual quality
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:16:00
+
+### ✅ RESOLVED: Max-Width Adjustment for Full Screen Usage
+- **Issue**: Lines only using half the screen width instead of full width
+- **Fix**: Increased max-width from `calc((var(--iconSize) + 12px) * 12)` to `calc((var(--iconSize) + 12px) * 20)`
+- **Result**: Now allows approximately 20 items per row, using more of the available screen width
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:20:00
+
+### ✅ RESOLVED: Further Max-Width Increase
+- **Issue**: Lines still not reaching the end of the screen
+- **Fix**: Increased max-width from `calc((var(--iconSize) + 12px) * 20)` to `calc((var(--iconSize) + 12px) * 30)`
+- **Result**: Now allows approximately 30 items per row, using even more of the available screen width
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:22:00
+
+### ✅ REVERTED: Icon Wrapper Container Implementation
+- **Issue**: Items clumped at end of line instead of wrapping properly
+- **Attempt**: Wrapping each icon container in a wrapper div for better layout control
+- **Result**: User requested revert and try different approach
+- **Revert**: Removed wrapper divs and JavaScript modifications
+- **Files Modified**: `Dev/css/playerDetails-classes.css`, `Dev/js/functions.js`
+- **Deployment**: 2024-08-03 22:29:00
+
+### ✅ REVERTED: CSS Columns Layout Implementation
+- **Issue**: Need new approach for better item distribution and wrapping
+- **Attempt**: Using CSS columns instead of rows for layout
+- **Result**: User reported "even worse" and requested revert
+- **Revert**: Removed CSS columns approach
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:33:00
+
+### ✅ RESOLVED: Simple Horizontal Line Layout
+- **Issue**: Need horizontal line that wraps naturally with consistent spacing regardless of borders
+- **New Approach**: Simple inline-block layout with consistent sizing for all items
+- **Changes**:
+  - Changed `.exo-weapons` to `display: block; text-align: left; font-size: 0;`
+  - Made all items same size: `calc(var(--iconSize) + 10)` for both regular and catalyst items
+  - Used consistent `margin: 2px` for all items
+  - Made all images same size: `var(--iconSize)` with `margin: 2.5px 2.5px`
+  - Used `display: inline-block` with `vertical-align: top` for natural wrapping
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:33:00
+
+### ✅ RESOLVED: Visual Size Compensation
+- **Issue**: Items without borders still look smaller than bordered items due to visual perception
+   - **Fix**: 
+  - Increased base item size from `calc(var(--iconSize) + 10)` to `calc(var(--iconSize) + 12)`
+  - Kept catalyst items at `calc(var(--iconSize) + 10)` (2px smaller)
+  - This compensates for the visual weight of borders making items appear larger
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:37:00
+
+### ✅ RESOLVED: Item Size Increase and Color Improvements
+- **Issue**: Items still look too small, completed catalyst yellow too bright, equipped item frames off
+- **Fixes**: 
+  - Increased base item size from `calc(var(--iconSize) + 12)` to `calc(var(--iconSize) + 16)`
+  - Increased catalyst item size from `calc(var(--iconSize) + 10)` to `calc(var(--iconSize) + 14)`
+  - Changed completed catalyst color from bright yellow `#ffff00` to golden `#d4af37`
+  - Improved equipped item frames: changed from `ridge white` to `2px solid white` with subtle glow
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:42:00
+
+### ✅ RESOLVED: Catalyst Color and Equipped Frame Fixes
+- **Issue**: Completed catalyst color not distinctive enough, equipped item frames still misaligned
+- **Fixes**: 
+  - Changed completed catalyst color from `#d4af37` to `#ffd700` (more distinctive golden yellow)
+  - Added explicit positioning `top: 0; left: 0;` to `.itemIconContainerInfo`
+  - Added `z-index: 3` to equipped frames to ensure proper layering
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:45:00
+
+### ✅ RESOLVED: Equipped Frame Alignment Fix
+- **Issue**: Equipped item frames totally misaligned due to incorrect margin calculations
+- **Fixes**: 
+  - Removed problematic `margin-left: 5px` and `margin-top: calc(calc(var(--iconSize) + 5px) * -1)`
+  - Kept clean positioning with `top: 0; left: 0;` for proper alignment
+  - Equipped frames should now align perfectly with their corresponding items
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:50:00
+
+### ✅ RESOLVED: Equipped Border System and Gear Score Background
+- **Issue**: Equipped frames still misaligned, missing black-opaque background for gear scores
+- **Fixes**: 
+  - **Converted equipped frames to borders**: Moved from `.itemIconContainerInfo.equipped` to `.itemIconContainer.equipped`
+  - **Direct border on items**: White border with glow effect now applied directly to equipped items
+  - **Restored gear score background**: Added `background: rgba(0, 0, 0, 0.8)` to `.itemIconContainerLvl`
+  - **Collection items exception**: Added `.collection-items .itemIconContainerLvl { background: transparent; }`
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:58:00
+
+### ✅ RESOLVED: Equipped Border Visibility and Gear Score Alignment
+- **Issue**: Equipped item borders not showing, gear score bar misaligned, black background on collection items
+- **Fixes**: 
+  - **Enhanced equipped border**: Added `!important` and `z-index: 3` to ensure border visibility
+  - **Fixed gear score positioning**: Changed from `transform: translateY(-120%)` to `bottom: 0` for proper alignment
+  - **Removed collection background**: Added `.exo-armor-bucket .itemIconContainerLvl` and `.exo-armor-class .itemIconContainerLvl` to transparent background rule
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 23:02:00
+
+### ✅ RESOLVED: UI Improvements and Language Updates
+- **Issue**: Equipped borders still not visible, gear score bar misaligned, various UI text improvements needed
+- **Fixes**: 
+  - **Enhanced equipped border**: Increased border width to `3px`, enhanced glow effect, increased z-index to `10`
+  - **Improved gear score bar**: Made 30% more transparent (`rgba(0, 0, 0, 0.56)`), reduced font size to `0.6rem`
+  - **Reduced class banners**: Made Titan/Hunter/Warlock banners 20% smaller (font-size and line-height)
+  - **Smaller settings text**: Added `font-size: 0.9rem` to settings menu buttons
+  - **Updated language translations**: Changed "clear cached data" to "clear cache" in all languages:
+    - English: "Clear cache"
+    - German: "Cache löschen"
+    - Spanish: "Limpiar caché"
+    - French: "Effacer le cache"
+    - Italian: "Cancella cache"
+    - Japanese: "キャッシュをクリア"
+    - Korean: "캐시 지우기"
+    - Polish: "Wyczyść pamięć podręczną"
+    - Portuguese: "Limpar cache"
+    - Russian: "Очистить кэш" (already correct)
+    - Chinese (Simplified): "清除缓存"
+    - Chinese (Traditional): "清除快取"
+- **Files Modified**: `Dev/css/playerDetails-classes.css`, `Dev/css/sidebar.css`, `Dev/js/main.js`
+- **Deployment**: 2024-08-03 23:10:00
+
+### ✅ RESOLVED: Weapon Category Separation Fix
+- **Issue**: Energy weapons were sharing space with kinetic weapons instead of appearing underneath
+- **Fix**: Added `clear: both` to `.exo-weapons` to ensure each weapon category starts on a new line
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 22:19:00
 
 ### 🔄 IN PROGRESS: Catalyst Progression Display Fix - Enhanced Progress Calculation
-- **Issue**: User reported "catalyst progression is not fixed. if there is some kind of % stat in the progression, like killnumbers, represent that - i dont care about individual steps, only the stat that tracks kills for the cat progression" and "seems to work better now for most weapons but not somthing like ratking or suros regime"
-- **Root Cause**: The `calculateCatalystProgression` function was only counting completed objectives rather than extracting the actual progress values (like kill counts) from the objectives. Some weapons like Rat King and Suros Regime have different objective structures.
-- **Solution**: 
-  - Updated `calculateCatalystProgression` to look for actual progress data in objectives
-  - Now checks for `objective.progress` and `objective.completionValue` properties to calculate real percentage
-  - Added three-pass approach: 1) Find objectives with progress values, 2) Find completed objectives with completion values, 3) Count completed objectives as fallback
-  - Added check for progress property directly on the record object
-  - Enhanced logging with objective indices for better debugging
+- **Issue**: Catalyst progression showing incorrect percentages (50% for all weapons, or no progression for specific weapons like Rat King, Suros Regime, Whisper of the Worm)
+- **Fix Attempts**:
+  - **Attempt 1**: Modified `calculateCatalystProgression` to prioritize `recordData.progress` and `recordData.completionValue` directly on record object
+  - **Attempt 2**: Reverted to odd/even state logic for record completion status
+  - **Attempt 3**: Reordered logic to check `recordData.completed`, then `recordData.progress`/`completionValue`, then `objectives` array, then `recordData.state`
+  - **Latest Enhancement**: Reordered logic to check record-level progress first before objectives array
+  - **Critical Fix**: Applied catalyst-progress CSS classes to container elements (was missing from HTML generation)
+  - **Latest Enhancement**: Reordered logic to check record-level progress first before objectives array
+- **Files Modified**: `Dev/js/functions.js`, `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 20:15:00
+- **Status**: User reports "still not working correctly" and "now those weapons show no progression"
+
+### 🔄 IN PROGRESS: Exotic Item Acquisition Status Fix - Reverted to Reliable Odd/Even Logic
+- **Issue**: Display of acquired exotic items does not match player's in-game collection
+- **Fix Attempts**:
+  - **Attempt 1**: Reverted to older logic using `checkState % 2 == 0` for obtained items
+  - **Attempt 2**: Removed safety checks that were skipping items
+  - **Attempt 3**: Reverted to direct access approach without additional checks
 - **Files Modified**: `Dev/js/functions.js`
-- **Technical Details**: 
-  - Added loop through objectives to find ones with `progress` and `completionValue` properties
-  - Calculates percentage as `(progress / completionValue) * 100`
-  - Added check for `recordData.progress` and `recordData.completionValue` directly on the record
-  - Enhanced logging to show objective indices and detailed progress information
-  - Maintains fallback logic for objectives without progress data
-- **Deployment**: Sunday, August 3, 2025 2:42:25 PM (XAMPP)
-- **Status**: Awaiting user confirmation of fix for Rat King and Suros Regime
+- **Deployment**: 2024-08-03 20:30:00
+- **Status**: User explicitly states this is *not* completed and requires further attention
 
-### ✅ RESOLVED: UI Element Alignment and Styling
-- **Login Icon Alignment**: Fixed login icon to be level with gear icon, sharing 50:50 width while maintaining height
-- **Gear Icon Centering**: Fixed gear icon animation to spin on the spot without wobbling
-- **Scaling Bar Color**: Changed magenta scaling bar to subtle, theme-compatible color
-- **Trashbin Icon Alignment**: Fixed trashbin icon alignment in recent player list
-- **Border Styling**: Added small borders equivalent to individual player items to:
-  - Settings menus and submenus (`.settingsSubMenu`, `.language-options`, `.settingsThemes`)
-  - Settings menu buttons (`.settingsSubMenuBtns`)
-  - Player list buttons (`.player-item`)
-  - Search field (`.sidebar .sidebar-content input`)
-  - Manual add player buttons (`.sidebar .nav-list button`)
-- **Manual Add Player Buttons**: Centered the 3 manual add player buttons in the sidebar with proper styling
+### ✅ RESOLVED: Comprehensive Debug Code Cleanup
+- **Issue**: Excessive debug logging in console from multiple JavaScript files causing console clutter
+- **Fixes**:
+  - **Enhanced Archetype Validation**: Added checks for `undefined`, `"undefined"` string, and empty values in `getArchetypeIcon()`
+  - **Removed Debug Logging**: Cleaned up all `console.log` statements from `functions.js`, `main.js`, `indexdb.js`, and `oauth.js`
+  - **Simplified Functions**: Removed `debugWeapon` parameters and conditional logging from catalyst functions
+  - **Cleaned Comments**: Removed outdated comments about removed debug code
+  - **Kept Essential Logging**: Maintained important error logging (`console.error`, `console.warn`) for actual issues
+- **Result**: Clean console with no debug messages, archetype icons display correctly or show nothing instead of broken URLs
+- **Files Modified**: `Dev/js/functions.js`, `Dev/js/main.js`, `Dev/js/indexdb.js`, `Dev/js/oauth.js`
+- **Deployment**: 2024-08-03 23:51:00
 
-### ✅ RESOLVED: Theme Compatibility
-- **Player Buttons**: Background now changes with theme changes
-- **Settings Menu**: Background now changes with theme changes  
-- **Search Field**: Background now changes with theme changes
-- **Login Frame**: Uses `var(--gradient)` for theme compatibility
-- **Fireteam View**: Adjusts to theme changes
-- **Tooltips**: Background now uses `var(--grad1)` instead of hardcoded white
-- **Timer Bar**: Background now uses `var(--grad1)` instead of hardcoded black
+### ✅ RESOLVED: Final Debug Message Cleanup and Weapon Element Colorization
+- **Issue**: Two remaining debug messages in console and request to colorize weapon element type symbols
+- **Fixes**:
+  - **Removed Final Debug Messages**: Eliminated "Attempt X - dbOperations: true loadingManager: true" and "All components ready, initializing..." console messages from `Dev/index.html`
+  - **Weapon Element Colorization**: Implemented CSS filter-based colorization for weapon damage type symbols:
+    - **Kinetic (1)**: White - brightness and contrast enhancement
+    - **Arc (2)**: Light Blue - hue rotation and saturation
+    - **Solar (3)**: Orange - hue rotation and saturation
+    - **Void (4)**: Purple - hue rotation and saturation
+    - **Stasis (6)**: Blue - hue rotation and saturation
+    - **Strand (7)**: Green - hue rotation and saturation
+  - **Data Attribute System**: Added `data-damage-type` attributes to weapon damage type icons in all three display sections (equipped, inventory, vault)
+- **Result**: Clean console with no debug messages and colorized weapon element symbols for better visual distinction
+- **Files Modified**: `Dev/index.html`, `Dev/css/playerDetails-classes.css`, `Dev/js/functions.js`
+- **Deployment**: 2024-08-03 23:57:00
 
-### ✅ RESOLVED: Translation System
-- **Manifest Integration**: Headlines like "exotic weapons" are pulled from manifest and loaded in correct language
-- **Search Field Translation**: Added translations for search field placeholder text
-- **Menu Text Translation**: Added translations for menu items (excluding player-specific buttons and about/info section)
-- **Loading Screen Translation**: Added translation for loading screen text (fixed immediate application)
-- **Gesture Text Translation**: Updated gesture text to be more appropriate ("Scroll up to view fireteam", "Scroll down to return")
-- **Comprehensive Translation Keys**: Added translations for all category headlines, fireteam view, and loading player text:
-  - `loadingPlayer`: "Loading player..." in all 13 languages
-  - `exoticWeapons`, `legendaryWeapons`, `rareWeapons`, `commonWeapons`
-  - `exoticArmor`, `legendaryArmor`, `rareArmor`, `commonArmor`
-  - `ghosts`, `vehicles`, `ships`, `emblems`, `finishers`, `shaders`, `mods`, `consumables`, `materials`
-  - `fireteamView`, `noFireteamData`
-- **Fireteam View Translation**: Added dynamic header with translated title
-- **Category Headlines**: Confirmed all category headlines are pulled from manifest data and automatically translated
+### ✅ RESOLVED: Simple Gear Score Bar Fix
+- **Issue**: Gear score bars had alignment issues with small gaps on the left side, not filling the full width
+- **Solution**: Simple fix using fixed dimensions and full positioning
+- **Changes**:
+  - **Fixed Height**: Set `height: 12px` for compact bar size (reduced from 50px)
+  - **Full Width**: Changed `width: 100%` to fill entire container width
+  - **Full Positioning**: Set `bottom: 0; left: 0` to position at very bottom and left edges
+  - **Energy Icon Size**: Reduced energy/archetype icons to `0.75rem` (from `0.85rem`) for better proportion
+- **Result**: Compact gear score bars that properly fill the entire bottom of item icons with appropriately sized icons
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 23:36:00
 
-### ✅ RESOLVED: Pull-to-Refresh and Scroll-Down-to-Exit
-- **Pull-to-Refresh**: Implemented with 500ms delay, requires both distance and time to trigger
-- **Scroll-Down-to-Exit**: Implemented with 500ms delay, allows returning from fireteam view by scrolling down
-- **Mouse Wheel Support**: Added desktop support for both gestures
-- **Full-Width Indicators**: Replaced small indicators with full-width bars containing 3 stacked glowing arrows
-- **Arrow Animations**: White pulsating arrow-stripes (⬆/⬇) for both scroll directions with road construction style
-- **Indicator Styling**: Increased arrow width (24px), closer spacing (-4px margin), reduced bar height (45px)
-- **Timer Bar Removal**: Timer bar is automatically hidden when returning from fireteam view
-- **Arrow Key Removal**: Removed down arrow key functionality for returning from fireteam view
+### ✅ REVERTED: Gear Score Bar System Redesign
+- **Issue**: Inconsistent alignment of gear score bars across different item types due to absolute positioning with pixel offsets
+- **Attempted Solution**: Replaced absolute positioning with CSS Grid layout for consistent, reliable alignment
+- **Result**: Grid layout caused layout issues and was reverted to original working system
+- **Status**: Reverted to original absolute positioning system with `bottom: 2.5px; left: 2.5px`
+- **Files Modified**: `Dev/css/playerDetails-classes.css` (reverted)
+- **Deployment**: 2024-08-03 23:30:00 (revert)
 
-### ✅ RESOLVED: Mainframe Adjustment
-- **Dynamic Layout**: Mainframe now adjusts to use free space when sidebar is open
-- **CSS Class System**: Uses `.sidebar-open` class for dynamic layout adjustment
-- **Initialization**: Correct state is set on page load
+### ✅ RESOLVED: Equipped Border Refinements and Database Notification Fix
+- **Issue**: Equipped borders showing but with unwanted glow effect and spacing, database notification incorrectly showing "new database created"
+- **Fixes**:
+  - **Removed Glow Effect**: Removed `box-shadow` from equipped border CSS for cleaner appearance
+  - **Reduced Border Thickness**: Changed border from `3px` to `1.5px` (50% thinner) for subtler appearance
+  - **Eliminated Spacing**: Added rule to remove `margin` from equipped item images so border sits directly on icon
+  - **Fixed Database Notification**: Moved `checkExistingData()` call to after database initialization and migration to properly detect existing data
+- **Files Modified**: `Dev/css/playerDetails-classes.css`, `Dev/js/indexdb.js`
+- **Deployment**: 2024-08-03 23:26:00
 
-### ✅ RESOLVED: Data Management
-- **Clear Cached Data**: Now removes all stored data in IndexedDB or deletes it entirely
-- **Settings Persistence**: Language, theme colors, and icon size are saved and reloaded through IndexedDB
-- **Caching Verification**: Confirmed manifest and player data caching is working correctly - data is saved to IndexedDB and loaded from cache when available
+### ✅ RESOLVED: Equipped Border JavaScript Fix
+- **Issue**: White border for equipped gear still missing despite CSS being correct
+- **Root Cause**: JavaScript was still using old system with `itemIconContainerInfo equipped` instead of applying `equipped` class to `itemIconContainer`
+- **Fix**: Modified JavaScript to apply `equipped` class directly to `itemIconContainer` for equipped items
+- **Files Modified**: `Dev/js/functions.js`
+- **Deployment**: 2024-08-03 23:20:00
 
-### ✅ RESOLVED: Player Loading UI
-- **Pre-Create Player Button**: When loading a new player, button is immediately created in recent player list
-- **Loading State**: Shows translated "Loading player..." text with spinning loader icon
-- **Theme Integration**: Loading spinner uses theme colors (`var(--grad1)`)
-- **Cleanup**: Loading item is removed when player data is loaded or on error
-- **Visual Feedback**: Loading items have reduced opacity (0.7) and different hover behavior
+### ✅ RESOLVED: System Messages and Loading Screen Improvements
+- **Issue**: Need system messages for database creation/loading, remove "ready to launch" step, close loading manager sooner, fix gear score bar alignment
+- **Fixes**:
+  - **Database System Messages**: Added detection for new database creation vs existing database loading with appropriate notifications
+  - **Loading Screen Optimization**: Removed step 5 "ready to launch" from loading sequence, reduced total steps from 5 to 4
+  - **Faster Loading**: Removed 1-second delay when closing loading manager, now closes immediately after processing
+  - **Gear Score Bar Alignment**: Fixed alignment by accounting for image margins (`bottom: 2.5px; left: 2.5px`) to properly fill bottom of image
+- **Files Modified**: `Dev/js/indexdb.js`, `Dev/js/loadingManager.js`, `Dev/js/functions.js`, `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-03 23:18:00
 
-## Debugging Features Added
-- Console logging for sidebar toggle state
-- Console logging for pull-to-refresh touch events
-- Console logging for scroll-down-to-exit touch events
-- Mouse wheel support for desktop testing of gestures
-- **Enhanced Debugging**: Added detailed console logging for view state detection
-- **View State Management**: Added `ensureViewState()` function to ensure correct initial view state
-- **Gesture Debugging**: Added detailed logging for touch start/end events and gesture conditions
-- **Indicator Debugging**: Added logging for indicator creation and opacity setting
-- **Full-Width Indicators**: Implemented with glowing arrows and backdrop blur effects
+### ✅ RESOLVED: UI Improvements and Language Updates
+- **Issue**: Equipped borders still not visible, gear score bar misaligned, various UI text improvements needed
+- **Fixes**: 
+  - **Enhanced equipped border**: Increased border width to `3px`, enhanced glow effect, increased z-index to `10`
+  - **Improved gear score bar**: Made 30% more transparent (`rgba(0, 0, 0, 0.56)`), reduced font size to `0.6rem`
+  - **Reduced class banners**: Made Titan/Hunter/Warlock banners 20% smaller (font-size and line-height)
+  - **Smaller settings text**: Added `font-size: 0.9rem` to settings menu buttons
+  - **Updated language translations**: Changed "clear cached data" to "clear cache" in all languages:
+    - English: "Clear cache"
+    - German: "Cache löschen"
+    - Spanish: "Limpiar caché"
+    - French: "Effacer le cache"
+    - Italian: "Cancella cache"
+    - Japanese: "キャッシュをクリア"
+    - Korean: "캐시 지우기"
+    - Polish: "Wyczyść pamięć podręczną"
+    - Portuguese: "Limpar cache"
+    - Russian: "Очистить кэш" (already correct)
+    - Chinese (Simplified): "清除缓存"
+    - Chinese (Traditional): "清除快取"
+- **Files Modified**: `Dev/css/playerDetails-classes.css`, `Dev/css/sidebar.css`, `Dev/js/main.js`
+- **Deployment**: 2024-08-03 23:10:00
 
-## Recent Fixes Applied
+### ✅ RESOLVED: Progress Animation for Add Player Buttons
+- **Issue**: User requested animation that fills button from left to right with theme color during player addition
+   - **Fix**: 
+  - Implemented progress bar animation in `buttonClick` function
+  - Overrode `window.getData` to track 3 API requests (LinkedProfiles, GetMembershipsById, Profile)
+  - Added progress bar with theme color that advances with each request
+  - Pre-calculated total requests and divided filling by number of steps
+  - Added safety checks for DOM elements to prevent errors
+  - Added console logging to track progress for debugging
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 23:45:00
 
-### ✅ RESOLVED: Catalyst Progression Border Visibility Fix - Border Positioning Adjustment
-- **Issue**: Catalyst progression borders were not visible due to incorrect positioning
-- **Fix**: Adjusted `.catalyst-border` positioning from `2.5px` offsets to `0px` offsets to cover entire container area
-- **Result**: Conic gradient progression is now visible around weapon images
+### ✅ RESOLVED: Progress Animation Safety Fixes
+- **Issue**: Progress animation was failing with "looks like a lot of steps failed" error
+   - **Fix**: 
+  - Added null checks for `progressBar` and `progressBar.parentNode` before updating width
+  - Added safety checks in completion timeout to ensure elements exist before manipulation
+  - Added null check for button in error handling
+  - Added console logging to track progress: `${completedRequests}/${totalRequests} (${progress}%)`
+  - Improved error handling to prevent DOM manipulation on non-existent elements
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 23:57:00
 
-### ✅ RESOLVED: Catalyst Progression Border Refinement - Clean Border Implementation
-- **Issue**: Catalyst borders were blurry due to margin adjustments and complex positioning
+### ✅ RESOLVED: Trashbin Icon Hover Styling
+- **Issue**: User requested to remove background from trashbin icon on hover and change color to deep red
+- **Fix**:
+  - Removed `background: rgba(255, 107, 107, 0.1)` from `.player-actions i:hover`
+  - Changed color from `#ff6b6b` to `#8b0000` (deep red) for better visual distinction
+  - Applied to trashbin icons in player list for delete functionality
+- **Files Modified**: `Dev/css/sidebar.css`
+- **Deployment**: 2024-08-03 23:58:00
+
+### ✅ RESOLVED: Search Field Debounce Implementation
+- **Issue**: Search field was sending requests immediately on every keystroke, causing excessive API calls
+   - **Fix**: 
+  - Implemented debounce mechanism with 2-second delay before sending search requests
+  - Replaced `onkeyup` event with `addEventListener` for `input`, `paste`, and `cut` events
+  - Added `searchDebounceTimer` variable to track and clear existing timers
+  - Created `debouncedSearch()` function that clears previous timer and sets new 2-second timeout
+  - Ensures cutting and pasting text counts as changes and triggers the debounce
+  - Prevents excessive API requests while maintaining responsive search functionality
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 23:59:00
+
+### ✅ RESOLVED: Search API Response Error Handling
+- **Issue**: `TypeError: can't access property "membershipId", item.destinyMemberships[0] is undefined` occurring in search results
+   - **Fix**: 
+  - Added null/undefined checks for `item.destinyMemberships` before accessing array elements
+  - Added length validation to ensure `destinyMemberships` array has at least one element
+  - Prevents errors when API returns search results without valid membership data
+  - Ensures only valid search results with proper membership information are displayed
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 23:32:00
+
+### ✅ RESOLVED: Search Debounce Delay Optimization
+- **Issue**: Search debounce delay felt too long (perceived as 4 seconds)
+- **Fix**:
+  - Reduced debounce delay from 2000ms to 800ms for more responsive search experience
+  - Maintains debounce functionality while providing faster response to user input
+  - Still prevents excessive API calls while improving perceived performance
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 22:36:00
+
+### ✅ RESOLVED: Player Loading Animation Enhancement
+- **Issue**: Progress animation not visually showing on button, only static "Loading Player..." text
 - **Fix**: 
-  - Removed `margin: 3.5px 3.5px` from weapon images in JavaScript
-  - Reverted `.catalyst-border` positioning to `0px` offsets for clean coverage
-  - Simplified CSS to avoid blurry effects
-- **Result**: Clean, sharp 1px bright yellow borders with visible progression fill
-- **Deployment**: Sunday, August 3, 2025 12:46:14 PM (XAMPP), 12:46:18 PM (Release)
-- **Root Cause**: The `.catalyst-border` element was positioned with `top: 2.5px, left: 2.5px, right: 2.5px, bottom: 2.5px`, which placed it exactly where the image was, but the image had `z-index: 2` while the border had `z-index: 1`, causing the image to completely cover the border
-- **Solution**: Changed the catalyst border positioning to `top: 0px, left: 0px, right: 0px, bottom: 0px` so it covers the entire container area and the conic gradient progression is visible around the image
-- **Implementation**: 
-  - Modified `Dev/css/playerDetails-classes.css` to adjust the positioning of `.itemIconContainer[data-catalyst-progress] .catalyst-border`
-  - Deployed fix to both XAMPP and Release directories
-  - Updated documentation with deployment timestamp
+  - Implemented 6-step progress animation (3 requests × 2 steps each - sent and received)
+  - Created fake-button approach for smooth animation that can be replaced instantly
+  - Added visual progress bar that fills from left to right with theme color
+  - Enhanced console logging for debugging progress steps
+  - Improved error handling with proper button restoration
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 22:50:00
 
-### ✅ RESOLVED: Weapon Icon Visibility Fix - Main Weapon Image Z-Index Adjustment
-- **Issue**: Main weapon icons were being covered by the catalyst progression border
-- **Root Cause**: The main weapon image had no z-index specified (defaulting to 0) while the `catalyst-border` element had `z-index: 1`, causing the border to appear above the weapon image
-- **Solution**: Added `z-index: 2` and `position: relative` to the main weapon image in catalyst progress containers to ensure it appears above the catalyst border
-- **Implementation**: 
-  - Modified `Dev/css/playerDetails-classes.css` to add `z-index: 2` and `position: relative` to `.itemIconContainer[data-catalyst-progress] > img`
-  - Deployed fix to both XAMPP and Release directories
-  - Updated documentation with deployment timestamp
-
-### ✅ RESOLVED: Exotic Item Acquisition Status Fix - Corrected Logic to Match Older Working Version
-- **Issue**: Exotic item availability status did not match the player's collection, showing incorrect grayed-out states
-- **Root Cause**: Logic was using `checkState % 2 == 1` (odd = not obtained) instead of the correct `checkState % 2 == 0` (even = obtained)
-- **Solution**: Corrected the logic to match the older working version from Archive/04-12-2023/js/functions.js
-- **Implementation**: 
-  - Changed exotic weapons logic: `if (checkState % 2 == 0) { unavailable = ""; } else { unavailable = " unavailable"; }`
-  - Changed exotic armor logic: `if (checkState % 2 == 0) { unavailable = ""; } else { unavailable = " unavailable"; }`
-  - Applied to both exotic weapons and exotic armor sections in `generatePlayerHTML`
-  - **Key Fix**: Even numbers = obtained (available), odd numbers = not obtained (unavailable)
-- **Deployment**: Sunday, August 3, 2025 1:11:38 PM (XAMPP), 1:11:41 PM (Release)
-
-### ✅ RESOLVED: Exotic Item Acquisition Status Fix - Handle Items Without Collectible Data
-- **Issue**: Items with `collectibleID = 0` (no collectible data) were not being displayed in the collection view
-- **Root Cause**: The logic only processed items where `collectibleID > 0`, causing items without collectible tracking to be skipped entirely
-- **Solution**: Added handling for items without collectible data to treat them as available (not grayed out)
-- **Implementation**: 
-  - Added `else` clause to handle items with `collectibleID = 0`
-  - Items without collectible data are now treated as available: `unavailable = ""`
-  - This ensures all exotic items are displayed, even if they don't have collection tracking
-  - Applied to both exotic weapons and exotic armor sections in `generatePlayerHTML`
-- **Deployment**: Sunday, August 3, 2025 1:16:16 PM (XAMPP), 1:16:19 PM (Release)
-
-### ✅ RESOLVED: Catalyst Progression Border Refinement - Exact 1px Border with Bright Yellow Fill
-- **Border Application Refinement**: Removed armor progress borders and refined weapon borders based on user feedback
-  - **Exotic Weapons Collection**: Catalyst progress borders are applied only to exotic weapons in the collection view (top category)
-  - **Exotic Armor Collection**: Removed all progress borders from exotic armor collection items
-  - **Equipped/Inventory/Vault Items**: No progress borders on equipped, inventory, and vault items
-  - **Border Style Improvements**: 
-    - **Exact 1px Border**: Implemented precise 1px border thickness around item boxes
-    - **Bright Yellow Color**: Used `#ffcb00` for both border and progression fill
-    - **Progression Fill**: Conic gradient overlay shows progression with bright yellow fill
-    - **100% Progress**: Full bright yellow border when catalyst is completed
-  - **Progression Fill Implementation**: 
-    - Image has 1px bright yellow border as base
-    - `::before` pseudo-element positioned above image (`z-index: 1`) shows progression fill
-    - Conic gradient fills clockwise with bright yellow (`#ffcb00`) based on `--catalyst-progress` CSS variable
-    - `pointer-events: none` ensures clicks pass through to the image
-  - Maintained archetype icon display for all armor items across all sections
-  - **Implementation**: 
-    - Modified `generatePlayerHTML()` function to remove armor progress border application from exotic armor collection
-    - Updated CSS in `playerDetails-classes.css` to use exact 1px borders with bright yellow progression fill
-    - Removed unused armor progress border CSS styles
-    - Positioned conic gradient overlay above image for proper progression visualization
-
-### ✅ RESOLVED: Archetype Icon Visibility Fix - Z-Index Adjustment
-- **Issue**: Archetype icons (gunner, brawler, specialist, etc.) were being covered by the catalyst progression border
-- **Root Cause**: The `catalyst-border` element had `z-index: 1` while `itemIconContainerEnergy` (archetype icons) had no z-index specified (defaulting to 0)
-- **Solution**: Added `z-index: 2` to `.itemIconContainerEnergy` CSS class to ensure archetype icons appear above the catalyst border
-- **Implementation**: 
-  - Modified `Dev/css/playerDetails-classes.css` to add `z-index: 2` to `.itemIconContainerEnergy`
-  - Deployed fix to both XAMPP and Release directories
-  - Updated documentation with deployment timestamp
-
-### ✅ RESOLVED: Exotic Armor Collection Archetype Icons - Missing Icon Display
-- **Issue**: Archetype icons were not displaying in the exotic armor collection section (top category)
-- **Root Cause**: The exotic armor collection section was missing the `itemIconContainerLvl` div that contains archetype icons, unlike the equipped/inventory/vault sections
-- **Solution**: Added archetype icon display to the exotic armor collection section using the same logic as other sections
-- **Implementation**: 
-  - Modified `generatePlayerHTML()` function to add `itemIconContainerLvl` div with archetype icons to exotic armor collection items
-  - Added fallback to placeholder icon if archetype is not available
-  - Deployed fix to both XAMPP and Release directories
-  - Updated documentation with deployment timestamp
-- **Armor Archetype System Implementation**: Replaced energy type icons with archetype icons for armor items and implemented new progress border system
-  - **New Feature**: Armor items now display archetype icons (gunner, brawler, specialist, tank, support, scout) in the bottom left instead of energy type icons
-  - **Fallback System**: If archetype is not available, the system falls back to the existing energy/damage type icon system
-    - **Implementation**: 
-      - Added `archetype` processing to `getDefinitions()` function using `equippingBlock.uniqueLabel` from Destiny 2 API
-      - Created `getArchetypeIcon()` function to map archetype names to Bungie CDN icon URLs
-      - Modified `generatePlayerHTML()` function to check for archetype icons first in all three sections (equipped, inventory, vault)
-      - Updated sorting arrays to include `archetype` property
-    - **Applied To**: All armor items across equipped, inventory, and vault sections
-  - **Archetype Icons**: Updated to use Bungie CDN icons instead of local placeholder files, adhering to principle of loading from manifest or stored data
-  - **Progress Border System**: Implemented thin golden border system for armor items with clockwise-filling progress indicator
-    - **CSS Implementation**: Added `.armor-progress` class with conic gradient border using `--armor-progress` CSS variable
-    - **JavaScript Integration**: Added `calculateArmorProgress()` and `getArmorProgressClasses()` helper functions
-    - **Visual Enhancement**: Items show progress with clockwise-filling borders, providing immediate visual feedback on completion status
-    - **Border Removal**: Removed existing borders from armor items and replaced with thin golden progress border
-
-- **Exotic Item Availability Logic Fix**: Fixed critical issue where items without collectible hashes were incorrectly marked as unavailable
-  - **Root Cause**: Items with `collectibleID[i] === 0` (no collectible hash) were trying to access `cP.collectibles[0]` which could be undefined or have unexpected states
-  - **Solution**: Added proper validation to only check collectible state when `collectibleID[i] > 0` and the collectible exists in `cP.collectibles`
-  - **Impact**: Items that are actually unlocked in-game but don't have collectible tracking will no longer be incorrectly grayed out
-  - **Applied To**: Both exotic weapons and armor sections in `generatePlayerHTML()` function
-- **Icon Spacing Reduction**: Reduced spacing between item icons from 5px to 2.5px (50% reduction) for more compact layout
-- **Unavailable Item Border Removal**: Removed borders from unavailable items for cleaner visual presentation
-- **Catalyst Progression Border System**: Implemented comprehensive catalyst progression visualization
-  - **Progressive Border**: Added clockwise-filling border system using CSS conic gradients that shows catalyst completion percentage
-  - **Color Coding**: Dull yellow border for incomplete catalysts, full golden border for completed catalysts
-  - **JavaScript Integration**: Added `calculateCatalystProgression()` and `getCatalystClasses()` helper functions to process Bungie API record data
-  - **CSS Custom Properties**: Used `--catalyst-progress` CSS variable to dynamically set border completion angle
-  - **API Data Processing**: Enhanced weapon generation logic to access record objectives and calculate progression percentages
-- **Technical Implementation**: 
-  - Added CSS pseudo-elements with conic gradients for smooth border progression
-  - Modified `generatePlayerHTML()` function to use new catalyst progression system
-  - Replaced simple masterwork state checking with detailed progression calculation
-- **Visual Enhancement**: Items now show precise catalyst progress with clockwise-filling borders, providing immediate visual feedback on completion status
-
-### ✅ RESOLVED: Checkmark System Improvements and Unavailable Item Styling
-- **Checkmark/X-Image Removal**: Completely removed checkmark and cross overlay images for cleaner visual presentation
-- **Unavailable Item Styling**: Added refined styling for unavailable exotic armor and weapons
-  - Items with states 1 (not acquired), 2 (obscured), 4 (invisible), 8 (cannot afford), 16 (no room), 32 (can't have second), 64 (purchase disabled) are now grayed out
-  - Applied reduced grayscale filter (`grayscale(70%) brightness(0.7)`) and moderate opacity reduction (`opacity: 0.8`) for subtle unavailable item indication
-  - Added `.unavailable` CSS class for item images with refined visual effect
-  - Removed all checkmark/cross overlay HTML generation and related CSS styles
-- **JavaScript Logic Enhancement**: Updated both weapon and armor sections in `functions.js` to correctly detect unavailable items based on Bungie API states
-- **Availability Logic Fix**: Corrected the logic to properly identify unavailable items - items with state 0 (obtained) are NOT grayed out, while items with state 1 (not acquired) and other unavailable states ARE grayed out
-- **Visual Consistency**: Maintained clean item presentation while providing subtle visual feedback for unavailable items
-- **Easy Revert**: Changes are modular and can be easily reverted by restoring the checkmark system and adjusting the availability logic
-
-### ✅ RESOLVED: Comprehensive UI/UX Improvements and Login System Enhancements
-- **Login Screen Improvements**: Removed the "X" close button from login window for cleaner interface
-- **Login Window Styling**: Added fadeout effect with backdrop blur, enhanced shadows, and border styling
-- **Notification System**: Implemented comprehensive notification system with success, error, info, and warning types
-- **Login State Management**: Enhanced login button state management to properly reflect current authentication status on page reload
-- **OAuth Integration**: Added success/error notifications for login attempts and popup window interactions
-- **Settings Icon**: Reduced gear icon size from 32px to 28px to better fit with login button proportions
-- **System Messages**: Created notification bucket in top-right corner for system messages and user feedback
-- **User Feedback**: Added notifications for login success, logout, login cancellation, and application loading
-- **Visual Enhancements**: Improved overall visual consistency and user experience with modern UI elements
-
-### ✅ RESOLVED: Directory Structure Cleanup and Synchronization
-- **Release-backup Removal**: Removed redundant `Release-backup/` directory
-- **Release/Dev Cleanup**: Removed duplicate `Release/Dev/` subdirectory that contained redundant files
-- **Directory Synchronization**: Verified that `Dev/` and `Release/` directories are now identical
-- **File Structure Validation**: Confirmed no differences between Dev and Release directories (52 files, all identical)
-- **Clean Architecture**: Release directory now contains only the necessary files without nested Dev subdirectory
-
-### ✅ RESOLVED: Comprehensive Data Structure Migration and Login System Updates
-- **Complete localStorage Migration**: All functions now use IndexedDB instead of localStorage
-- **Fireteam Function Fix**: Updated `getFireteam()` function in both Dev and Release directories to use new IndexedDB structure
-- **OAuth Token Access**: Changed from `localStorage.getItem("oauthToken")` to `window.dbOperations.getOAuthToken()`
-- **Error Handling**: Added comprehensive error handling and validation for fireteam data loading
-- **Data Structure**: Updated to work with new OAuth token structure and IndexedDB storage
-- **Fireteam Data Caching**: Added fireteam data saving to IndexedDB for better performance
-- **Login UI Fix**: Fixed logout function to use proper class toggling instead of style.display
-- **OAuth Popup Handler**: Enhanced OAuth popup handler with proper UI state updates and error handling
-- **Login State Management**: Improved login/logout state detection and UI updates
-- **Release Directory Sync**: Updated Release directory to match Dev directory fixes
-- **Comprehensive Code Review**: Verified no remaining localStorage usage except in migration functions
-
-### ✅ RESOLVED: Scaling Slider and Submenu Text Improvements
-- **Scaling Slider Color**: Changed magenta-like accent color to subtle white (`rgba(255, 255, 255, 0.6)`) for better theme compatibility
-
-### ✅ RESOLVED: Login Frame Implementation and Settings Login Button Fix
-- **Login Frame Structure**: Restructured login frame with overlay and window components for popup behavior
-- **Login Window Size**: Adjusted to 50% of screen width and height
-- **Background Overlay**: Semi-transparent black background (`rgba(0, 0, 0, 0.7)`) that closes frame when clicked
-- **White Animated Stripes**: Changed particle stripes from orange to white (`rgba(255, 255, 255, 0.8)`) with fading effect
-- **Settings Login Button**: Fixed broken `clickLogin()` function call by replacing with `showLoginFrame()` function
-- **Login Flow**: Clicking settings login button opens frame, clicking login button in frame opens OAuth popup
-- **OAuth Error Fix**: Removed problematic DOM removal line that caused `loginFr is null` error after OAuth completion
-- **OAuth Authentication**: Updated `getData` and `postData` functions to include OAuth token authentication when available
-- **API Request Enhancement**: All API requests now use stored OAuth data for authenticated endpoints
-- **Last Deployment**: Saturday, August 2, 2025 11:58:31 PM
-
-### ✅ RESOLVED: Comprehensive README Update and Git Deployment
-- **Professional README**: Completely transformed README.md into comprehensive, professional documentation
-- **Feature Documentation**: Detailed breakdown of all application capabilities and features
-- **Multilingual Support**: Complete table of 13 supported languages with status indicators
-- **Technical Architecture**: Detailed explanation of codebase structure and components
-- **Usage Guide**: Step-by-step instructions for all application features
-- **Development Documentation**: Project structure and component descriptions
-- **Contributing Guidelines**: Clear instructions for community contributions
-- **Roadmap**: Future features and long-term development goals
-- **Community Links**: Support channels and resources
-- **Visual Appeal**: Professional badges, emojis, and structured sections
-- **Dev to Release Copy**: Successfully copied all updated files from Dev to Release directory
-- **Git Push**: Successfully committed and pushed all changes to GitHub repository
-- **Last Deployment**: Saturday, August 2, 2025 11:59:33 PM
-- **Submenu Text**: Changed "Clear cached data" to "Clear Cache" for better readability
-- **Language Options Width**: Added `min-width: 12rem` to ensure all language names display correctly, especially longer ones like "Português (Brasil)" and "Español (México)"
-
-### ✅ RESOLVED: FT-view Visibility and Manual Add Player Button Alignment
-- **FT-view Visibility**: Fixed conflicting CSS rules in `viewSections.css` that were causing the fireteam view to be visible on the main page
-- **Manual Add Player Buttons**: 
-  - Added container div with class `manual-add-buttons` around the 3 buttons
-  - Updated CSS to use flexbox layout with `display: flex`, `justify-content: center`, and `gap: 0.5rem`
-  - Buttons now use `flex: 1` to distribute space evenly and appear in one line
-  - Removed conflicting margin settings that were causing spacing issues
-
-### ✅ RESOLVED: Player Data Reload on Language Change
-- **IndexedDB Enhancement**: Added `clearPlayerData()` function to `indexdb.js` to clear only player data
-- **Language Change Logic**: Modified `setLang()` function to reload existing player data instead of clearing it
-- **New Function**: Added `reloadStoredPlayers()` function that iterates through stored players and re-fetches their data from the API
-- **Data Consistency**: This ensures that when language is changed, existing player data is reloaded with the new language strings instead of being cleared
-- **Manifest Refresh**: Combined with existing manifest path clearing to ensure complete refresh of translated content
-- **Platform Type Handling**: Function extracts platform type from stored player data to ensure correct API calls
-
-## Known Issues to Address
-- ~~Pull-to-refresh speed (too fast)~~ ✅ RESOLVED
-- ~~Mainframe adjustment when sidebar is open~~ ✅ RESOLVED
-- ~~Scroll-down-to-exit functionality~~ ✅ RESOLVED
-- ~~FT-view visibility on main page~~ ✅ RESOLVED
-- ~~Manual add player buttons not in one line~~ ✅ RESOLVED
-- ~~Player data not reloaded on language change~~ ✅ RESOLVED (Now reloads existing players instead of clearing them)
-- ~~Arrow key functionality for fireteam view~~ ✅ RESOLVED
-
-## Recent Fixes Applied (August 2, 2025 - 11:42 PM)
-
-### Latest Fixes:
-
-7. **Login Frame Size Adjustment and Slider Styling Revert**:
-   - **Problem**: User reported "make the login window only 50% of the screen, also it does not close while clicking on login (clicking background works). the slider changed color but now it seems to have a solid background. revert the recent changes and keep the naming change, i guess that will fix it."
+### ✅ RESOLVED: Player Loading Animation Debugging
+- **Issue**: "even with the fake button no loading animation is seen"
    - **Fix**: 
-     - **Login Window Size**: Changed login window from 75% to 50% of screen size (both width and height)
-     - **Login Button Click Behavior**: Modified `openOauthPopup()` function to call `closeLoginFrame()` first, then open the OAuth popup
-     - **Removed Redundant Function**: Removed `clickLogin()` function since login button now directly calls `openOauthPopup()`
-     - **Slider Styling Revert**: Reverted comprehensive browser-specific slider styling (thumb/track custom styling) while keeping the corrected ID (`settingsIconsizeSlider`) and basic `accent-color` setting
-     - **Simplified Slider CSS**: Kept only the essential styling: width, background, border, border-radius, and accent-color
-   - **Files**: `Dev/css/loginFrame.css`, `Dev/js/oauth.js`, `Dev/js/main.js`, `Dev/css/sidebar.css`
-   - **Result**: Login window is now 50% of screen size, clicking login button properly closes the frame and opens OAuth popup, slider has subtle white color without solid background
+  - Added debugging console logs to track DOM manipulation
+  - Changed progress bar styling (white background, increased height, z-index)
+  - Fixed originalText variable scoping in error handling
+  - Added detailed logging for progress bar width updates
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 22:51:00
 
-6. **Scaling Slider Color Fix and Login Frame Enhancement**:
-   - **Problem**: User reported "the slider still shows magenta. when clicking on login, open the login-frame in a new window that takes 75% of the screen and overlaps the rest of the application with a darkened background. close the login-window while clicking on the darkened background. also close the login-window if someone clicks on login but then also open the popup. keep the current animation but make the stripes/particles white and fading out when reaching the end (if possible, without a new approach. otherwise ignore that)"
-   - **Fix**: 
-     - **Scaling Slider Color**: Fixed ID mismatch between HTML (`settingsIconsizeSlider`) and CSS (`settingsiconSizeSlider`), added comprehensive browser-specific styling with white accent color and custom thumb/track styling
-     - **Login Frame Redesign**: 
-       - Restructured HTML to include overlay and window containers
-       - Added darkened background overlay (75% opacity) that closes frame when clicked
-       - Created centered login window (75% screen size) with rounded corners
-       - Updated JavaScript to handle new close/open behavior
-       - Made stripes/particles white (`rgba(255, 255, 255, 0.8)`) instead of orange
-     - **Enhanced Slider Styling**: Added `-webkit-appearance: none`, custom thumb styling for WebKit and Mozilla browsers, and proper track styling
-   - **Files**: `Dev/css/sidebar.css`, `Dev/index.html`, `Dev/css/loginFrame.css`, `Dev/js/main.js`
-   - **Result**: Slider now shows subtle white color instead of magenta, login frame opens in centered window with darkened background, closes on overlay click, and has white animated stripes
+### ✅ RESOLVED: Debug Code Cleanup
+- **Issue**: User requested to "remove the debug code from the console. dont add the animation to the "add xxxx"-buttons but to the newly created fake-button in the sidebar. remove that."
+- **Fix**: 
+  - Removed all debug console.log statements from the buttonClick function
+  - Removed progress tracking logs: "Fake button created and inserted", "Progress bar created", "Progress: X/Y (%) - Request sent/received", "Progress bar width updated to: X%"
+  - Removed error logging for "Progress bar or parent not found for width update"
+  - Verified animation is exclusively on the fake-button and not on original "add xxxx" search result buttons
+  - Maintained error handling console.log in select function as it's appropriate for debugging
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 22:57:00
 
-### Previous Fixes:
+### ✅ RESOLVED: Player Loading Animation Isolation Fix
+- **Issue**: The animation was still appearing on the individual "add xxxx" buttons (dev buttons) when it should only be on the fake button in the sidebar
+- **Fix**: Created a complete separation between individual buttons and search result buttons:
+  - Created new `addPlayerDirect()` function for individual "add xxxx" buttons with NO animation
+  - Kept `buttonClick()` function for search result buttons with animation on fake button
+  - Updated HTML to use `addPlayerDirect()` for individual buttons instead of `buttonClick()`
+  - Individual buttons now load players directly without any visual animation or button replacement
+  - Search result buttons still use the fake button animation system
+- **Files Modified**: `Dev/js/main.js`, `Dev/index.html`
+- **Deployment**: 2024-08-03 23:05:00
 
-### Latest Fixes:
+### ✅ RESOLVED: Sidebar Progress Animation Implementation
+- **Issue**: User wanted the animation to be completely removed from individual buttons and search result buttons, and instead create a fake button in the player bucket list (sidebar) that shows progress animation with step counting
+- **Fix**: Completely redesigned the player loading system:
+  - Removed all animation from individual buttons and search result buttons
+  - Created new `addPlayerWithProgress()` function that creates a fake button in the player bucket
+  - Both `addPlayerDirect()` and `buttonClick()` now call the same `addPlayerWithProgress()` function
+  - Fake button shows "Loading Player... (X/6)" with step counting (0/6 to 6/6)
+  - Progress bar fills from left to right using theme color (`var(--grad1)`)
+  - Progress updates for each API request sent and received (6 total steps)
+  - Added `updateProgressBar()` helper function to update both progress bar width and step text
+  - Fake button appears in sidebar and gets removed when loading completes
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 23:08:00
 
-6. **Exotic Item Acquisition Status Fix - Revert to Old Working Approach**:
-   - **Problem**: User reported "probelm persists. maybe check if any functions are still using the old system. it still looks to me like only the weapons/armor is available that is also in the inventory. the old code did a little workaround to get this working"
-   - **Fix**: 
-     - **Reverted to Old Working Logic**: Removed the safety check `if (userDB['Definitions']['item'].collectibleID[i] > 0)` and the `else` block that treated items without collectible data as available
-     - **Direct Access Approach**: Now directly accessing `cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state` without any safety checks, exactly as the old code did
-     - **Old Code Reference**: Based on the working implementation from `Archive/31-12-2021/js/functions.js` where the logic was `var checkState = cP.collectibles[itemDefinitions.collectibleID[i]].state;`
-     - **Collection Status Logic**: Maintained the correct odd/even logic where even numbers = obtained, odd numbers = not obtained
-   - **Files**: `Dev/js/functions.js` (exotic weapons and exotic armor sections in `generatePlayerHTML`)
-   - **Result**: Implements the "little workaround" the user mentioned that made the collection status work correctly in the old version
+### ✅ RESOLVED: Progress Bar Animation Visibility Fix
+- **Issue**: Steps were updating but the visual progress bar animation wasn't visible
+- **Fix**: Fixed the progress bar element creation by including it directly in the HTML structure:
+  - Removed separate progress bar element creation and appending
+  - Included progress bar div directly in the `innerHTML` with all styles
+  - This ensures the progress bar element is properly created and positioned
+  - Progress bar now shows visual animation as it fills from 0% to 100%
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 23:10:00
 
-5. **Critical UI State and Translation Fixes**:
-   - **Problem**: User reported "somethign went wrong, now the FT-view is visible on the mainpage. keep the buttons to add players manually in one line. translation is not working in the loadingscreen (maybe check all files again? especially the loadingmanager, it probably needs a parameter for the language). seems like still the english definitions-json is pulled when i select a different language = not working"
-   - **Fix**: 
-     - **FT-view Visibility**: Fixed `viewFireteam` div to have `closed` class by default in HTML
-     - **Manual Add Player Buttons**: Changed CSS from `display: block` to `display: inline-block` with 30% width and proper margins to keep buttons in one line
-     - **Loading Screen Translation**: Updated `LoadingManager` to use `getText()` function for all loading state texts
-     - **Language-Specific Manifest Loading**: Modified `setLang()` function to clear manifest paths before reload, forcing fresh manifest fetch in new language
-     - **Comprehensive Translation Keys**: Added missing translation keys for all loading states in all 13 languages:
-       - `initializingDatabase`, `loadingManifestData`, `fetchingPlayerData`, `processingInventory`, `readyToLaunch`, `error`
-   - **Files**: `Dev/index.html`, `Dev/css/sidebar.css`, `Dev/js/loadingManager.js`, `Dev/js/main.js`
-   - **Result**: FT-view is now hidden by default, manual add player buttons display in one line, loading screen shows translated text, and language changes properly trigger manifest reload
+### ✅ RESOLVED: Search List Refresh and Button Progress Animation Fixes
+- **Issue**: 
+  1. Search list not refreshing when search field is changed again
+  2. Filling button-bar not showing while loading a player (static "Loading Player..." button)
+- **Fix**: 
+  1. Added `suggBox.innerHTML = "";` before showing new suggestions and when input is empty to clear previous results
+  2. Fixed button progress animation by ensuring `originalText` is properly captured with fallback, and improved error handling
+- **Files Modified**: `Dev/js/main.js`
+- **Deployment**: 2024-08-03 22:45:00
 
-4. **Manual Translation Reversion and Manifest Integration**:
-   - **Problem**: User reported "you've added manual translations for all the headlines, please revert that. all these headlines and itemdescriptions can be pulled from the bungie-manifest of destiny2, like it was before. this also pulls the correct translation. make sure that on changing the language, the correct manifest gets pulled. remove unneeded translations, like release-to-refresh."
-   - **Fix**: 
-     - **Removed Manual Translation Keys**: Removed all manually added translation keys for category headlines and item descriptions:
-       - `exoticWeapons`, `legendaryWeapons`, `rareWeapons`, `commonWeapons`
-       - `exoticArmor`, `legendaryArmor`, `rareArmor`, `commonArmor`
-       - `ghosts`, `vehicles`, `ships`, `emblems`, `finishers`, `shaders`, `mods`, `consumables`, `materials`
-     - **Removed Unneeded Translation Keys**: Removed `pullToRefresh`, `releaseToRefresh`, `releaseToExit` from all 13 languages
-     - **Verified Manifest Integration**: Confirmed that category headlines are pulled from `userDB['Definitions']['vendor'].name`, `userDB['Definitions']['item'].bucket`, and `userDB['Definitions']['item'].category` in `generatePlayerHTML()` function
-     - **Language Change Handling**: Verified that `setLang()` function includes `location.reload()` which triggers manifest reload in new language
-     - **Indicator Text Removal**: Removed text content assignments from indicator creation since indicators now show only icons
-   - **Files**: `Dev/js/main.js` (translations object, indicator creation functions)
-   - **Result**: Category headlines and item descriptions are now correctly pulled from Bungie manifest and automatically translated when language changes
+## Last Deployment
+**Timestamp**: 2024-08-03 23:10:00  
+**Command**: `robocopy "Dev" "C:\xampp\htdocs\destiny2-inventory" /E /XO /R:3 /W:1`  
+**Files Updated**: 
+- `Dev/js/main.js` (51866 bytes)
+- `Dev/index.html` (26785 bytes)
 
-### Previous Fixes:
-
-1. **Border Styling and Manual Add Player Button Alignment**: 
-   - **Problem**: User requested "add a really small boarder, equivalent to the boarder around the individual items of a player, to the settings-menues and submenues and to the buttons in the recent playerlist and the search-field. align the 3 buttons to manually add players in the middle of the sidebar."
-   - **Fix**: 
-     - Added `border: solid rgba(0,0,0,0.3) 2px; border-radius: 10%;` to all requested elements
-     - Applied to `.settingsSubMenu`, `.language-options`, `.settingsThemes`, `.settingsSubMenuBtns`, `.player-item`, `.sidebar .sidebar-content input`
-     - Added new CSS for `.sidebar .nav-list button` with centered alignment (80% width, auto margins)
-     - Added hover effects for manual add player buttons
-   - **Files**: `Dev/css/sidebar.css`
-
-2. **Comprehensive Translation System Update**:
-   - **Problem**: User reported "translation is still not showing up in the loading-screen and also not for the newly added 'loading player' function. translation is also not working for the category-headlines and the FT-view."
-   - **Fix**: 
-     - Added comprehensive translation keys for all category headlines, fireteam view, and loading player text
-     - Added translations for all 13 supported languages (en, de, es, es-mx, fr, it, ja, ko, pl, pt-br, ru, zh-chs, zh-cht)
-     - Updated `applyTranslations()` function to add dynamic fireteam view header
-     - Confirmed category headlines are already pulled from manifest data and automatically translated
-     - Updated `buttonClick()` function to use translated "loading player" text
-   - **Files**: `Dev/js/main.js`
-
-3. **Translation Keys Added**:
-   - `loadingPlayer`: "Loading player..." in all languages
-   - `exoticWeapons`, `legendaryWeapons`, `rareWeapons`, `commonWeapons`
-   - `exoticArmor`, `legendaryArmor`, `rareArmor`, `commonArmor`
-   - `ghosts`, `vehicles`, `ships`, `emblems`, `finishers`, `shaders`, `mods`, `consumables`, `materials`
-   - `fireteamView`, `noFireteamData`
-   - All translations provided for all 13 supported languages
-
-### Previous Fixes:
-
-1. **FT-view Remains Cleanup**: 
-   - **Problem**: User reported "some remains from the FT-view while returning" and requested screens don't mix
-   - **Fix**: 
-     - Added `contentFireteam.innerHTML = '';` when entering fireteam view
-     - Added `contentFireteam.innerHTML = '';` when returning from fireteam view
-     - Applied to all transition methods (touch events, wheel events, both directions)
-     - Ensures clean state and prevents UI remains from mixing between views
-   - **Files**: `Dev/js/main.js` (lines ~370, ~410, ~470, ~530)
-
----
-
-## 📝 Conversation History & Context
-
-### **Current Session Summary (August 2, 2025 - 11:59 PM)**
-This session focused on resolving the OAuth authentication error and creating comprehensive documentation:
-
-#### **Primary Issue Resolved: OAuth Login Error**
-- **Problem**: `Uncaught (in promise) TypeError: can't access property "parentNode", loginFr is null` after OAuth completion
-- **Root Cause**: OAuth function was trying to remove login frame from DOM after it was already hidden
-- **Solution**: Removed problematic DOM removal lines in `Dev/js/oauth.js`
-- **Enhancement**: Updated `getData` and `postData` functions to include OAuth token authentication
-
-#### **Major Documentation Overhaul**
-- **README.md**: Completely transformed into professional, comprehensive documentation
-- **Features**: Added detailed breakdown of all application capabilities
-- **Multilingual Support**: Documented all 13 supported languages with status table
-- **Technical Architecture**: Added detailed codebase structure explanation
-- **Usage Guide**: Created step-by-step instructions for all features
-- **Development Documentation**: Added project structure and component descriptions
-- **Contributing Guidelines**: Clear instructions for community contributions
-- **Roadmap**: Future features and long-term development goals
-
-#### **Deployment Actions**
-- **XAMPP Deployment**: Updated application to `C:\xampp\htdocs\destiny2-inventory\`
-- **Release Copy**: Copied Dev version to Release directory
-- **Git Operations**: Staged, committed, and pushed all changes to GitHub
-
-### **Key Technical Changes Made**
-1. **OAuth Authentication Enhancement**:
-   - Fixed DOM error in `Dev/js/oauth.js`
-   - Enhanced API functions in `Dev/js/functions.js` to use OAuth tokens
-   - Improved security for authenticated endpoints
-
-2. **Documentation Improvements**:
-   - Professional README with badges and structured sections
-   - Comprehensive feature documentation
-   - Technical architecture explanation
-   - Community contribution guidelines
-
-3. **File Updates**:
-   - `Dev/js/oauth.js` - OAuth error fix
-   - `Dev/js/functions.js` - API authentication enhancement
-   - `README.md` - Complete documentation overhaul
-   - `setup-local.md` - Updated with latest changes
-
-### **User Preferences & Workflow**
-- **Server**: XAMPP (Apache/PHP stack) preferred over Python http.server
-- **Deployment**: Use `robocopy` for reliable file copying
-- **Git**: Only push when explicitly requested
-- **Documentation**: Always update setup-local.md with changes
-- **Testing**: Deploy to XAMPP for testing before Git operations
-
-### **Current Project State**
-- **OAuth Authentication**: Fully functional with proper error handling
-- **API Integration**: Enhanced with OAuth token support
-- **Documentation**: Professional and comprehensive
-- **Deployment**: Both Dev and Release versions updated
-- **Git Repository**: All changes committed and pushed
-
-### **Next Session Context**
-For future sessions, this conversation provides complete context on:
-- Recent OAuth authentication fixes
-- Comprehensive documentation updates
-- Current project state and deployment status
-- User preferences and workflow requirements
-- Technical architecture and file structure 
+## Side Notes
+- The application uses IndexedDB for persistent data storage, replacing the old `localStorage` system
+- All manifest data is loaded from Bungie's CDN, no local storage of manifest files
+- The catalyst progression system uses CSS conic gradients for dynamic border filling
+- Archetype icons are loaded directly from Bungie's manifest without local caching
+- The notification system provides real-time feedback for user actions
+- Debug logging has been removed after resolving initialization issues 

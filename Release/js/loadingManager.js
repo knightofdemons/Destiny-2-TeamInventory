@@ -8,7 +8,7 @@ class LoadingManager {
         this.progressBar = document.getElementById('loadingProgressBar');
         this.loadingText = document.getElementById('loadingText');
         this.currentProgress = 0;
-        this.totalSteps = 5;
+        this.totalSteps = 4; // Reduced from 5 to 4 (removed "ready to launch" step)
         this.currentStep = 0;
         this.lastStateText = '';
         this.isUpdating = false; // Add flag to prevent concurrent updates
@@ -84,13 +84,12 @@ class LoadingManager {
                 this.loadingFrame.className = `loadingFrame loading-state-${step}`;
             }
             
-            // Update text based on state
+            // Update text based on state (removed step 5 "ready to launch")
             const stateTexts = {
                 1: getText ? getText('initializingDatabase') : "Initializing Database...",
                 2: getText ? getText('loadingManifestData') : "Loading Manifest Data...",
                 3: getText ? getText('fetchingPlayerData') : "Fetching Player Data...",
-                4: getText ? getText('processingInventory') : "Processing Inventory...",
-                5: getText ? getText('readyToLaunch') : "Ready to Launch..."
+                4: getText ? getText('processingInventory') : "Processing Inventory..."
             };
             
             const newText = stateTexts[step] || "Loading...";

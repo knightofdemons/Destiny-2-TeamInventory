@@ -346,113 +346,120 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
 // Calculate catalyst progression percentage
 function calculateCatalystProgression(recordData) {
 	if (!recordData) {
-		console.log('No recordData, returning 0');
 		return 0;
 	}
 	
-	console.log('Record data for catalyst:', recordData);
-	
-	// Check if the record is completed first
-	if (recordData.completed !== undefined && recordData.completed) {
-		console.log('Record is completed, returning 100');
+	// Check if record is already completed
+	if (recordData.completed) {
 		return 100;
 	}
 	
-	// Look for actual progress in objectives array
-	if (recordData.objectives && Array.isArray(recordData.objectives) && recordData.objectives.length > 0) {
-		console.log('Using objectives array for progression:', recordData.objectives);
+	// Check for direct progress property
+	if (recordData.progress !== undefined && recordData.completionValue !== undefined && recordData.completionValue > 0) {
+		const progressPercentage = (recordData.progress / recordData.completionValue) * 100;
+		return Math.min(progressPercentage, 100);
+	}
+	
+	// Check objectives array
+	if (recordData.objectives && recordData.objectives.length > 0) {
+		let totalProgress = 0;
+		let totalCompletionValue = 0;
+		let hasProgressObjectives = false;
+		let completedSteps = 0;
+		let totalSteps = 0;
 		
-		// First pass: Look for objectives with actual progress values
 		for (let i = 0; i < recordData.objectives.length; i++) {
 			const objective = recordData.objectives[i];
-			console.log(`Checking objective ${i}:`, objective);
 			
-			// If objective has progress property, use that for percentage
+			// If objective has progress property, add to total
 			if (objective.progress !== undefined && objective.completionValue !== undefined && objective.completionValue > 0) {
-				const progressPercentage = (objective.progress / objective.completionValue) * 100;
-				console.log(`Found progress objective ${i} - progress: ${objective.progress}, completionValue: ${objective.completionValue}, percentage: ${progressPercentage}`);
-				return Math.min(progressPercentage, 100); // Cap at 100%
+				// Check if the objective is already completed
+				if (objective.complete || objective.progress >= objective.completionValue) {
+					// This objective is completed, treat it as a step
+					completedSteps++;
+					totalSteps++;
+				} else {
+					// This is an ongoing progress objective (like kill counts)
+					totalProgress += objective.progress;
+					totalCompletionValue += objective.completionValue;
+					hasProgressObjectives = true;
+				}
 			}
+		}
+		
+		// If we found progress objectives, calculate percentage from those
+		if (hasProgressObjectives && totalCompletionValue > 0) {
+			const progressPercentage = (totalProgress / totalCompletionValue) * 100;
+			return Math.min(progressPercentage, 100);
+		}
+		
+		// If no progress objectives but we have steps, calculate step completion
+		if (totalSteps > 0) {
+			const stepPercentage = (completedSteps / totalSteps) * 100;
+			return stepPercentage;
 		}
 		
 		// Second pass: Look for completed objectives with completion values
 		for (let i = 0; i < recordData.objectives.length; i++) {
 			const objective = recordData.objectives[i];
 			if (objective.complete && objective.completionValue !== undefined && objective.completionValue > 0) {
-				console.log(`Found completed objective ${i} with completion value: ${objective.completionValue}`);
 				return 100;
 			}
 		}
 		
-		// Third pass: Check for any completed objectives (for weapons that don't have progress values)
+		// Third pass: Count completed objectives
 		let completedObjectives = 0;
-		let totalObjectives = 0;
+		let totalObjectives = recordData.objectives.length;
 		
 		for (let i = 0; i < recordData.objectives.length; i++) {
 			const objective = recordData.objectives[i];
-			console.log(`Objective ${i} complete status:`, objective.complete);
 			if (objective.complete) {
 				completedObjectives++;
 			}
-			totalObjectives++;
 		}
 		
 		if (totalObjectives > 0) {
 			const result = (completedObjectives / totalObjectives) * 100;
-			console.log(`Fallback: ${completedObjectives}/${totalObjectives} objectives completed = ${result}%`);
 			return result;
 		}
 	}
 	
-	// Check if there's a progress property directly on the record
-	if (recordData.progress !== undefined && recordData.completionValue !== undefined && recordData.completionValue > 0) {
-		const progressPercentage = (recordData.progress / recordData.completionValue) * 100;
-		console.log('Found progress directly on record - progress:', recordData.progress, 'completionValue:', recordData.completionValue, 'percentage:', progressPercentage);
-		return Math.min(progressPercentage, 100);
-	}
-	
-	// Fallback to state property for binary completion status
+	// Check state property as fallback
 	if (recordData.state !== undefined) {
-		console.log('Using state property as fallback:', recordData.state);
-		// Use the same odd/even logic as collectibles: even = completed, odd = not completed
-		return (recordData.state % 2 === 0) ? 100 : 0;
+		if (recordData.state % 2 === 1) {
+			return 100;
+		} else {
+			return 0;
+		}
 	}
 	
-	// If none of the above, return 0
-	console.log('No progression data found, returning 0');
 	return 0;
 }
 
 // Get catalyst CSS classes and progression data
 function getCatalystClasses(recordData) {
-	console.log('=== getCatalystClasses called with:', recordData);
 	if (!recordData) {
-		console.log('No recordData, returning empty');
 		return { classes: "", progression: 0 };
 	}
 	
 	const progression = calculateCatalystProgression(recordData);
 	
 	if (progression === 0) {
-		console.log('Returning no catalyst progress');
-		return { classes: "", progression: 0 }; // No catalyst progress
+		return { classes: "", progression: 0 };
 	} else if (progression === 100) {
-		console.log('Returning completed catalyst');
-		return { classes: " catalyst-progress completed", progression: 100 }; // Completed catalyst
+		return { classes: " catalyst-progress completed", progression: 100 };
 	} else {
-		console.log('Returning incomplete catalyst with progression:', progression);
-		return { classes: " catalyst-progress", progression: progression }; // Incomplete catalyst
+		return { classes: " catalyst-progress", progression: progression };
 	}
 }
 
 // Get archetype icon URL based on archetype name
 function getArchetypeIcon(archetype) {
-	if (!archetype || archetype === "") {
+	if (!archetype || archetype === "" || archetype === "undefined" || archetype === undefined) {
 		return "";
 	}
 	
 	// Map archetype names to Bungie CDN icon paths
-	// These paths are based on the Destiny 2 CDN structure for archetype icons
 	const archetypeIcons = {
 		"gunner": "https://www.bungie.net/common/destiny2_content/icons/archetypes/gunner.png",
 		"brawler": "https://www.bungie.net/common/destiny2_content/icons/archetypes/brawler.png", 
@@ -465,11 +472,8 @@ function getArchetypeIcon(archetype) {
 	return archetypeIcons[archetype.toLowerCase()] || "";
 }
 
-// Calculate armor progress percentage (placeholder - can be customized based on specific requirements)
+// Calculate armor progress percentage
 function calculateArmorProgress(itemDetails) {
-	// For now, return a placeholder value
-	// This can be customized based on specific armor progression requirements
-	// Examples: masterwork level, stat tiers, etc.
 	return 75; // Placeholder 75% progress
 }
 
@@ -482,11 +486,11 @@ function getArmorProgressClasses(itemDetails) {
 	const progression = calculateArmorProgress(itemDetails);
 	
 	if (progression === 0) {
-		return { classes: "", progression: 0 }; // No progress
+		return { classes: "", progression: 0 };
 	} else if (progression === 100) {
-		return { classes: " completed", progression: 100 }; // Completed
+		return { classes: " completed", progression: 100 };
 	} else {
-		return { classes: "", progression: progression }; // Incomplete
+		return { classes: "", progression: progression };
 	}
 }
 
@@ -520,6 +524,7 @@ async function InitData(){
         
         // Load settings from IndexedDB
         const settings = await window.dbOperations.getAllSettings();
+        
         if (settings && Object.keys(settings).length > 0) {
             userDB.siteSettings = settings;
             
@@ -649,15 +654,12 @@ async function InitData(){
             await getDefinitions();
         }
         
-        window.loadingManager.setState(5);
         await window.loadingManager.animateProgress(100);
         
-        // Hide loading screen after a short delay
-        setTimeout(() => {
-            window.loadingManager.hide();
-            // Show welcome notification
-            showNotification('Destiny 2 Team Inventory loaded successfully!', 'success', 3000);
-        }, 1000);
+        // Hide loading screen immediately (removed delay)
+        window.loadingManager.hide();
+        // Show welcome notification
+        showNotification('Destiny 2 Team Inventory loaded successfully!', 'success', 3000);
         
         hasInitDataCompleted = true;
         
@@ -756,7 +758,6 @@ async function getPlayer(memberID, memberType){
 /* generatePlayerHTML Function												   */
 /*********************************************************************************/
 function generatePlayerHTML(cP){
-	console.log('=== generatePlayerHTML called ===');
 	// add HTML
 	HTML = "<div class='playerMain'>" +
 				// player header
@@ -783,8 +784,9 @@ function generatePlayerHTML(cP){
 	HTML +=			"<div class='exo-weapons'>";
 					// every item...
 					for (let i = 0; i < userDB['Definitions']['item'].type.length; i++) {
-						// ... that is exo & matches bucket
-						if(userDB['Definitions']['item'].exo[i] === 1 && userDB['Definitions']['item'].bucketHash[i] === buckets[b]) {
+						// ... that is exo & matches bucket & has valid catalyst hash (if it has one)
+						if(userDB['Definitions']['item'].exo[i] === 1 && userDB['Definitions']['item'].bucketHash[i] === buckets[b] && 
+						   (userDB['Definitions']['item'].catHash[i] === 0 || userDB['Definitions']['item'].catHash[i] > 1000)) {
 						// make headline for first found item
 						if (hb < 1) {
 	HTML +=					"<div class='headline-weapon-bucket'>" + userDB['Definitions']['item'].bucket[i] + "</div>";
@@ -792,18 +794,11 @@ function generatePlayerHTML(cP){
 						}
 													// check if weapon is achieved and determine availability
 							var unavailable = "";
-							// Add debugging for collectible access
-							console.log('Checking collectible for item:', userDB['Definitions']['item'].name[i], 'collectibleID:', userDB['Definitions']['item'].collectibleID[i]);
-							console.log('cP.collectibles exists:', !!cP.collectibles);
-							console.log('cP.collectibles keys:', Object.keys(cP.collectibles || {}).slice(0, 10)); // Show first 10 keys
-							
 							// Use the old approach: directly access collectible state without safety checks
 							var checkState = 0; // Default to 0 (not acquired)
 							if (userDB['Definitions']['item'].collectibleID[i] > 0 && cP.collectibles && cP.collectibles[userDB['Definitions']['item'].collectibleID[i]]) {
 								checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
-								console.log('Found collectible state:', checkState);
 							} else {
-								console.log('No collectible found or collectibleID is 0, using default state 0');
 							}
 							// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
 							// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
@@ -814,21 +809,18 @@ function generatePlayerHTML(cP){
 							} else {
 								unavailable = " unavailable"; // Odd = not obtained, so unavailable
 							}
-							console.log('Final unavailable state for', userDB['Definitions']['item'].name[i], ':', unavailable);
+							
+
 							// check Catalyst progression
 							var catalystData = { classes: "", progression: 0 };
-							console.log('Checking catalyst for item:', userDB['Definitions']['item'].name[i], 'catHash:', userDB['Definitions']['item'].catHash[i]);
+							
 							if (userDB['Definitions']['item'].catHash[i] > 0 && cP.records[userDB['Definitions']['item'].catHash[i]] !== undefined) {
-								console.log('Found catalyst record for item:', userDB['Definitions']['item'].name[i], 'record:', cP.records[userDB['Definitions']['item'].catHash[i]]);
 								catalystData = getCatalystClasses(cP.records[userDB['Definitions']['item'].catHash[i]]);
-								console.log('Catalyst data result:', catalystData);
-							} else {
-								console.log('No catalyst found for item:', userDB['Definitions']['item'].name[i], 'catHash:', userDB['Definitions']['item'].catHash[i], 'record exists:', cP.records[userDB['Definitions']['item'].catHash[i]] !== undefined);
 							}
-	HTML +=				"<div class='itemIconContainer" + unavailable + "' data-catalyst-progress='" + catalystData.progression + "'>" +
-							'<img src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
+	HTML +=				"<div class='itemIconContainer" + unavailable + catalystData.classes + "' data-catalyst-progress='" + catalystData.progression + "' style='" + (catalystData.progression > 0 && catalystData.progression < 100 ? '--progression-deg: ' + (catalystData.progression * 3.6) + 'deg;' : '') + "'>" +
+							'<img src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'; this.parentElement.querySelector(\'.catalyst-border\').style.display=\'block\';" style="opacity: 0;">' +
 							'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
-							'<div class="catalyst-border" style="background: conic-gradient(from 0deg, #ffcb00 0deg, #ffcb00 ' + (catalystData.progression * 3.6) + 'deg, transparent ' + (catalystData.progression * 3.6) + 'deg, transparent 360deg);"></div>' +
+							                                    '<div class="catalyst-border"></div>' +
 						"</div>";
 						}
 					}
@@ -868,16 +860,11 @@ function generatePlayerHTML(cP){
 								}
 							// check if armor is achieved and determine availability
 								var unavailable = "";
-								// Add debugging for collectible access
-								console.log('Checking collectible for armor:', userDB['Definitions']['item'].name[i], 'collectibleID:', userDB['Definitions']['item'].collectibleID[i]);
-								
 								// Use the old approach: directly access collectible state without safety checks
 								var checkState = 0; // Default to 0 (not acquired)
 								if (userDB['Definitions']['item'].collectibleID[i] > 0 && cP.collectibles && cP.collectibles[userDB['Definitions']['item'].collectibleID[i]]) {
 									checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
-									console.log('Found collectible state for armor:', checkState);
 								} else {
-									console.log('No collectible found or collectibleID is 0 for armor, using default state 0');
 								}
 								// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
 								// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
@@ -888,7 +875,6 @@ function generatePlayerHTML(cP){
 								} else {
 									unavailable = " unavailable"; // Odd = not obtained, so unavailable
 								}
-								console.log('Final unavailable state for armor', userDB['Definitions']['item'].name[i], ':', unavailable);
 	HTML +=					"<div class='itemIconContainer" + unavailable + "'>" +
 								'<img src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 								'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
@@ -945,7 +931,7 @@ function generatePlayerHTML(cP){
 							for (item in cEquip) {
 								indexItem = userDB['Definitions']['item'].id.indexOf(cEquip[item].itemHash.toString());
 								if (cEquip[item].bucketHash === buckets[b]) {
-	HTML +=						"<div class='itemIconContainer'>" +
+	HTML +=						"<div class='itemIconContainer equipped'>" +
 									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 									"<div class='itemIconContainerLvl'>";
 									// Check for archetype icon first, then fall back to energy type
@@ -957,7 +943,7 @@ function generatePlayerHTML(cP){
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType)] + '">' +
 										" ";								
 									} else if (cP.itemDetails[cEquip[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cEquip[item].itemInstanceId].damageType !== 0) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].damageType)] + '">' +
+	HTML +=								'<img class="itemIconContainerEnergy" data-damage-type="' + cP.itemDetails[cEquip[item].itemInstanceId].damageType + '" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].damageType)] + '">' +
 										" ";								
 									} else {
 	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
@@ -968,7 +954,7 @@ function generatePlayerHTML(cP){
 	HTML +=								(cP.itemDetails[cEquip[item].itemInstanceId].itemLevel * 10 + cP.itemDetails[cEquip[item].itemInstanceId].quality);
 									}
 	HTML +=							"</div>" +
-									'<div class="itemIconContainerInfo equipped" title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
+									'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[indexItem] + " (" + userDB['Definitions']['item'].type[indexItem] + ')"></div>' +
 								"</div>";
 								}
 							}
@@ -992,7 +978,7 @@ function generatePlayerHTML(cP){
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType)] + '">' +
 										" ";								
 									} else if (cP.itemDetails[cInv[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cInv[item].itemInstanceId].damageType !== 0) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].damageType)] + '">' +
+	HTML +=								'<img class="itemIconContainerEnergy" data-damage-type="' + cP.itemDetails[cInv[item].itemInstanceId].damageType + '" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].damageType)] + '">' +
 										" ";								
 									} else {
 	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
@@ -1038,7 +1024,7 @@ function generatePlayerHTML(cP){
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType)] + '">' +
 										" ";								
 									} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== 0) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType)] + '">' +
+	HTML +=								'<img class="itemIconContainerEnergy" data-damage-type="' + cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType + '" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType)] + '">' +
 										" ";								
 									} else {
 	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									

@@ -104,7 +104,28 @@
 	
 	.exo-weapons
 	{
-		float: left;
+		display: block;
+		width: 100%;
+		text-align: left;
+		font-size: 0; /* Remove whitespace between inline-block elements */
+	}
+	
+	.exo-weapons::after {
+		content: "";
+		display: table;
+		clear: both;
+	}
+	
+	.exo-weapons::after {
+		content: "";
+		display: table;
+		clear: both;
+	}
+	
+	.exo-weapons::after {
+		content: "";
+		display: table;
+		clear: both;
 	}
 	
 	.item-list
@@ -116,15 +137,19 @@
 	.itemIconContainer
 	{
 		cursor: help;
-		float: left;
-		height: calc(var(--iconSize) + 10);
+		height: calc(var(--iconSize) + 16);
 		position: relative;
-		width: calc(var(--iconSize) + 10);
+		width: calc(var(--iconSize) + 16);
+		display: inline-block; /* Ensure consistent sizing */
+		box-sizing: border-box; /* Include borders in sizing */
+		margin: 2px; /* Consistent spacing for all items */
+		vertical-align: top; /* Ensure all items align to the top of their row */
+		font-size: initial; /* Restore font size for content inside */
 	}
 	
 	.itemIconContainer > img, .itemIconContainer.master > img
 	{
-		border: solid rgba(0,0,0,0.3) 2px;
+		border: none; /* Remove black border from all items */
 		border-radius: 10%;
 		height: var(--iconSize);
 		margin: 2.5px 2.5px; /* Reduced from 5px 5px to half the space */
@@ -149,70 +174,153 @@
 	}
 	
 	/* NEW: Catalyst progression border styles - JavaScript-generated border */
-	.itemIconContainer[data-catalyst-progress] {
+	.itemIconContainer.catalyst-progress {
 		position: relative;
+		/* Make catalyst items slightly smaller to compensate for border visual weight */
+		cursor: help;
+		height: calc(var(--iconSize) + 14); /* 2px smaller than base container */
+		width: calc(var(--iconSize) + 14); /* 2px smaller than base container */
+		margin: 2px; /* Same spacing as base items */
 	}
 	
-	.itemIconContainer[data-catalyst-progress] > img {
+	.itemIconContainer.catalyst-progress > img {
 		border: none;
 		box-shadow: none;
+		height: var(--iconSize); /* Same as base image */
+		width: var(--iconSize); /* Same as base image */
+		margin: 2.5px 2.5px; /* Same as base image */
 		z-index: 2; /* Ensure main weapon image appears above catalyst border */
 		position: relative; /* Required for z-index to work */
 	}
 	
-	.itemIconContainer[data-catalyst-progress] .catalyst-border {
+	.itemIconContainer.catalyst-progress .catalyst-border {
 		position: absolute;
-		top: 0px;
-		left: 0px;
-		right: 0px;
-		bottom: 0px;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 		border-radius: 10%;
 		z-index: 1;
 		pointer-events: none;
+		display: block; /* Ensure border is visible */
+		/* Use mask to create border effect - cut out center */
+		mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 2px), black calc(var(--iconSize) / 2 - 2px));
+		-webkit-mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 2px), black calc(var(--iconSize) / 2 - 2px));
 	}
 	
-	/* Completed catalysts get a glow effect */
-	.itemIconContainer[data-catalyst-progress="100"] > img {
-		box-shadow: 0px 0px 4px #ffcb00;
+	/* Apply conic-gradient background for incomplete catalysts using data attribute */
+	.itemIconContainer.catalyst-progress:not(.completed) .catalyst-border {
+		background: conic-gradient(from 0deg, #ff8c00 0deg, #ff8c00 var(--progression-deg), transparent var(--progression-deg), transparent 360deg);
 	}
+	
+	/* Completed catalysts get a solid golden border */
+	.itemIconContainer.catalyst-progress.completed .catalyst-border {
+		background: #ffd700 !important; /* More distinctive golden yellow */
+		mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 2px), black calc(var(--iconSize) / 2 - 2px));
+		-webkit-mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 2px), black calc(var(--iconSize) / 2 - 2px));
+	}
+	
+
 	
 
 
 	.itemIconContainerEnergy
 	{
-		height: 0.85rem;
+		height: 0.75rem;
 		margin-bottom: 2px;
 		vertical-align: middle;
-		width: 0.85rem;
+		width: 0.75rem;
 		z-index: 2; /* Ensure archetype icons appear above catalyst border */
 	}
 	
+	/* Weapon damage type colorization using Bungie's official element colors */
+	.itemIconContainerEnergy[data-damage-type="1"] {
+		/* Kinetic - Darker Grey background */
+		background: rgb(96, 96, 96);
+		border-radius: 1.6px;
+		padding: 1px;
+	}
+	
+	.itemIconContainerEnergy[data-damage-type="2"] {
+		/* Arc - Even Darker Electric Blue background */
+		background: rgb(0, 130, 163);
+		border-radius: 1.6px;
+		padding: 1px;
+	}
+	
+	.itemIconContainerEnergy[data-damage-type="3"] {
+		/* Solar - Even Darker Orange background */
+		background: rgb(163, 90, 0);
+		border-radius: 1.6px;
+		padding: 1px;
+	}
+	
+	.itemIconContainerEnergy[data-damage-type="4"] {
+		/* Void - Darker Purple background (unchanged) */
+		background: rgb(118, 0, 169);
+		border-radius: 1.6px;
+		padding: 1px;
+	}
+	
+	.itemIconContainerEnergy[data-damage-type="6"] {
+		/* Stasis - Even Darker Ice Blue background */
+		background: rgb(0, 122, 163);
+		border-radius: 1.6px;
+		padding: 1px;
+	}
+	
+	.itemIconContainerEnergy[data-damage-type="7"] {
+		/* Strand - Even Darker Lime Green background */
+		background: rgb(32, 131, 32);
+		border-radius: 1.6px;
+		padding: 1px;
+	}
+	
+	/* Equipped items get a white border directly on the item */
+	.itemIconContainer.equipped
+	{
+		border: 1.5px solid white !important;
+		border-radius: 10%;
+		z-index: 10; /* Ensure equipped border appears above all other elements */
+	}
+	
+	/* Remove margin from equipped item images so border sits directly on icon */
+	.itemIconContainer.equipped > img
+	{
+		margin: 0 !important;
+	}
+	
+	/* Remove the old equipped frame system */
 	.itemIconContainerInfo
 	{
 		height: var(--iconSize);
-		margin-left: 5px;
-		margin-top: calc(calc(var(--iconSize) + 5px) * -1);
 		position: absolute;
 		width: var(--iconSize);
-	}
-	
-	.itemIconContainerInfo.equipped
-	{
-		border: ridge white;
-		border-radius: 10%;
+		top: 0;
+		left: 0;
 	}
 	
 	.itemIconContainerLvl
 	{
+		background: rgba(0, 0, 0, 0.56); /* 30% more transparent (0.8 * 0.7 = 0.56) */
 		border-bottom-left-radius: 6.5px;
 		border-bottom-right-radius: 6.5px;
-		font-size: calc(0.7rem * var(--sizeMultiplier));
+		font-size: calc(0.6rem * var(--sizeMultiplier)); /* One size smaller */
 		font-weight: 400;
-		margin-left: 5px;
 		padding-left: calc(0.05 * var(--iconSize));
 		position: absolute;
-		transform: translateY(-120%);
-		width: var(--iconSize);
+		bottom: 0; /* Position at very bottom */
+		left: 0; /* Position at very left */
+		width: 100%; /* Full width of container */
+		height: 12px; /* Fixed height */
+	}
+	
+	/* Remove black background from collection items (top section) */
+	.collection-items .itemIconContainerLvl,
+	.exo-armor-bucket .itemIconContainerLvl,
+	.exo-armor-class .itemIconContainerLvl
+	{
+		background: transparent;
 	}
 	
 	.itemIconStatus
@@ -322,9 +430,9 @@
 	.headline-armor-class
 	{
 		color: #fff;
-		font-size: calc(1.2rem * var(--sizeMultiplier));
+		font-size: calc(0.96rem * var(--sizeMultiplier)); /* 20% smaller (1.2 * 0.8 = 0.96) */
 		font-weight: 400;
-		line-height: calc(3rem * var(--sizeMultiplier));
+		line-height: calc(2.4rem * var(--sizeMultiplier)); /* 20% smaller line height */
 		text-align: center;
 	}
 	

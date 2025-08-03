@@ -185,9 +185,9 @@
 		<h3><i class="bx bx-bookmarks"></i></h3>
 		<ul class="nav-list">
 			<div class="manual-add-buttons">
-				<button onclick="buttonClick('4611686018471653494', '3')">Add Hühnchen</button> 
-				<button onclick="buttonClick('4611686018489703844', '3')">Add Quaith</button> 
-				<button onclick="buttonClick('4611686018491598431', '3')">Add Drasuk</button>
+				<button onclick="addPlayerDirect('4611686018471653494', '3')">Add Hühnchen</button> 
+				<button onclick="addPlayerDirect('4611686018489703844', '3')">Add Quaith</button> 
+				<button onclick="addPlayerDirect('4611686018491598431', '3')">Add Drasuk</button>
 			</div>
 			<ul class="playerBucket" id="playerBucket">
 		</ul>  
@@ -277,7 +277,6 @@ function tryInit() {
     }
     
     if (window.dbOperations && window.loadingManager) {
-        console.log('All components ready, initializing...');
         InitData();
     } else {
         initAttempts++;
