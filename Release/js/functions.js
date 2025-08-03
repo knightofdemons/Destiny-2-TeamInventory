@@ -723,17 +723,19 @@ function generatePlayerHTML(cP){
 	HTML +=					"<div class='headline-weapon-bucket'>" + userDB['Definitions']['item'].bucket[i] + "</div>";
 							hb++;
 						}
-						// check if weapon is achieved and determine availability
+													// check if weapon is achieved and determine availability
 							var unavailable = "";
-							// Only check collectible state if collectibleID exists and is not 0
-							if (userDB['Definitions']['item'].collectibleID[i] > 0 && cP.collectibles[userDB['Definitions']['item'].collectibleID[i]] !== undefined) {
+							// Use the old approach: directly access collectible state without safety checks
+							if (userDB['Definitions']['item'].collectibleID[i] > 0) {
 								var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
 								// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
 								// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
 								// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
-								// Check if item is unavailable (not acquired = state 1, or other unavailable states)
-								if (checkState === 1 || checkState === 2 || checkState === 4 || checkState === 8 || checkState === 16 || checkState === 32 || checkState === 64) {
-									unavailable = " unavailable";
+								// Use the old approach: even numbers = obtained, odd numbers = not obtained
+								if (checkState % 2 == 0) {
+									unavailable = ""; // Even = obtained, so not unavailable
+								} else {
+									unavailable = " unavailable"; // Odd = not obtained, so unavailable
 								}
 							}
 							// check Catalyst progression
@@ -784,15 +786,17 @@ function generatePlayerHTML(cP){
 								}
 							// check if armor is achieved and determine availability
 								var unavailable = "";
-								// Only check collectible state if collectibleID exists and is not 0
-								if (userDB['Definitions']['item'].collectibleID[i] > 0 && cP.collectibles[userDB['Definitions']['item'].collectibleID[i]] !== undefined) {
+								// Use the old approach: directly access collectible state without safety checks
+								if (userDB['Definitions']['item'].collectibleID[i] > 0) {
 									var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
 									// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
 									// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
 									// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
-									// Check if item is unavailable (not acquired = state 1, or other unavailable states)
-									if (checkState === 1 || checkState === 2 || checkState === 4 || checkState === 8 || checkState === 16 || checkState === 32 || checkState === 64) {
-										unavailable = " unavailable";
+									// Use the old approach: even numbers = obtained, odd numbers = not obtained
+									if (checkState % 2 == 0) {
+										unavailable = ""; // Even = obtained, so not unavailable
+									} else {
+										unavailable = " unavailable"; // Odd = not obtained, so unavailable
 									}
 								}
 	HTML +=					"<div class='itemIconContainer" + unavailable + "'>" +

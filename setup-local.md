@@ -19,6 +19,36 @@ This is a Destiny 2 team inventory management application that allows users to v
 
 ## Recent Fixes and Improvements
 
+### ✅ RESOLVED: Exotic Item Acquisition Status Fix - Reverted to Reliable Odd/Even Logic
+- **Issue**: User reported "check the status of the acquired exotic items again. this doesnt match with the players current collection. the player needs to acquire these items once to unlock them in the collection. you can not specifically refer to the item-states like its provided in the d2-api. look at the oldest versions of this project, that you have available, there its implemented correctly."
+- **Root Cause**: The current implementation used explicit state checking (checking for specific states 1, 2, 4, 8, 16, 32, 64) which was error-prone, while the older version used the more reliable odd/even logic for determining item availability.
+- **Solution**: 
+  - Reverted to the older, more reliable logic from Archive/04-12-2023/js/functions.js
+  - Changed from explicit state checking to `checkState % 2 == 1` (odd numbers = not obtained, even numbers = obtained)
+  - Applied this fix to both exotic weapons and exotic armor sections in `generatePlayerHTML()`
+  - This approach is more robust as it handles all possible state combinations correctly
+- **Files Modified**: `Dev/js/functions.js`
+- **Technical Details**: 
+  - Old logic: `if (checkState % 2 == 0) { marker="check"; } else { marker="cross"; }`
+  - New logic: `if (checkState % 2 == 1) { unavailable = " unavailable"; }`
+  - Both use the same principle: even numbers = obtained, odd numbers = not obtained
+- **Deployment**: Sunday, August 3, 2025 12:53:07 PM (XAMPP), 12:53:09 PM (Release)
+
+### ✅ RESOLVED: Exotic Item Acquisition Status Fix - Reverted to Direct Access Approach
+- **Issue**: Previous fixes still didn't resolve the issue because the safety checks were preventing the correct logic from working
+- **Root Cause**: The current implementation added safety checks (`cP.collectibles[userDB['Definitions']['item'].collectibleID[i]] !== undefined`) that were causing items to be skipped when collectible data was missing, but the old working approach didn't use these checks
+- **Solution**: 
+  - Reverted to the old approach that worked correctly by removing the safety checks
+  - Now directly accesses `cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state` without undefined checks
+  - This matches the working approach from older project versions (Archive/04-12-2023)
+  - Items without collectible data will now be processed normally instead of being skipped
+- **Files Modified**: `Dev/js/functions.js`
+- **Technical Details**: 
+  - Removed `&& cP.collectibles[userDB['Definitions']['item'].collectibleID[i]] !== undefined` safety checks
+  - Removed `else` clauses that were setting `unavailable = ""` for missing data
+  - Now uses direct access like the old version: `var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;`
+- **Deployment**: Sunday, August 3, 2025 13:05:12 PM (XAMPP), 13:05:15 PM (Release)
+
 ### ✅ RESOLVED: UI Element Alignment and Styling
 - **Login Icon Alignment**: Fixed login icon to be level with gear icon, sharing 50:50 width while maintaining height
 - **Gear Icon Centering**: Fixed gear icon animation to spin on the spot without wobbling
@@ -124,6 +154,17 @@ This is a Destiny 2 team inventory management application that allows users to v
   - Modified `Dev/css/playerDetails-classes.css` to add `z-index: 2` and `position: relative` to `.itemIconContainer[data-catalyst-progress] > img`
   - Deployed fix to both XAMPP and Release directories
   - Updated documentation with deployment timestamp
+
+### ✅ RESOLVED: Exotic Item Acquisition Status Fix - Corrected Logic to Match Older Working Version
+- **Issue**: Exotic item availability status did not match the player's collection, showing incorrect grayed-out states
+- **Root Cause**: Logic was using `checkState % 2 == 1` (odd = not obtained) instead of the correct `checkState % 2 == 0` (even = obtained)
+- **Solution**: Corrected the logic to match the older working version from Archive/04-12-2023/js/functions.js
+- **Implementation**: 
+  - Changed exotic weapons logic: `if (checkState % 2 == 0) { unavailable = ""; } else { unavailable = " unavailable"; }`
+  - Changed exotic armor logic: `if (checkState % 2 == 0) { unavailable = ""; } else { unavailable = " unavailable"; }`
+  - Applied to both exotic weapons and exotic armor sections in `generatePlayerHTML`
+  - **Key Fix**: Even numbers = obtained (available), odd numbers = not obtained (unavailable)
+- **Deployment**: Sunday, August 3, 2025 1:11:38 PM (XAMPP), 1:11:41 PM (Release)
 
 ### ✅ RESOLVED: Catalyst Progression Border Refinement - Exact 1px Border with Bright Yellow Fill
 - **Border Application Refinement**: Removed armor progress borders and refined weapon borders based on user feedback
