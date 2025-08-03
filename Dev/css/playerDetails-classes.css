@@ -204,7 +204,6 @@
 	
 	.itemIconContainerLvl
 	{
-		background-color: rgba(0,0,0,0.5);
 		border-bottom-left-radius: 6.5px;
 		border-bottom-right-radius: 6.5px;
 		font-size: calc(0.7rem * var(--sizeMultiplier));

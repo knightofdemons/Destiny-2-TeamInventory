@@ -345,36 +345,102 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
 
 // Calculate catalyst progression percentage
 function calculateCatalystProgression(recordData) {
-	if (!recordData || !recordData.objectives) {
+	if (!recordData) {
+		console.log('No recordData, returning 0');
 		return 0;
 	}
 	
-	let completedObjectives = 0;
-	let totalObjectives = 0;
+	console.log('Record data for catalyst:', recordData);
 	
-	for (let objective of recordData.objectives) {
-		if (objective.complete) {
-			completedObjectives++;
-		}
-		totalObjectives++;
+	// Check if the record is completed first
+	if (recordData.completed !== undefined && recordData.completed) {
+		console.log('Record is completed, returning 100');
+		return 100;
 	}
 	
-	return totalObjectives > 0 ? (completedObjectives / totalObjectives) * 100 : 0;
+	// Look for actual progress in objectives array
+	if (recordData.objectives && Array.isArray(recordData.objectives) && recordData.objectives.length > 0) {
+		console.log('Using objectives array for progression:', recordData.objectives);
+		
+		// First pass: Look for objectives with actual progress values
+		for (let i = 0; i < recordData.objectives.length; i++) {
+			const objective = recordData.objectives[i];
+			console.log(`Checking objective ${i}:`, objective);
+			
+			// If objective has progress property, use that for percentage
+			if (objective.progress !== undefined && objective.completionValue !== undefined && objective.completionValue > 0) {
+				const progressPercentage = (objective.progress / objective.completionValue) * 100;
+				console.log(`Found progress objective ${i} - progress: ${objective.progress}, completionValue: ${objective.completionValue}, percentage: ${progressPercentage}`);
+				return Math.min(progressPercentage, 100); // Cap at 100%
+			}
+		}
+		
+		// Second pass: Look for completed objectives with completion values
+		for (let i = 0; i < recordData.objectives.length; i++) {
+			const objective = recordData.objectives[i];
+			if (objective.complete && objective.completionValue !== undefined && objective.completionValue > 0) {
+				console.log(`Found completed objective ${i} with completion value: ${objective.completionValue}`);
+				return 100;
+			}
+		}
+		
+		// Third pass: Check for any completed objectives (for weapons that don't have progress values)
+		let completedObjectives = 0;
+		let totalObjectives = 0;
+		
+		for (let i = 0; i < recordData.objectives.length; i++) {
+			const objective = recordData.objectives[i];
+			console.log(`Objective ${i} complete status:`, objective.complete);
+			if (objective.complete) {
+				completedObjectives++;
+			}
+			totalObjectives++;
+		}
+		
+		if (totalObjectives > 0) {
+			const result = (completedObjectives / totalObjectives) * 100;
+			console.log(`Fallback: ${completedObjectives}/${totalObjectives} objectives completed = ${result}%`);
+			return result;
+		}
+	}
+	
+	// Check if there's a progress property directly on the record
+	if (recordData.progress !== undefined && recordData.completionValue !== undefined && recordData.completionValue > 0) {
+		const progressPercentage = (recordData.progress / recordData.completionValue) * 100;
+		console.log('Found progress directly on record - progress:', recordData.progress, 'completionValue:', recordData.completionValue, 'percentage:', progressPercentage);
+		return Math.min(progressPercentage, 100);
+	}
+	
+	// Fallback to state property for binary completion status
+	if (recordData.state !== undefined) {
+		console.log('Using state property as fallback:', recordData.state);
+		// Use the same odd/even logic as collectibles: even = completed, odd = not completed
+		return (recordData.state % 2 === 0) ? 100 : 0;
+	}
+	
+	// If none of the above, return 0
+	console.log('No progression data found, returning 0');
+	return 0;
 }
 
 // Get catalyst CSS classes and progression data
 function getCatalystClasses(recordData) {
+	console.log('=== getCatalystClasses called with:', recordData);
 	if (!recordData) {
+		console.log('No recordData, returning empty');
 		return { classes: "", progression: 0 };
 	}
 	
 	const progression = calculateCatalystProgression(recordData);
 	
 	if (progression === 0) {
+		console.log('Returning no catalyst progress');
 		return { classes: "", progression: 0 }; // No catalyst progress
 	} else if (progression === 100) {
+		console.log('Returning completed catalyst');
 		return { classes: " catalyst-progress completed", progression: 100 }; // Completed catalyst
 	} else {
+		console.log('Returning incomplete catalyst with progression:', progression);
 		return { classes: " catalyst-progress", progression: progression }; // Incomplete catalyst
 	}
 }
@@ -690,6 +756,7 @@ async function getPlayer(memberID, memberType){
 /* generatePlayerHTML Function												   */
 /*********************************************************************************/
 function generatePlayerHTML(cP){
+	console.log('=== generatePlayerHTML called ===');
 	// add HTML
 	HTML = "<div class='playerMain'>" +
 				// player header
@@ -725,23 +792,38 @@ function generatePlayerHTML(cP){
 						}
 													// check if weapon is achieved and determine availability
 							var unavailable = "";
+							// Add debugging for collectible access
+							console.log('Checking collectible for item:', userDB['Definitions']['item'].name[i], 'collectibleID:', userDB['Definitions']['item'].collectibleID[i]);
+							console.log('cP.collectibles exists:', !!cP.collectibles);
+							console.log('cP.collectibles keys:', Object.keys(cP.collectibles || {}).slice(0, 10)); // Show first 10 keys
+							
 							// Use the old approach: directly access collectible state without safety checks
-							if (userDB['Definitions']['item'].collectibleID[i] > 0) {
-								var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
-								// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
-								// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
-								// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
-								// Use the old approach: even numbers = obtained, odd numbers = not obtained
-								if (checkState % 2 == 0) {
-									unavailable = ""; // Even = obtained, so not unavailable
-								} else {
-									unavailable = " unavailable"; // Odd = not obtained, so unavailable
-								}
+							var checkState = 0; // Default to 0 (not acquired)
+							if (userDB['Definitions']['item'].collectibleID[i] > 0 && cP.collectibles && cP.collectibles[userDB['Definitions']['item'].collectibleID[i]]) {
+								checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
+								console.log('Found collectible state:', checkState);
+							} else {
+								console.log('No collectible found or collectibleID is 0, using default state 0');
 							}
+							// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
+							// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
+							// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
+							// Use the old approach: even numbers = obtained, odd numbers = not obtained
+							if (checkState % 2 == 0) {
+								unavailable = ""; // Even = obtained, so not unavailable
+							} else {
+								unavailable = " unavailable"; // Odd = not obtained, so unavailable
+							}
+							console.log('Final unavailable state for', userDB['Definitions']['item'].name[i], ':', unavailable);
 							// check Catalyst progression
 							var catalystData = { classes: "", progression: 0 };
+							console.log('Checking catalyst for item:', userDB['Definitions']['item'].name[i], 'catHash:', userDB['Definitions']['item'].catHash[i]);
 							if (userDB['Definitions']['item'].catHash[i] > 0 && cP.records[userDB['Definitions']['item'].catHash[i]] !== undefined) {
+								console.log('Found catalyst record for item:', userDB['Definitions']['item'].name[i], 'record:', cP.records[userDB['Definitions']['item'].catHash[i]]);
 								catalystData = getCatalystClasses(cP.records[userDB['Definitions']['item'].catHash[i]]);
+								console.log('Catalyst data result:', catalystData);
+							} else {
+								console.log('No catalyst found for item:', userDB['Definitions']['item'].name[i], 'catHash:', userDB['Definitions']['item'].catHash[i], 'record exists:', cP.records[userDB['Definitions']['item'].catHash[i]] !== undefined);
 							}
 	HTML +=				"<div class='itemIconContainer" + unavailable + "' data-catalyst-progress='" + catalystData.progression + "'>" +
 							'<img src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
@@ -786,19 +868,27 @@ function generatePlayerHTML(cP){
 								}
 							// check if armor is achieved and determine availability
 								var unavailable = "";
+								// Add debugging for collectible access
+								console.log('Checking collectible for armor:', userDB['Definitions']['item'].name[i], 'collectibleID:', userDB['Definitions']['item'].collectibleID[i]);
+								
 								// Use the old approach: directly access collectible state without safety checks
-								if (userDB['Definitions']['item'].collectibleID[i] > 0) {
-									var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
-									// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
-									// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
-									// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
-									// Use the old approach: even numbers = obtained, odd numbers = not obtained
-									if (checkState % 2 == 0) {
-										unavailable = ""; // Even = obtained, so not unavailable
-									} else {
-										unavailable = " unavailable"; // Odd = not obtained, so unavailable
-									}
+								var checkState = 0; // Default to 0 (not acquired)
+								if (userDB['Definitions']['item'].collectibleID[i] > 0 && cP.collectibles && cP.collectibles[userDB['Definitions']['item'].collectibleID[i]]) {
+									checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
+									console.log('Found collectible state for armor:', checkState);
+								} else {
+									console.log('No collectible found or collectibleID is 0 for armor, using default state 0');
 								}
+								// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
+								// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
+								// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
+								// Use the old approach: even numbers = obtained, odd numbers = not obtained
+								if (checkState % 2 == 0) {
+									unavailable = ""; // Even = obtained, so not unavailable
+								} else {
+									unavailable = " unavailable"; // Odd = not obtained, so unavailable
+								}
+								console.log('Final unavailable state for armor', userDB['Definitions']['item'].name[i], ':', unavailable);
 	HTML +=					"<div class='itemIconContainer" + unavailable + "'>" +
 								'<img src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 								'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +

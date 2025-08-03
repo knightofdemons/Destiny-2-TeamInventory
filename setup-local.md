@@ -14,7 +14,7 @@ This is a Destiny 2 team inventory management application that allows users to v
 ### File Deployment
 - **Source Directory**: `Dev/`
 - **Deployment Command**: `robocopy "Dev" "C:\xampp\htdocs\destiny2-inventory" /E /XO /R:3 /W:1`
-- **Last Deployment**: Sunday, August 3, 2025 12:39:35 PM
+- **Last Deployment**: Sunday, August 3, 2025 2:42:25 PM
 - **Note**: Always deploy to XAMPP directory, only push to Git when explicitly requested
 
 ## Recent Fixes and Improvements
@@ -48,6 +48,54 @@ This is a Destiny 2 team inventory management application that allows users to v
   - Removed `else` clauses that were setting `unavailable = ""` for missing data
   - Now uses direct access like the old version: `var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;`
 - **Deployment**: Sunday, August 3, 2025 13:05:12 PM (XAMPP), 13:05:15 PM (Release)
+
+### ✅ RESOLVED: Catalyst Progression Display Fix - Improved Progression Calculation
+- **Issue**: User reported "boarders of exotic items: progress is not shown correctly, started catalysts just show 50% not the acutal %-progress"
+- **Root Cause**: The `calculateCatalystProgression` function was incorrectly calculating progression by counting completed objectives vs total objectives, which doesn't accurately represent catalyst progression in Destiny 2
+- **Solution**: 
+  - Updated `calculateCatalystProgression` function to use the correct approach for determining catalyst progression
+  - Now prioritizes the `progress` property from the record data (the actual progression percentage)
+  - Falls back to checking if the record is `completed` (100% if completed, 0% if not)
+  - Only uses the objectives array as a last resort fallback
+  - This ensures the actual catalyst progression percentage is displayed correctly
+- **Files Modified**: `Dev/js/functions.js`
+- **Technical Details**: 
+  - Changed from counting objectives to using `recordData.progress` property
+  - Added fallback logic: `progress` property → `completed` property → objectives array
+  - This matches the Bungie API structure where catalyst progression is stored in the `progress` field
+- **Deployment**: Sunday, August 3, 2025 13:26:45 PM (XAMPP), 13:26:49 PM (Release)
+
+### ✅ RESOLVED: Exotic Armor Black Bar Removal
+- **Issue**: User reported "remove the black-opaque bar for the exotic armor as seen in the screenshot. this is not needed."
+- **Root Cause**: The `.itemIconContainerLvl` CSS class had a `background-color: rgba(0,0,0,0.5);` property that created a black opaque bar at the bottom of exotic armor items
+- **Solution**: 
+  - Removed the `background-color: rgba(0,0,0,0.5);` property from `.itemIconContainerLvl` class
+  - This eliminates the unnecessary black bar while keeping the archetype icons visible
+- **Files Modified**: `Dev/css/playerDetails-classes.css`
+- **Technical Details**: 
+  - The `.itemIconContainerLvl` class is used for displaying archetype icons on exotic armor
+  - Removed only the background color, kept all other styling properties intact
+  - Archetype icons remain visible but without the dark background bar
+- **Deployment**: Sunday, August 3, 2025 1:59:28 PM (XAMPP)
+
+### 🔄 IN PROGRESS: Catalyst Progression Display Fix - Enhanced Progress Calculation
+- **Issue**: User reported "catalyst progression is not fixed. if there is some kind of % stat in the progression, like killnumbers, represent that - i dont care about individual steps, only the stat that tracks kills for the cat progression" and "seems to work better now for most weapons but not somthing like ratking or suros regime"
+- **Root Cause**: The `calculateCatalystProgression` function was only counting completed objectives rather than extracting the actual progress values (like kill counts) from the objectives. Some weapons like Rat King and Suros Regime have different objective structures.
+- **Solution**: 
+  - Updated `calculateCatalystProgression` to look for actual progress data in objectives
+  - Now checks for `objective.progress` and `objective.completionValue` properties to calculate real percentage
+  - Added three-pass approach: 1) Find objectives with progress values, 2) Find completed objectives with completion values, 3) Count completed objectives as fallback
+  - Added check for progress property directly on the record object
+  - Enhanced logging with objective indices for better debugging
+- **Files Modified**: `Dev/js/functions.js`
+- **Technical Details**: 
+  - Added loop through objectives to find ones with `progress` and `completionValue` properties
+  - Calculates percentage as `(progress / completionValue) * 100`
+  - Added check for `recordData.progress` and `recordData.completionValue` directly on the record
+  - Enhanced logging to show objective indices and detailed progress information
+  - Maintains fallback logic for objectives without progress data
+- **Deployment**: Sunday, August 3, 2025 2:42:25 PM (XAMPP)
+- **Status**: Awaiting user confirmation of fix for Rat King and Suros Regime
 
 ### ✅ RESOLVED: UI Element Alignment and Styling
 - **Login Icon Alignment**: Fixed login icon to be level with gear icon, sharing 50:50 width while maintaining height
@@ -165,6 +213,17 @@ This is a Destiny 2 team inventory management application that allows users to v
   - Applied to both exotic weapons and exotic armor sections in `generatePlayerHTML`
   - **Key Fix**: Even numbers = obtained (available), odd numbers = not obtained (unavailable)
 - **Deployment**: Sunday, August 3, 2025 1:11:38 PM (XAMPP), 1:11:41 PM (Release)
+
+### ✅ RESOLVED: Exotic Item Acquisition Status Fix - Handle Items Without Collectible Data
+- **Issue**: Items with `collectibleID = 0` (no collectible data) were not being displayed in the collection view
+- **Root Cause**: The logic only processed items where `collectibleID > 0`, causing items without collectible tracking to be skipped entirely
+- **Solution**: Added handling for items without collectible data to treat them as available (not grayed out)
+- **Implementation**: 
+  - Added `else` clause to handle items with `collectibleID = 0`
+  - Items without collectible data are now treated as available: `unavailable = ""`
+  - This ensures all exotic items are displayed, even if they don't have collection tracking
+  - Applied to both exotic weapons and exotic armor sections in `generatePlayerHTML`
+- **Deployment**: Sunday, August 3, 2025 1:16:16 PM (XAMPP), 1:16:19 PM (Release)
 
 ### ✅ RESOLVED: Catalyst Progression Border Refinement - Exact 1px Border with Bright Yellow Fill
 - **Border Application Refinement**: Removed armor progress borders and refined weapon borders based on user feedback
@@ -373,6 +432,16 @@ This is a Destiny 2 team inventory management application that allows users to v
 ### Previous Fixes:
 
 ### Latest Fixes:
+
+6. **Exotic Item Acquisition Status Fix - Revert to Old Working Approach**:
+   - **Problem**: User reported "probelm persists. maybe check if any functions are still using the old system. it still looks to me like only the weapons/armor is available that is also in the inventory. the old code did a little workaround to get this working"
+   - **Fix**: 
+     - **Reverted to Old Working Logic**: Removed the safety check `if (userDB['Definitions']['item'].collectibleID[i] > 0)` and the `else` block that treated items without collectible data as available
+     - **Direct Access Approach**: Now directly accessing `cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state` without any safety checks, exactly as the old code did
+     - **Old Code Reference**: Based on the working implementation from `Archive/31-12-2021/js/functions.js` where the logic was `var checkState = cP.collectibles[itemDefinitions.collectibleID[i]].state;`
+     - **Collection Status Logic**: Maintained the correct odd/even logic where even numbers = obtained, odd numbers = not obtained
+   - **Files**: `Dev/js/functions.js` (exotic weapons and exotic armor sections in `generatePlayerHTML`)
+   - **Result**: Implements the "little workaround" the user mentioned that made the collection status work correctly in the old version
 
 5. **Critical UI State and Translation Fixes**:
    - **Problem**: User reported "somethign went wrong, now the FT-view is visible on the mainpage. keep the buttons to add players manually in one line. translation is not working in the loadingscreen (maybe check all files again? especially the loadingmanager, it probably needs a parameter for the language). seems like still the english definitions-json is pulled when i select a different language = not working"
