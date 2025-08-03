@@ -127,7 +127,7 @@
 		border: solid rgba(0,0,0,0.3) 2px;
 		border-radius: 10%;
 		height: var(--iconSize);
-		margin: 5px 5px;
+		margin: 2.5px 2.5px; /* Reduced from 5px 5px to half the space */
 		vertical-align: middle;
 		width: var(--iconSize);
 	}
@@ -138,11 +138,94 @@
 		box-shadow: 0px 0px 4px #ffcb00;
 	}
 	
-	.itemIconContainer > img.cross
+	/* Removed cross opacity rule - no longer using checkmarks */
+	
+	/* NEW: Gray out unavailable items - reduced effect */
+	.itemIconContainer.unavailable > img
 	{
-		opacity: 50%;
+		filter: grayscale(70%) brightness(0.7);
+		opacity: 0.8;
+		border: none; /* Remove borders from unavailable items */
 	}
 	
+	/* NEW: Catalyst progression border styles */
+	.itemIconContainer.catalyst-progress > img
+	{
+		border: solid rgba(249,217,92,0.6) 2px; /* Dull yellow for incomplete catalysts */
+		box-shadow: 0px 0px 4px rgba(249,217,92,0.3);
+	}
+	
+	.itemIconContainer.catalyst-progress.completed > img
+	{
+		border: solid rgba(249,217,92,1) 2px; /* Full golden border for completed catalysts */
+		box-shadow: 0px 0px 4px #ffcb00;
+	}
+	
+	/* NEW: Progressive catalyst border using conic gradient */
+	.itemIconContainer.catalyst-progress {
+		position: relative;
+	}
+	
+	.itemIconContainer.catalyst-progress::before {
+		content: '';
+		position: absolute;
+		top: -2px;
+		left: -2px;
+		right: -2px;
+		bottom: -2px;
+		border-radius: 12%; /* Slightly larger than the image border-radius */
+		background: conic-gradient(
+			from 0deg,
+			rgba(249,217,92,0.8) 0deg,
+			rgba(249,217,92,0.8) var(--catalyst-progress, 0deg),
+			transparent var(--catalyst-progress, 0deg),
+			transparent 360deg
+		);
+		z-index: -1;
+	}
+	
+	.itemIconContainer.catalyst-progress.completed::before {
+		background: conic-gradient(
+			from 0deg,
+			rgba(249,217,92,1) 0deg,
+			rgba(249,217,92,1) 360deg
+		);
+		box-shadow: 0px 0px 4px #ffcb00;
+	}
+	
+	/* NEW: Armor progress border styles */
+	.itemIconContainer.armor-progress {
+		position: relative;
+		border: none !important; /* Remove existing borders */
+	}
+	
+	.itemIconContainer.armor-progress::before {
+		content: '';
+		position: absolute;
+		top: -2px;
+		left: -2px;
+		right: -2px;
+		bottom: -2px;
+		border-radius: 12%; /* Slightly larger than the image border-radius */
+		background: conic-gradient(
+			from 0deg,
+			rgba(249,217,92,0.8) 0deg,
+			rgba(249,217,92,0.8) var(--armor-progress, 0deg),
+			transparent var(--armor-progress, 0deg),
+			transparent 360deg
+		);
+		z-index: -1;
+	}
+	
+	.itemIconContainer.armor-progress.completed::before {
+		background: conic-gradient(
+			from 0deg,
+			rgba(249,217,92,1) 0deg,
+			rgba(249,217,92,1) 360deg
+		);
+		box-shadow: 0px 0px 4px #ffcb00;
+	}
+
 	.itemIconContainerEnergy
 	{
 		height: 0.85rem;
@@ -188,11 +271,7 @@
 		z-index: 1;
 	}
 	
-	.itemIconStatus > img
-	{
-		height: calc(20px * var(--sizeMultiplier));
-		width: calc(20px * var(--sizeMultiplier));
-	}
+	/* Removed checkmark/cross image styles - no longer used */
 	
 	.vaultItems
 	{

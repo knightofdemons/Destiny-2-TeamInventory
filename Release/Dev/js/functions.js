@@ -829,35 +829,90 @@ function generatePlayerHTML(cP){
 /* view Fireteam 																 */
 /*********************************************************************************/
 async function getFireteam(){
-	getDefinitions();
+	getDefinitions(); // Ensure definitions are loaded
 	contentFireteam.innerHTML = "<div class='warning'><a>Loading data from Bungie...</a></div>";
-	let temp = JSON.parse(localStorage.getItem("oauthToken"));
-	if(!temp){
+	
+	// Get OAuth token from IndexedDB instead of localStorage
+	const oauthToken = await window.dbOperations.getOAuthToken();
+	if(!oauthToken || !oauthToken.membership_id){
 		fireteamCounter = -1;
 		contentFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>";
-	}else{
-		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
+		return; // Exit if not logged in
+	}
+	
+	try {
+		// Get user's linked profiles
+		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + oauthToken.membership_id + '/LinkedProfiles/?getAllMemberships=true';
+		let temp = await getData(rqURL);
+		
+		if (!temp.Response || !temp.Response.profiles || temp.Response.profiles.length === 0) {
+			fireteamCounter = -1;
+			contentFireteam.innerHTML = "<div class='warning'><a>Could not retrieve user profile data</a></div>";
+			return;
+		}
+		
+		const memberID = temp.Response.profiles[0].membershipId;
+		const memberType = temp.Response.profiles[0].applicableMembershipTypes[0];
+		
+		// Get profile transitory data (fireteam info)
+		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
 		temp = await getData(rqURL);
-			memberID = temp["Response"]["profiles"][0]["membershipId"];
-			memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
-			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
-			temp = await getData(rqURL);
-				if (!temp["Response"]["profileTransitoryData"]["data"]){
-					fireteamCounter = 0;
-					contentFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
-				}else{
-					contentFireteam.innerHTML = "";
-					fireteamCounter = temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length;
-					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
-						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
-						let tmpProf = await getData(rqURL);
-						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0], "contentFireteam");
-						let tmpAdd = generatePlayerHTML(currentPlayer);
-						userDB['fireteamPlayers'] =	{
-										currentPlayer: currentPlayer.membershipId[0]
+		
+		if (!temp.Response || !temp.Response.profileTransitoryData || !temp.Response.profileTransitoryData.data) {
+			fireteamCounter = 0;
+			contentFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
+			return;
+		}
+		
+		const partyMembers = temp.Response.profileTransitoryData.data.partyMembers;
+		if (!partyMembers || partyMembers.length === 0) {
+			fireteamCounter = 0;
+			contentFireteam.innerHTML = "<div class='warning'><a>No fireteam members found</a></div>";
+			return;
+		}
+		
+		contentFireteam.innerHTML = "";
+		fireteamCounter = partyMembers.length;
+		
+		// Process each fireteam member
+		for (let i = 0; i < partyMembers.length; i++) {
+			try {
+				const memberId = partyMembers[i].membershipId;
+				
+				// Get member's linked profiles
+				rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + memberId + '/LinkedProfiles/?getAllMemberships=true';
+				let tmpProf = await getData(rqURL);
+				
+				if (tmpProf.Response && tmpProf.Response.profiles && tmpProf.Response.profiles.length > 0) {
+					const memberType = tmpProf.Response.profiles[0].applicableMembershipTypes[0];
+					
+					// Get player data
+					const currentPlayer = await getPlayer(memberId, memberType);
+					
+					if (currentPlayer) {
+						// Store fireteam player data
+						userDB['fireteamPlayers'] = {
+							currentPlayer: currentPlayer.membershipId[0]
 						};
+						
+						// Generate and display player HTML
 						contentFireteam.innerHTML += generatePlayerHTML(currentPlayer);
 					}
-				}		
+				}
+			} catch (error) {
+				console.warn(`Failed to load fireteam member ${i}:`, error);
+			}
+		}
+		
+		// Save fireteam data to IndexedDB
+		await window.dbOperations.saveFireteamData({
+			members: partyMembers,
+			timestamp: Date.now()
+		});
+		
+	} catch (error) {
+		console.error("Error loading fireteam data:", error);
+		fireteamCounter = -1;
+		contentFireteam.innerHTML = "<div class='warning'><a>Error loading fireteam data. Please try again.</a></div>";
 	}
 }

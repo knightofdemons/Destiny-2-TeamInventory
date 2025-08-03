@@ -203,6 +203,12 @@ async function getDefinitions(){
 						(itemDefinitionsTmp.name = itemDefinitionsTmp.name || []).push(resItemDefinitions[resItemDef]['displayProperties']['name']);
 						(itemDefinitionsTmp.id = itemDefinitionsTmp.id || []).push(resItemDef);
 						(itemDefinitionsTmp.iconURL = itemDefinitionsTmp.iconURL || []).push('https://www.bungie.net' + resItemDefinitions[resItemDef]['displayProperties']['icon']);
+						// Add archetype information for armor items
+						if (resItemDefinitions[resItemDef]['equippingBlock'] !== undefined && resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] !== undefined) {
+							(itemDefinitionsTmp.archetype = itemDefinitionsTmp.archetype || []).push(resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel']);
+						} else {
+							(itemDefinitionsTmp.archetype = itemDefinitionsTmp.archetype || []).push("");
+						}
 						if (resItemDefinitions[resItemDef]['collectibleHash'] !== undefined) {
 							(itemDefinitionsTmp.collectibleID = itemDefinitionsTmp.collectibleID || []).push(resItemDefinitions[resItemDef]['collectibleHash']);
 						} else {
@@ -277,6 +283,7 @@ async function getDefinitions(){
 		let name = itemDefinitionsTmp.name;
 		let id = itemDefinitionsTmp.id;
 		let iconURL = itemDefinitionsTmp.iconURL;
+		let archetype = itemDefinitionsTmp.archetype;
 		let collectibleID = itemDefinitionsTmp.collectibleID;
 		let bucketHash = itemDefinitionsTmp.bucketHash;
 		let bucket = itemDefinitionsTmp.bucket;
@@ -287,7 +294,7 @@ async function getDefinitions(){
 		let subcategory = itemDefinitionsTmp.subcategory;
 		let exo = itemDefinitionsTmp.exo;
 		let catHash = itemDefinitionsTmp.catHash;
-		itemDefinitions = sortArrays({type,name,id,iconURL,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory,exo,catHash});
+		itemDefinitions = sortArrays({type,name,id,iconURL,archetype,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory,exo,catHash});
 
 	// Save all definitions to IndexedDB
 	const definitions = {
@@ -331,6 +338,91 @@ function sortArrays(arrays, comparator = (a, b) => (a < b) ? -1 : (a > b) ? 1 : 
   }
 }
 
+
+/*********************************************************************************/
+/* Helper Functions															   */
+/*********************************************************************************/
+
+// Calculate catalyst progression percentage
+function calculateCatalystProgression(recordData) {
+	if (!recordData || !recordData.objectives) {
+		return 0;
+	}
+	
+	let completedObjectives = 0;
+	let totalObjectives = 0;
+	
+	for (let objective of recordData.objectives) {
+		if (objective.complete) {
+			completedObjectives++;
+		}
+		totalObjectives++;
+	}
+	
+	return totalObjectives > 0 ? (completedObjectives / totalObjectives) * 100 : 0;
+}
+
+// Get catalyst CSS classes and progression data
+function getCatalystClasses(recordData) {
+	if (!recordData) {
+		return { classes: "", progression: 0 };
+	}
+	
+	const progression = calculateCatalystProgression(recordData);
+	
+	if (progression === 0) {
+		return { classes: "", progression: 0 }; // No catalyst progress
+	} else if (progression === 100) {
+		return { classes: " catalyst-progress completed", progression: 100 }; // Completed catalyst
+	} else {
+		return { classes: " catalyst-progress", progression: progression }; // Incomplete catalyst
+	}
+}
+
+// Get archetype icon URL based on archetype name
+function getArchetypeIcon(archetype) {
+	if (!archetype || archetype === "") {
+		return "";
+	}
+	
+	// Map archetype names to Bungie CDN icon paths
+	// These paths are based on the Destiny 2 CDN structure for archetype icons
+	const archetypeIcons = {
+		"gunner": "https://www.bungie.net/common/destiny2_content/icons/archetypes/gunner.png",
+		"brawler": "https://www.bungie.net/common/destiny2_content/icons/archetypes/brawler.png", 
+		"specialist": "https://www.bungie.net/common/destiny2_content/icons/archetypes/specialist.png",
+		"tank": "https://www.bungie.net/common/destiny2_content/icons/archetypes/tank.png",
+		"support": "https://www.bungie.net/common/destiny2_content/icons/archetypes/support.png",
+		"scout": "https://www.bungie.net/common/destiny2_content/icons/archetypes/scout.png"
+	};
+	
+	return archetypeIcons[archetype.toLowerCase()] || "";
+}
+
+// Calculate armor progress percentage (placeholder - can be customized based on specific requirements)
+function calculateArmorProgress(itemDetails) {
+	// For now, return a placeholder value
+	// This can be customized based on specific armor progression requirements
+	// Examples: masterwork level, stat tiers, etc.
+	return 75; // Placeholder 75% progress
+}
+
+// Get armor progress CSS classes and progression data
+function getArmorProgressClasses(itemDetails) {
+	if (!itemDetails) {
+		return { classes: "", progression: 0 };
+	}
+	
+	const progression = calculateArmorProgress(itemDetails);
+	
+	if (progression === 0) {
+		return { classes: "", progression: 0 }; // No progress
+	} else if (progression === 100) {
+		return { classes: " completed", progression: 100 }; // Completed
+	} else {
+		return { classes: "", progression: progression }; // Incomplete
+	}
+}
 
 /*********************************************************************************/
 /* Get initial data															  */
@@ -445,15 +537,8 @@ async function InitData(){
             }
         }
         
-        // Check OAuth token
-        const oauthToken = await window.dbOperations.getOAuthToken();
-        if (oauthToken) {
-            document.querySelector("#settingsLogin").classList.add('closed');
-            document.querySelector("#settingsLogout").classList.remove('closed');
-        } else {
-            document.querySelector("#settingsLogin").classList.remove('closed');
-            document.querySelector("#settingsLogout").classList.add('closed');
-        }
+        // Check OAuth token and update login state
+        await updateLoginState();
         
         // Load manifest data
         window.loadingManager.setState(2);
@@ -504,6 +589,8 @@ async function InitData(){
         // Hide loading screen after a short delay
         setTimeout(() => {
             window.loadingManager.hide();
+            // Show welcome notification
+            showNotification('Destiny 2 Team Inventory loaded successfully!', 'success', 3000);
         }, 1000);
         
         hasInitDataCompleted = true;
@@ -636,38 +723,26 @@ function generatePlayerHTML(cP){
 	HTML +=					"<div class='headline-weapon-bucket'>" + userDB['Definitions']['item'].bucket[i] + "</div>";
 							hb++;
 						}
-						// check if weapon is achieved and overlay a check mark or cross over the image
-							var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
-							var marker = "";
-							// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
-							// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
-							// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
-							if (checkState % 2 == 0) {
-								marker="check";
+						// check if weapon is achieved and determine availability
+							var unavailable = "";
+							// Only check collectible state if collectibleID exists and is not 0
+							if (userDB['Definitions']['item'].collectibleID[i] > 0 && cP.collectibles[userDB['Definitions']['item'].collectibleID[i]] !== undefined) {
+								var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
+								// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
+								// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
+								// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
+								// Check if item is unavailable (not acquired = state 1, or other unavailable states)
+								if (checkState === 1 || checkState === 2 || checkState === 4 || checkState === 8 || checkState === 16 || checkState === 32 || checkState === 64) {
+									unavailable = " unavailable";
 								}
-							else {
-								marker="cross";
 							}
-							// check Masterwork
+							// check Catalyst progression
+							var catalystData = { classes: "", progression: 0 };
 							if (userDB['Definitions']['item'].catHash[i] > 0 && cP.records[userDB['Definitions']['item'].catHash[i]] !== undefined) {
-								var checkMaster = cP.records[userDB['Definitions']['item'].catHash[i]].state;
-							} else {
-								var checkMaster = 2;
+								catalystData = getCatalystClasses(cP.records[userDB['Definitions']['item'].catHash[i]]);
 							}
-							var master = "";
-						// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyRecordState.html#schema_Destiny-DestinyRecordState
-						// states can be added! --> all odd numbers = achieved, all even numbers = not achieved
-							if (checkMaster % 2 == 1) {
-								master=" master";
-								}
-							else {
-								master="";
-							}
-	HTML +=				"<div class='itemIconContainer" + master + "'>" +
-							'<img class="' + marker + '" src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
-							"<div class='itemIconStatus'>" + 
-									"<img src='css/images/" + marker + ".png'>" +
-							"</div>" +
+	HTML +=				"<div class='itemIconContainer" + catalystData.classes + unavailable + "' style='--catalyst-progress: " + catalystData.progression * 3.6 + "deg'>" +
+							'<img src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 							'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
 						"</div>";
 						}
@@ -706,23 +781,21 @@ function generatePlayerHTML(cP){
 									}
 									hb++;
 								}
-							// check if armor is achieved and overlay a check mark or cross over the image
-								var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
-								var marker = "";
-								// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
-								// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
-								// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
-								if (checkState % 2 == 0) {
-									marker="check";
+							// check if armor is achieved and determine availability
+								var unavailable = "";
+								// Only check collectible state if collectibleID exists and is not 0
+								if (userDB['Definitions']['item'].collectibleID[i] > 0 && cP.collectibles[userDB['Definitions']['item'].collectibleID[i]] !== undefined) {
+									var checkState = cP.collectibles[userDB['Definitions']['item'].collectibleID[i]].state;
+									// states: https://bungie-net.github.io/multi/schema_Destiny-DestinyCollectibleState.html#schema_Destiny-DestinyCollectibleState
+									// 0 = none, 1 = not acquired, 2 = obscured, 4 = invisible, 8 = cannot afford material, 16 = no room left in inventory, 32 = can't have a second one, 64 = purchase disabled
+									// states can be added! --> all odd numbers = not obtained, all even numbers = obtained
+									// Check if item is unavailable (not acquired = state 1, or other unavailable states)
+									if (checkState === 1 || checkState === 2 || checkState === 4 || checkState === 8 || checkState === 16 || checkState === 32 || checkState === 64) {
+										unavailable = " unavailable";
 									}
-								else {
-									marker="cross";
 								}
-	HTML +=					"<div class='itemIconContainer'>" +
-								'<img class=' + marker + ' src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
-								"<div class='itemIconStatus'>" + 
-									"<img src='css/images/" + marker + ".png'>" +
-								"</div>" +
+	HTML +=					"<div class='itemIconContainer" + unavailable + "'>" +
+								'<img src="' + userDB['Definitions']['item'].iconURL[i] + '" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 								'<div class="itemIconContainerInfo" title="' + userDB['Definitions']['item'].name[i] + ' (' + userDB['Definitions']['item'].type[i] + ')"></div>' +
 							"</div>";
 							}
@@ -767,17 +840,23 @@ function generatePlayerHTML(cP){
 							for (item in cEquip) {
 								indexItem = userDB['Definitions']['item'].id.indexOf(cEquip[item].itemHash.toString());
 								if (cEquip[item].bucketHash === buckets[b]) {
-	HTML +=						"<div class='itemIconContainer'>" +
+									// Calculate armor progress
+									const armorData = getArmorProgressClasses(cP.itemDetails[cEquip[item].itemInstanceId]);
+	HTML +=						"<div class='itemIconContainer armor-progress" + armorData.classes + "' style='--armor-progress: " + armorData.progression * 3.6 + "deg'>" +
 									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 									"<div class='itemIconContainerLvl'>";
-									if (cP.itemDetails[cEquip[item].itemInstanceId].energy !== undefined) {
+									// Check for archetype icon first, then fall back to energy type
+									const archetypeIcon = getArchetypeIcon(userDB['Definitions']['item'].archetype[indexItem]);
+									if (archetypeIcon !== "") {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + archetypeIcon + '">' +
+										" ";								
+									} else if (cP.itemDetails[cEquip[item].itemInstanceId].energy !== undefined) {
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType)] + '">' +
 										" ";								
 									} else if (cP.itemDetails[cEquip[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cEquip[item].itemInstanceId].damageType !== 0) {
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].damageType)] + '">' +
 										" ";								
-									}
-									else {
+									} else {
 	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
 									}
 									if (cP.itemDetails[cEquip[item].itemInstanceId].primaryStat !== undefined) {
@@ -798,17 +877,23 @@ function generatePlayerHTML(cP){
 							for (item in cInv) {
 								indexItem = userDB['Definitions']['item'].id.indexOf(cInv[item].itemHash.toString());
 								if (cInv[item].bucketHash === buckets[b]) {
-	HTML +=						"<div class='itemIconContainer'>" +
+									// Calculate armor progress
+									const armorData = getArmorProgressClasses(cP.itemDetails[cInv[item].itemInstanceId]);
+	HTML +=						"<div class='itemIconContainer armor-progress" + armorData.classes + "' style='--armor-progress: " + armorData.progression * 3.6 + "deg'>" +
 									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 									"<div class='itemIconContainerLvl'>";
-									if (cP.itemDetails[cInv[item].itemInstanceId].energy !== undefined) {
+									// Check for archetype icon first, then fall back to energy type
+									const archetypeIcon = getArchetypeIcon(userDB['Definitions']['item'].archetype[indexItem]);
+									if (archetypeIcon !== "") {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + archetypeIcon + '">' +
+										" ";								
+									} else if (cP.itemDetails[cInv[item].itemInstanceId].energy !== undefined) {
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType)] + '">' +
 										" ";								
 									} else if (cP.itemDetails[cInv[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cInv[item].itemInstanceId].damageType !== 0) {
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].damageType)] + '">' +
 										" ";								
-									}
-									else {
+									} else {
 	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
 									}
 									if (cP.itemDetails[cInv[item].itemInstanceId].primaryStat !== undefined) {
@@ -840,17 +925,23 @@ function generatePlayerHTML(cP){
 							if (cP.profileInventory[item] !== undefined) {
 								indexItem = userDB['Definitions']['item'].id.indexOf(cP.profileInventory[item].itemHash.toString());
 								if (userDB['Definitions']['item'].bucketHash[indexItem] === buckets[b]) {
-	HTML +=						"<div class='itemIconContainer'>" +
+									// Calculate armor progress
+									const armorData = getArmorProgressClasses(cP.itemDetails[cP.profileInventory[item].itemInstanceId]);
+	HTML +=						"<div class='itemIconContainer armor-progress" + armorData.classes + "' style='--armor-progress: " + armorData.progression * 3.6 + "deg'>" +
 									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '" title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')" onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
 									"<div class='itemIconContainerLvl'>";
-									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy !== undefined) {
+									// Check for archetype icon first, then fall back to energy type
+									const archetypeIcon = getArchetypeIcon(userDB['Definitions']['item'].archetype[indexItem]);
+									if (archetypeIcon !== "") {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + archetypeIcon + '">' +
+										" ";								
+									} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy !== undefined) {
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType)] + '">' +
 										" ";								
 									} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== 0) {
 	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType)] + '">' +
 										" ";								
-									}
-									else {
+									} else {
 	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
 									}
 									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].primaryStat !== undefined) {
@@ -878,33 +969,88 @@ function generatePlayerHTML(cP){
 async function getFireteam(){
 	getDefinitions();
 	contentFireteam.innerHTML = "<div class='warning'><a>Loading data from Bungie...</a></div>";
-	let temp = JSON.parse(localStorage.getItem("oauthToken"));
-	if(!temp){
+	
+	// Get OAuth token from IndexedDB instead of localStorage
+	const oauthToken = await window.dbOperations.getOAuthToken();
+	if(!oauthToken || !oauthToken.membership_id){
 		fireteamCounter = -1;
 		contentFireteam.innerHTML = "<div class='warning'><a>You are not logged in! Please reload the page and sign in with the app</a></div>";
-	}else{
-		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["membership_id"] + '/LinkedProfiles/?getAllMemberships=true';
+		return;
+	}
+	
+	try {
+		// Get user's linked profiles
+		let rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + oauthToken.membership_id + '/LinkedProfiles/?getAllMemberships=true';
+		let temp = await getData(rqURL);
+		
+		if (!temp.Response || !temp.Response.profiles || temp.Response.profiles.length === 0) {
+			fireteamCounter = -1;
+			contentFireteam.innerHTML = "<div class='warning'><a>Could not retrieve user profile data</a></div>";
+			return;
+		}
+		
+		const memberID = temp.Response.profiles[0].membershipId;
+		const memberType = temp.Response.profiles[0].applicableMembershipTypes[0];
+		
+		// Get profile transitory data (fireteam info)
+		rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
 		temp = await getData(rqURL);
-			memberID = temp["Response"]["profiles"][0]["membershipId"];
-			memberType = temp["Response"]["profiles"][0]["applicableMembershipTypes"][0];
-			rqURL = 'https://www.bungie.net/Platform/Destiny2/' + memberType + '/Profile/' + memberID + '/?components=1000';
-			temp = await getData(rqURL);
-				if (!temp["Response"]["profileTransitoryData"]["data"]){
-					fireteamCounter = 0;
-					contentFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
-				}else{
-					contentFireteam.innerHTML = "";
-					fireteamCounter = temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length;
-					for (let i = 0; i < temp["Response"]["profileTransitoryData"]["data"]["partyMembers"].length; i++){
-						rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"] + '/LinkedProfiles/?getAllMemberships=true';
-						let tmpProf = await getData(rqURL);
-						currentPlayer = await getPlayer(temp["Response"]["profileTransitoryData"]["data"]["partyMembers"][i]["membershipId"], tmpProf["Response"]["profiles"][0]["applicableMembershipTypes"][0], "contentFireteam");
-						let tmpAdd = generatePlayerHTML(currentPlayer);
-						userDB['fireteamPlayers'] =	{
-										currentPlayer: currentPlayer.membershipId[0]
+		
+		if (!temp.Response || !temp.Response.profileTransitoryData || !temp.Response.profileTransitoryData.data) {
+			fireteamCounter = 0;
+			contentFireteam.innerHTML = "<div class='warning'><a>Your Destiny-Account shows that you are offline!</a></div>";
+			return;
+		}
+		
+		const partyMembers = temp.Response.profileTransitoryData.data.partyMembers;
+		if (!partyMembers || partyMembers.length === 0) {
+			fireteamCounter = 0;
+			contentFireteam.innerHTML = "<div class='warning'><a>No fireteam members found</a></div>";
+			return;
+		}
+		
+		contentFireteam.innerHTML = "";
+		fireteamCounter = partyMembers.length;
+		
+		// Process each fireteam member
+		for (let i = 0; i < partyMembers.length; i++) {
+			try {
+				const memberId = partyMembers[i].membershipId;
+				
+				// Get member's linked profiles
+				rqURL = 'https://www.bungie.net/Platform/Destiny2/254/Profile/' + memberId + '/LinkedProfiles/?getAllMemberships=true';
+				let tmpProf = await getData(rqURL);
+				
+				if (tmpProf.Response && tmpProf.Response.profiles && tmpProf.Response.profiles.length > 0) {
+					const memberType = tmpProf.Response.profiles[0].applicableMembershipTypes[0];
+					
+					// Get player data
+					const currentPlayer = await getPlayer(memberId, memberType);
+					
+					if (currentPlayer) {
+						// Store fireteam player data
+						userDB['fireteamPlayers'] = {
+							currentPlayer: currentPlayer.membershipId[0]
 						};
+						
+						// Generate and display player HTML
 						contentFireteam.innerHTML += generatePlayerHTML(currentPlayer);
 					}
-				}		
+				}
+			} catch (error) {
+				console.warn(`Failed to load fireteam member ${i}:`, error);
+			}
+		}
+		
+		// Save fireteam data to IndexedDB
+		await window.dbOperations.saveFireteamData({
+			members: partyMembers,
+			timestamp: Date.now()
+		});
+		
+	} catch (error) {
+		console.error("Error loading fireteam data:", error);
+		fireteamCounter = -1;
+		contentFireteam.innerHTML = "<div class='warning'><a>Error loading fireteam data. Please try again.</a></div>";
 	}
 }

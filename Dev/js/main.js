@@ -865,12 +865,84 @@ function showLoginFrame(){
 	loginFrame.classList.remove("closed");
 }
 
-function closeLoginFrame(){
+async function closeLoginFrame(){
 	loginFrame.classList.add("closed");
+	// Show notification if user closes login frame without logging in
+	try {
+		const oauthToken = await window.dbOperations.getOAuthToken();
+		if (!oauthToken) {
+			showNotification('Login cancelled. You can try again anytime.', 'info');
+		}
+	} catch (error) {
+		console.error("Error checking OAuth token:", error);
+	}
 }
 
 function showLoadingFrame(){
 	loadingFrame.classList.add("closed");
+}
+
+// Notification System Functions
+function showNotification(message, type = 'info', duration = 4000) {
+	const container = document.getElementById('notificationContainer');
+	if (!container) return;
+	
+	const notification = document.createElement('div');
+	notification.className = `notification ${type}`;
+	
+	const icon = document.createElement('i');
+	icon.className = `bx ${getNotificationIcon(type)} notification-icon`;
+	
+	const text = document.createElement('span');
+	text.textContent = message;
+	
+	notification.appendChild(icon);
+	notification.appendChild(text);
+	container.appendChild(notification);
+	
+	// Trigger animation
+	setTimeout(() => {
+		notification.classList.add('show');
+	}, 100);
+	
+	// Auto remove after duration
+	setTimeout(() => {
+		notification.classList.remove('show');
+		setTimeout(() => {
+			if (container.contains(notification)) {
+				container.removeChild(notification);
+			}
+		}, 300);
+	}, duration);
+}
+
+function getNotificationIcon(type) {
+	switch (type) {
+		case 'success': return 'bx-check-circle';
+		case 'error': return 'bx-x-circle';
+		case 'warning': return 'bx-error';
+		case 'info': 
+		default: return 'bx-info-circle';
+	}
+}
+
+// Function to check and update login state
+async function updateLoginState() {
+	try {
+		const oauthToken = await window.dbOperations.getOAuthToken();
+		const loginBtn = document.querySelector("#settingsLogin");
+		const logoutBtn = document.querySelector("#settingsLogout");
+		
+		if (oauthToken && oauthToken.membership_id) {
+			loginBtn.classList.add('closed');
+			logoutBtn.classList.remove('closed');
+		} else {
+			loginBtn.classList.remove('closed');
+			logoutBtn.classList.add('closed');
+		}
+	} catch (error) {
+		console.error("Error updating login state:", error);
+	}
 }
 
 
@@ -1074,10 +1146,11 @@ async function clickLogout() {
 		document.querySelector(".settingsSubMenu").classList.toggle("open");
 		document.querySelector(".language-options").classList.remove("open");
 		await window.dbOperations.deleteOAuthToken();
-		document.querySelector("#settingsLogin").style.display = 'flex';
-		document.querySelector("#settingsLogout").style.display = 'none';
+		await updateLoginState();
+		showNotification('Successfully logged out.', 'info');
 	} catch (error) {
 		console.error("Error logging out:", error);
+		showNotification('Logout failed. Please try again.', 'error');
 	}
 }
 

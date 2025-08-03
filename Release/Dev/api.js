@@ -1,1 +1,0 @@
-const akey = '688335aba0164d2f9a3bfa1db03b7087';
