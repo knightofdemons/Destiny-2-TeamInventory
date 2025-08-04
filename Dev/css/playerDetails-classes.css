@@ -204,8 +204,8 @@
 		pointer-events: none;
 		display: block; /* Ensure border is visible */
 		/* Use mask to create border effect - cut out center */
-		mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 2px), black calc(var(--iconSize) / 2 - 2px));
-		-webkit-mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 2px), black calc(var(--iconSize) / 2 - 2px));
+		mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 5px), black calc(var(--iconSize) / 2 - 5px));
+		-webkit-mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 5px), black calc(var(--iconSize) / 2 - 5px));
 	}
 	
 	/* Apply conic-gradient background for incomplete catalysts using data attribute */
@@ -216,8 +216,181 @@
 	/* Completed catalysts get a solid golden border */
 	.itemIconContainer.catalyst-progress.completed .catalyst-border {
 		background: #ffd700 !important; /* More distinctive golden yellow */
-		mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 2px), black calc(var(--iconSize) / 2 - 2px));
-		-webkit-mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 2px), black calc(var(--iconSize) / 2 - 2px));
+		mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 5px), black calc(var(--iconSize) / 2 - 5px));
+		-webkit-mask: radial-gradient(circle at center, transparent calc(var(--iconSize) / 2 - 5px), black calc(var(--iconSize) / 2 - 5px));
+	}
+
+	/* Archetype indicators - CSS-based instead of images */
+	.itemIconContainerEnergy.archetype-gunner {
+		background: linear-gradient(45deg, #ff4444, #cc0000) !important;
+		border: 3px solid #ff6666 !important;
+		border-radius: 50% !important;
+		width: 20px !important;
+		height: 20px !important;
+		position: relative !important;
+		display: block !important;
+	}
+
+	.itemIconContainerEnergy.archetype-gunner::before {
+		content: "🔫";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 8px;
+		line-height: 1;
+	}
+
+	.itemIconContainerEnergy.archetype-brawler {
+		background: linear-gradient(45deg, #ff8800, #cc6600) !important;
+		border: 3px solid #ffaa44 !important;
+		border-radius: 50% !important;
+		width: 20px !important;
+		height: 20px !important;
+		position: relative !important;
+		display: block !important;
+	}
+
+	.itemIconContainerEnergy.archetype-brawler::before {
+		content: "👊";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 8px;
+		line-height: 1;
+	}
+
+	.itemIconContainerEnergy.archetype-specialist {
+		background: linear-gradient(45deg, #44ff44, #00cc00) !important;
+		border: 3px solid #66ff66 !important;
+		border-radius: 50% !important;
+		width: 20px !important;
+		height: 20px !important;
+		position: relative !important;
+		display: block !important;
+	}
+
+	.itemIconContainerEnergy.archetype-specialist::before {
+		content: "⚡";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 8px;
+		line-height: 1;
+	}
+
+	.itemIconContainerEnergy.archetype-tank {
+		background: linear-gradient(45deg, #4444ff, #0000cc) !important;
+		border: 3px solid #6666ff !important;
+		border-radius: 50% !important;
+		width: 20px !important;
+		height: 20px !important;
+		position: relative !important;
+		display: block !important;
+	}
+
+	.itemIconContainerEnergy.archetype-tank::before {
+		content: "🛡️";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 8px;
+		line-height: 1;
+	}
+
+	.itemIconContainerEnergy.archetype-support {
+		background: linear-gradient(45deg, #ff44ff, #cc00cc) !important;
+		border: 3px solid #ff66ff !important;
+		border-radius: 50% !important;
+		width: 20px !important;
+		height: 20px !important;
+		position: relative !important;
+		display: block !important;
+	}
+
+	.itemIconContainerEnergy.archetype-support::before {
+		content: "💚";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 8px;
+		line-height: 1;
+	}
+
+	.itemIconContainerEnergy.archetype-scout {
+		background: linear-gradient(45deg, #ffff44, #cccc00) !important;
+		border: 3px solid #ffff66 !important;
+		border-radius: 50% !important;
+		width: 20px !important;
+		height: 20px !important;
+		position: relative !important;
+		display: block !important;
+	}
+
+	.itemIconContainerEnergy.archetype-scout::before {
+		content: "👁️";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 8px;
+		line-height: 1;
+	}
+	
+	/* Old armor system - shows mods instead of archetypes */
+	.itemIconContainerEnergy.archetype-old-armor {
+		background: linear-gradient(45deg, #666666, #444444) !important;
+		border: 2px solid #888888 !important;
+		border-radius: 50% !important;
+		width: 16px !important;
+		height: 16px !important;
+		position: relative !important;
+		display: block !important;
+	}
+	
+	/* Mod icons for old armor */
+	.itemIconContainerEnergy.mod-icon {
+		background: transparent !important;
+		border: none !important;
+		border-radius: 0 !important;
+		width: 12px !important; /* Reduced from 16px to 12px (25% smaller) */
+		height: 12px !important; /* Reduced from 16px to 12px (25% smaller) */
+		position: relative !important;
+		display: inline-block !important;
+		text-align: center !important;
+		line-height: 12px !important; /* Reduced from 16px to 12px (25% smaller) */
+		font-size: 6px !important; /* Reduced from 8px to 6px (25% smaller) */
+		color: #ffffff !important;
+		margin-left: 5px !important; /* Add 5px margin to push icons to the right */
+		margin-right: 2px !important;
+		vertical-align: middle !important;
+		z-index: 10 !important; /* Higher z-index to ensure mod tooltip appears above gear level */
+		pointer-events: auto !important; /* Ensure mod icons can receive mouse events */
+		cursor: help !important; /* Show help cursor to indicate tooltip availability */
+		overflow: hidden !important; /* Hide overflow for zoom effect */
+	}
+	
+	/* Zoom mod icon images by 25% (cutting edges) */
+	.itemIconContainerEnergy.mod-icon img {
+		transform: scale(1.25) !important; /* Zoom in by 25% */
+		transform-origin: center !important;
+	}
+	
+	/* Archetype icon positioned in top-left of armor */
+	.itemIconContainer .archetype-icon {
+		position: absolute !important;
+		top: 2px !important;
+		left: 2px !important;
+		width: 16px !important;
+		height: 16px !important;
+		z-index: 15 !important; /* Higher than mod icons */
+		pointer-events: none !important; /* Don't interfere with armor tooltips */
+		border-radius: 2px !important;
+		background: rgba(0, 0, 0, 0.7) !important;
 	}
 	
 
@@ -310,9 +483,11 @@
 		padding-left: calc(0.05 * var(--iconSize));
 		position: absolute;
 		bottom: 0; /* Position at very bottom */
-		left: 0; /* Position at very left */
-		width: 100%; /* Full width of container */
+		left: 0; /* Reset to original position */
+		width: 100%; /* Reset to full width */
 		height: 12px; /* Fixed height */
+		z-index: 1; /* Lower z-index than mod icons */
+		pointer-events: none; /* Prevent interference with clicks */
 	}
 	
 	/* Remove black background from collection items (top section) */

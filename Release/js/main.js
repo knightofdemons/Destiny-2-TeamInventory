@@ -801,6 +801,9 @@ async function switchPlayer(){
 		if (playerKeys.length > 0 && userDB.siteSettings.playerCursor < playerKeys.length) {
 			const currentPlayer = userDB.loadedPlayers[playerKeys[userDB.siteSettings.playerCursor]];
 			viewMain.innerHTML = generatePlayerHTML(currentPlayer);
+			
+			// Load mod images after HTML is generated
+			await loadModImages();
 		}
 	} catch (error) {
 		console.error("Error switching player:", error);
@@ -1016,6 +1019,9 @@ async function select(element){
 			
 			// Display the player
 			viewMain.innerHTML = generatePlayerHTML(currentPlayer);
+			
+			// Load mod images after HTML is generated
+			await loadModImages();
 			
 			suggBox.innerHTML = "";
 			inputBox.value = "";
@@ -1236,12 +1242,16 @@ function populatePlayerBucket() {
         const membershipId = Array.isArray(player.membershipId) ? player.membershipId[0] : player.membershipId;
         const playerName = Array.isArray(player.bungieName) ? player.bungieName[0] : player.bungieName;
         
+        // Truncate long player names
+        const maxLength = 25; // "Hühnchen Süß-Sauer 7,99" is about 25 characters
+        const truncatedName = playerName.length > maxLength ? playerName.substring(0, maxLength) + '...' : playerName;
+        
         const playerElement = document.createElement('li');
         playerElement.id = `acc-${membershipId}`;
         playerElement.className = 'player-item';
         playerElement.innerHTML = `
             <div class="player-info" onclick="showPlayer('${membershipId}')">
-                <span class="player-name">${playerName}</span>
+                <span class="player-name" title="${playerName}">${truncatedName}</span>
             </div>
             <div class="player-actions">
                 <i class="bx bx-trash" onclick="deletePlayer('${membershipId}')" title="Remove player"></i>
@@ -1258,6 +1268,9 @@ async function showPlayer(membershipId) {
         const player = userDB.loadedPlayers[membershipId];
         if (player) {
             viewMain.innerHTML = generatePlayerHTML(player);
+            
+            // Load mod images after HTML is generated
+            await loadModImages();
         }
     } catch (error) {
         console.error("Error showing player:", error);
@@ -1282,6 +1295,9 @@ async function deletePlayer(membershipId) {
             if (playerKeys.length > 0) {
                 const firstPlayer = userDB.loadedPlayers[playerKeys[0]];
                 viewMain.innerHTML = generatePlayerHTML(firstPlayer);
+                
+                // Load mod images after HTML is generated
+                await loadModImages();
             } else {
                 viewMain.innerHTML = '<div class="no-players">No players loaded. Add a player to get started.</div>';
             }
@@ -1315,22 +1331,20 @@ async function addPlayerWithProgress(mshipId, platType){
 			
 			// Create the HTML structure first
 			fakeButton.innerHTML = `
-				<div class="player-info">
-					<div class="player-name">Loading Player... (0/6)</div>
-				</div>
-				<div class="player-actions">
-					<i class="bx bx-loader-alt bx-spin" style="color: var(--grad1);"></i>
+				<div class="player-info" style="position: relative; z-index: 2;">
+					<div class="player-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Loading Player... (0/6)</div>
 				</div>
 				<div class="button-progress-bar" style="
 					position: absolute;
-					bottom: 0;
+					top: 0;
 					left: 0;
-					height: 4px;
-					background: var(--grad1);
+					height: 100%;
+					background: ${getInverseThemeColor()};
 					width: 0%;
 					transition: width 0.3s ease;
-					border-radius: 0 0 4px 4px;
-					z-index: 10;
+					border-radius: 4px;
+					z-index: 1;
+					opacity: 0.3;
 				"></div>
 			`;
 			
@@ -1382,6 +1396,9 @@ async function addPlayerWithProgress(mshipId, platType){
 		// Display the player
 		viewMain.innerHTML = generatePlayerHTML(cP);
 		
+		// Load mod images after HTML is generated
+		await loadModImages();
+		
 	} catch (error) {
 		console.error("Error adding player:", error);
 		
@@ -1398,6 +1415,28 @@ async function addPlayerWithProgress(mshipId, platType){
 	}
 }
 
+// Helper function to get inverse of current theme color
+function getInverseThemeColor() {
+	const currentGrad1 = getComputedStyle(document.documentElement).getPropertyValue('--grad1').trim();
+	console.log('Current theme color:', currentGrad1); // Debug log
+	
+	// Define inverse colors for each theme
+	const inverseColors = {
+		'#9a1e18': '#65e1e7', // Red -> Cyan
+		'#115ca7': '#feea58', // Blue -> Yellow
+		'#709922': '#8f66dd', // Green -> Purple
+		'#FBDA61': '#04249e', // Yellow -> Dark Blue
+		'#d78125': '#287eda', // Orange -> Light Blue
+		'#393956': '#c6c6a9', // Purple -> Light Green
+		'#8a8a8a': '#757575', // Black -> Dark Gray
+		'#f0f0f0': '#0f0f0f'  // White -> Black
+	};
+	
+	const inverseColor = inverseColors[currentGrad1];
+	console.log('Inverse color:', inverseColor); // Debug log
+	return inverseColor || '#ff0000'; // Default to red if not found
+}
+
 // Helper function to update progress bar and text
 function updateProgressBar(mshipId, progress, currentStep, totalSteps) {
 	const loadingPlayerItem = document.getElementById(`loading-player-${mshipId}`);
@@ -1406,6 +1445,8 @@ function updateProgressBar(mshipId, progress, currentStep, totalSteps) {
 		const progressBar = loadingPlayerItem.querySelector('.button-progress-bar');
 		if (progressBar) {
 			progressBar.style.width = progress + '%';
+			// Update color to inverse of current theme
+			progressBar.style.background = getInverseThemeColor();
 		}
 		
 		// Update text

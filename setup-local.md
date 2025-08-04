@@ -423,6 +423,20 @@ robocopy "Dev" "Release" /E /L /XO /R:3 /W:1
 - **Files Modified**: `Dev/js/functions.js`, `Dev/js/main.js`, `Dev/js/indexdb.js`, `Dev/js/oauth.js`
 - **Deployment**: 2024-08-03 23:51:00
 
+### ✅ RESOLVED: Armor Mod Detection System Fix
+- **Issue**: General armor mods were not displaying correctly due to excessive debug logging and inefficient socket data processing
+- **Fixes**:
+  - **Cleaned Mod Detection Function**: Removed all debug logging from `getEquippedMods()` function for cleaner execution
+  - **Improved Socket Data Processing**: Streamlined socket data checking logic for both array and socketEntries formats
+  - **Enhanced Mod Icon System**: Now properly uses `getModIcon()` function with socket type hashes for appropriate mod icons
+  - **Removed Debug Logging**: Cleaned up debug logging from `getPlayer()` function socket data merging
+  - **Simplified HTML Generation**: Removed debug logging from armor item processing in HTML generation
+  - **Optimized Archetype Detection**: Removed debug logging from archetype detection in manifest loading
+  - **Fixed Socket Data Structure Access**: Reordered socket data access logic to prioritize `socketEntries` array (the correct API structure) and added debug logging to show full socket object structure
+- **Result**: Armor mods should now display correctly with appropriate icons (⚡🛡️⚔️💎🔧) based on socket types
+- **Files Modified**: `Dev/js/functions.js`
+- **Deployment**: 2024-08-04 20:51:00
+
 ### ✅ RESOLVED: Final Debug Message Cleanup and Weapon Element Colorization
 - **Issue**: Two remaining debug messages in console and request to colorize weapon element type symbols
 - **Fixes**:
@@ -438,6 +452,66 @@ robocopy "Dev" "Release" /E /L /XO /R:3 /W:1
 - **Result**: Clean console with no debug messages and colorized weapon element symbols for better visual distinction
 - **Files Modified**: `Dev/index.html`, `Dev/css/playerDetails-classes.css`, `Dev/js/functions.js`
 - **Deployment**: 2024-08-03 23:57:00
+
+### ✅ RESOLVED: Mod Image Loading Performance Optimization
+- **Issue**: Excessive API calls for manifest data when loading mod images ("for every image a request gets made")
+- **Fix**: 
+  - Implemented manifest caching system with 5-minute expiry to prevent redundant API calls
+  - Added `manifestCache` object and `getCachedManifestData()` function
+  - Modified `getModImageUrl()` to use cached manifest data instead of fetching fresh data for each mod
+  - Significantly reduced network requests and improved loading performance
+- **Files Modified**: `Dev/js/functions.js`
+- **Deployment**: 2024-08-04 21:20:00
+
+### ✅ RESOLVED: General Armor Mod Display Only
+- **Issue**: Too many mods being displayed - user requested to show only the first mod plug (general armor mod slot)
+- **Fix**: 
+  - Modified `getEquippedMods()` function to only process the first socket instead of all sockets
+  - Changed from `forEach` loop to single socket processing for both `socketEntries` and array formats
+  - Updated mod name from "Equipped Mod" to "General Mod" for clarity
+  - Maintains the same image loading system with `plugHash` and caching
+- **Files Modified**: `Dev/js/functions.js`
+- **Deployment**: 2024-08-04 21:21:00
+
+### ✅ RESOLVED: Mod Image Alt Text Enhancement
+- **Issue**: Mod images had generic alt text "Mod" instead of showing the actual mod name
+- **Fix**: 
+  - Modified `getModImageUrl()` function to return both image URL and mod name from manifest
+  - Updated `loadModImages()` function to use actual mod name in alt text and title attributes
+  - Added tooltip support with `title` attribute for better accessibility
+  - Enhanced logging to show mod names during loading process
+- **Files Modified**: `Dev/js/functions.js`
+- **Deployment**: 2024-08-04 21:26:00
+
+### ✅ RESOLVED: Mod Tooltip System Refinement
+- **Issue**: User requested to remove alt text and implement tooltip system exactly like armor name tooltips
+- **Fix**: 
+  - Removed alt text from mod images in `loadModImages()` function
+  - Updated mod icon's `title` attribute with actual mod name from manifest
+  - Maintains existing tooltip system that works identically to armor name tooltips
+  - Tooltips now show actual mod names (e.g., "Resilience Mod", "Recovery Mod") on hover
+- **Files Modified**: `Dev/js/functions.js`
+- **Deployment**: 2024-08-04 21:29:00
+
+### ✅ RESOLVED: Tooltip Overlap Fix
+- **Issue**: Tooltip of the armor image overlaps with the mod tooltip, making it impossible to see which mod is equipped
+- **Fix**: 
+  - Modified HTML generation to conditionally remove armor image tooltip when mods are present
+  - Applied fix to all three sections: equipped items, inventory items, and vault items
+  - Only shows armor tooltip when no mods are equipped, preventing overlap
+  - Mod tooltips now display clearly without interference from armor tooltips
+- **Files Modified**: `Dev/js/functions.js`, `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-04 21:34:00
+
+### ✅ RESOLVED: Old Armor Mod Detection and Icon Background Removal
+- **Issue**: Old armor mod slots were empty, and mod icons had dark background that needed to be removed
+- **Fix**: 
+  - Added `isOldArmor()` function to detect old armor based on socket structure when archetype is not set
+  - Updated all three sections (equipped, inventory, vault) to use fallback detection for old armor
+  - Removed background gradient and borders from mod icons for cleaner appearance
+  - Mod icons now show just the mod image/symbol without background styling
+- **Files Modified**: `Dev/js/functions.js`, `Dev/css/playerDetails-classes.css`
+- **Deployment**: 2024-08-04 21:42:00
 
 ### ✅ RESOLVED: Simple Gear Score Bar Fix
 - **Issue**: Gear score bars had alignment issues with small gaps on the left side, not filling the full width
@@ -650,11 +724,11 @@ robocopy "Dev" "Release" /E /L /XO /R:3 /W:1
 - **Deployment**: 2024-08-03 22:45:00
 
 ## Last Deployment
-**Timestamp**: 2024-08-03 23:10:00  
+**Timestamp**: 2024-08-04 21:10:00  
 **Command**: `robocopy "Dev" "C:\xampp\htdocs\destiny2-inventory" /E /XO /R:3 /W:1`  
 **Files Updated**: 
-- `Dev/js/main.js` (51866 bytes)
-- `Dev/index.html` (26785 bytes)
+- `Dev/js/functions.js` (74360 bytes)
+- `Dev/js/main.js` (53570 bytes)
 
 ## Side Notes
 - The application uses IndexedDB for persistent data storage, replacing the old `localStorage` system
@@ -662,4 +736,50 @@ robocopy "Dev" "Release" /E /L /XO /R:3 /W:1
 - The catalyst progression system uses CSS conic gradients for dynamic border filling
 - Archetype icons are loaded directly from Bungie's manifest without local caching
 - The notification system provides real-time feedback for user actions
-- Debug logging has been removed after resolving initialization issues 
+- Debug logging has been removed after resolving initialization issues
+- **Archetype System Implementation**: 
+  - **Armor Only**: Archetype system applies only to armor items (not weapons)
+  - **Weapons**: Show energy types (Arc, Solar, Void, etc.) or damage types as before
+  - **Old Armor**: Displays equipped mods with simple icons (⚡🛡️⚔️💎🔧) instead of element types
+  - **New Armor**: Will display archetype icons once correct manifest property is identified
+  - **Exotic Collection**: Removed archetype display from exotic collection at top
+  - **Mod Detection**: Automatically detects equipped mods on old armor pieces using socket data
+  - **CSS Styling**: Added styles for archetype indicators and mod icons with distinct visual appearance
+  - **Debug Logging**: Added console logging to identify correct archetype properties in manifest
+  - **Mod Display Fixes**: 
+    - Fixed mod icon display to use inline-block instead of flex
+    - Added proper vertical alignment for mod icons
+    - Enhanced gear level positioning with z-index and pointer-events
+    - Added debug logging to troubleshoot mod detection issues
+    - **Socket Data Loading**: Added component 305 (ItemSockets) to API requests
+    - **Socket Data Integration**: Merged socket data into item details for mod detection
+  - **Generic Mod Icons**: Implemented generic 🔧 icon for equipped mods since socketTypeHash is undefined in API response
+  - **Mod Detection Working**: Mods are now being detected and displayed on old armor pieces
+
+### ✅ RESOLVED: Armor Mod Detection System Fix
+- **Issue**: General armor mod display was not working correctly, showing generic wrench icon (🔧) instead of actual mod images. Console logs showed `socketTypeHash` was `undefined` for all sockets.
+- **Root Cause**: The `socketTypeHash` property is not available in the socket data from the Destiny 2 profile API. The socket data only contains current state (what's equipped), while socket structure (including `socketTypeHash`) is defined in the item's manifest definition.
+- **Fix**: Completely redesigned the mod display system to use `plugHash` values (which are available) to fetch actual mod images from the Bungie manifest, similar to how DIM works:
+  - **Modified `getEquippedMods()` function**: Removed dependency on `socketTypeHash` and focused on using `plugHash` for actual mod images
+  - **Enhanced `getModImageUrl()` function**: Async function that fetches mod definitions from manifest using `plugHash` and returns actual image URLs from Bungie's CDN
+  - **Added `loadModImages()` function**: Post-render function that finds all mod icons with `data-plug-hash` attributes and replaces temporary 🔧 icons with actual mod images
+  - **Updated HTML generation**: All mod icons now include `data-plug-hash` attributes for image loading
+  - **Integrated image loading**: Added `await loadModImages()` calls after all `generatePlayerHTML()` calls in:
+    - `switchPlayer()` function
+    - `searchPlayer()` function  
+    - `showPlayer()` function
+    - `deletePlayer()` function
+    - `addPlayerWithProgress()` function
+    - `InitData()` function
+  - **Image loading process**: 
+    1. HTML is generated with temporary 🔧 icons and `data-plug-hash` attributes
+    2. `loadModImages()` finds all mod icons and fetches actual images from manifest
+    3. Images are loaded asynchronously and replace the temporary icons
+    4. Each mod now displays its actual image from Bungie's CDN
+- **Technical Details**:
+  - Uses `DestinyInventoryItemDefinition` from manifest to get mod display properties
+  - Images are loaded from `https://www.bungie.net` + `displayProperties.icon`
+  - Implements proper error handling for missing manifest data or failed image loads
+  - Maintains fallback to 🔧 icon if image loading fails
+- **Files Modified**: `Dev/js/functions.js`, `Dev/js/main.js`
+- **Deployment**: 2024-08-04 21:10:00 
