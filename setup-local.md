@@ -87,15 +87,17 @@ robocopy "Dev" "Release" /E /L /XO /R:3 /W:1
 - **Files Modified**: `Dev/js/functions.js`, `Dev/css/playerDetails-classes.css`
 - **Deployment**: 2024-08-03 19:30:00
 
-### ✅ RESOLVED: Armor Archetype Icon System
-- **Issue**: Needed to replace energy type icons with archetype icons for armor
+### ✅ RESOLVED: Armor Archetype Icon System - Manifest-Based Implementation
+- **Issue**: Archetype icons not showing for new armor pieces - needed to use correct manifest property
 - **Fix**: 
-  - Implemented archetype icon system using `equippingBlock.uniqueLabel` from manifest
-  - Icons loaded directly from Bungie CDN (no local storage)
-  - Applied to equipped, inventory, and vault armor sections
-  - Added z-index management to prevent icon coverage
-- **Files Modified**: `Dev/js/functions.js`, `Dev/css/playerDetails-classes.css`
-- **Deployment**: 2024-08-03 19:45:00
+  - **Replaced complex socket detection** with simple `iconWatermark` property from `DestinyInventoryItemDefinition`
+  - **Updated manifest loading** to store `archetypeIcon` URLs directly from `iconWatermark` property
+  - **Simplified HTML generation** to use manifest-based archetype icons instead of socket detection
+  - **Removed complex functions**: Eliminated `detectArchetypeFromSockets()`, `detectAndUpdateArchetypes()`, and `findArchetypeHashes()`
+  - **Applied to all sections**: Equipped, inventory, and vault armor now show archetype icons from manifest
+  - **Example**: Hash 351882401 has `iconWatermark: "/common/destiny2_content/icons/6129365b4fad6754f2b8c4478fc3c4ac.png"` → displays as `https://www.bungie.net/common/destiny2_content/icons/6129365b4fad6754f2b8c4478fc3c4ac.png`
+- **Files Modified**: `Dev/js/functions.js`
+- **Deployment**: 2024-08-04 21:30:00
 
 ### ✅ RESOLVED: Exotic Armor Black Bar Removal
 - **Issue**: Black opaque bar was present at bottom of exotic armor items
@@ -493,6 +495,36 @@ robocopy "Dev" "Release" /E /L /XO /R:3 /W:1
 - **Files Modified**: `Dev/js/functions.js`
 - **Deployment**: 2024-08-04 21:29:00
 
+### ✅ RESOLVED: Debug Logging Cleanup and Mod Tooltip Analysis
+- **Issue**: User reported excessive debug logging and requested to "dont add debug message to every armor piece next time, just the ones we're concerned about"
+- **Analysis**: 
+  - **Mod Tooltips**: Debug analysis confirmed that mods like "Melee Mod" (plugHash `4287799666`) correctly show mod names instead of stat increases because they don't have `investmentStats` in the manifest data
+  - **Energy Type Icons**: Debug showed successful lookups (e.g., `API value: 3 Index found: 6`) but `undefined` URLs still appeared in HTML, suggesting potential caching or timing issues
+  - **Expected Behavior**: Mods without stat bonuses (like "Melee Mod", "Empty Mod Socket") correctly display their names, while mods with stat bonuses (like "Health Mod", "Class Mod") show stat increases (e.g., "+10 Resilience")
+- **Fix**: 
+  - Removed all excessive debug logging from `loadModImages()` function
+  - Removed energy type lookup debug logging from `generatePlayerHTML()` function
+  - Removed debug logging from `getModImageUrl()` function
+  - Maintained essential error logging for actual issues
+  - Cleaned up console output while preserving functionality
+- **Files Modified**: `Dev/js/functions.js`
+- **Deployment**: 2024-08-05 6:14:54 PM
+
+### ✅ RESOLVED: Energy Type Icon Undefined URL Fix
+- **Issue**: Energy type icons showing `src="https://www.bungie.netundefined"` for certain energy types (Solar, Arc, Stasis, Void)
+- **Root Cause**: Some energy types in the Bungie manifest don't have `transparentIconPath` property, causing `undefined` when constructing icon URLs
+- **Debug Analysis**: 
+  - Energy type lookup was working correctly (e.g., `energyType: 3, energyTypeIndex: 6`)
+  - Array alignment was correct (enumValue=3 found at index 6)
+  - Issue was `transparentIconPath` being `undefined` for Solar, Arc, Stasis, and Void energy types
+  - Only "Any", "Ghost", and "Subclass" energy types had valid `transparentIconPath` values
+- **Fix**: 
+  - Added fallback logic in manifest loading to use regular `displayProperties.icon` when `transparentIconPath` is not available
+  - Applied fix to both energy types and damage types for consistency
+  - Removed all debug logging after identifying and fixing the issue
+- **Files Modified**: `Dev/js/functions.js`
+- **Deployment**: 2024-08-05 6:27:31 PM
+
 ### ✅ RESOLVED: Tooltip Overlap Fix
 - **Issue**: Tooltip of the armor image overlaps with the mod tooltip, making it impossible to see which mod is equipped
 - **Fix**: 
@@ -724,11 +756,12 @@ robocopy "Dev" "Release" /E /L /XO /R:3 /W:1
 - **Deployment**: 2024-08-03 22:45:00
 
 ## Last Deployment
-**Timestamp**: 2024-08-04 21:10:00  
+**Timestamp**: 2024-08-05 6:27:31 PM  
 **Command**: `robocopy "Dev" "C:\xampp\htdocs\destiny2-inventory" /E /XO /R:3 /W:1`  
 **Files Updated**: 
-- `Dev/js/functions.js` (74360 bytes)
-- `Dev/js/main.js` (53570 bytes)
+- `Dev/js/functions.js` (Fixed energy type icon undefined URLs, added fallback to regular icon when transparentIconPath is missing)
+- `Dev/css/playerDetails-classes.css` (No changes)
+- `Dev/js/main.js` (No changes)
 
 ## Side Notes
 - The application uses IndexedDB for persistent data storage, replacing the old `localStorage` system

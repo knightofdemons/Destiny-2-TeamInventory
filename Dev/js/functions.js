@@ -156,14 +156,24 @@ async function getDefinitions(){
 		// get details for energy types from manifest for every item
 				for (let resEnergyDef in resEnergyDefinitions) {
 					(energyDefinitions.name = energyDefinitions.name || []).push(resEnergyDefinitions[resEnergyDef]['displayProperties']['name']);
-					(energyDefinitions.iconURL = energyDefinitions.iconURL || []).push('https://www.bungie.net' + resEnergyDefinitions[resEnergyDef]['transparentIconPath']);
+					
+					// Use transparentIconPath if available, otherwise fall back to regular icon
+					const iconPath = resEnergyDefinitions[resEnergyDef]['transparentIconPath'] || resEnergyDefinitions[resEnergyDef]['displayProperties']['icon'];
+					(energyDefinitions.iconURL = energyDefinitions.iconURL || []).push('https://www.bungie.net' + iconPath);
+					
 					(energyDefinitions.no = energyDefinitions.no || []).push(resEnergyDefinitions[resEnergyDef]['enumValue']);
 				};
+				
+
 				
 		// get details for damage types from manifest for every item
 				for (let resDamageTypeDef in resDamageTypeDefinitions) {
 					(damageTypeDefinitions.name = damageTypeDefinitions.name || []).push(resDamageTypeDefinitions[resDamageTypeDef]['displayProperties']['name']);
-					(damageTypeDefinitions.iconURL = damageTypeDefinitions.iconURL || []).push('https://www.bungie.net' + resDamageTypeDefinitions[resDamageTypeDef]['transparentIconPath']);
+					
+					// Use transparentIconPath if available, otherwise fall back to regular icon
+					const iconPath = resDamageTypeDefinitions[resDamageTypeDef]['transparentIconPath'] || resDamageTypeDefinitions[resDamageTypeDef]['displayProperties']['icon'];
+					(damageTypeDefinitions.iconURL = damageTypeDefinitions.iconURL || []).push('https://www.bungie.net' + iconPath);
+					
 					(damageTypeDefinitions.no = damageTypeDefinitions.no || []).push(resDamageTypeDefinitions[resDamageTypeDef]['enumValue']);
 				};
 		
@@ -203,28 +213,20 @@ async function getDefinitions(){
 						(itemDefinitionsTmp.name = itemDefinitionsTmp.name || []).push(resItemDefinitions[resItemDef]['displayProperties']['name']);
 						(itemDefinitionsTmp.id = itemDefinitionsTmp.id || []).push(resItemDef);
 						(itemDefinitionsTmp.iconURL = itemDefinitionsTmp.iconURL || []).push('https://www.bungie.net' + resItemDefinitions[resItemDef]['displayProperties']['icon']);
+						
+
 								// Add archetype information for ARMOR items only (not weapons)
 		const itemType = resItemDefinitions[resItemDef]['itemTypeDisplayName'];
 		const isArmor = ['Helmet', 'Gauntlets', 'Chest Armor', 'Leg Armor', 'Class Armor'].includes(itemType);
 		
 		if (isArmor) {
-			// Only process archetypes for armor items
-			if (resItemDefinitions[resItemDef]['equippingBlock'] !== undefined && resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'] !== undefined) {
-				// Check if this is new armor with archetype system
-				const uniqueLabel = resItemDefinitions[resItemDef]['equippingBlock']['uniqueLabel'];
-				const itemName = resItemDefinitions[resItemDef]['displayProperties']['name'];
-				
-
-				
-				// For now, mark as old armor until we find the correct archetype property
-				(itemDefinitionsTmp.archetype = itemDefinitionsTmp.archetype || []).push("old_armor");
-			} else {
-				// Old armor system - no uniqueLabel
-				(itemDefinitionsTmp.archetype = itemDefinitionsTmp.archetype || []).push("old_armor");
-			}
+			// For now, mark all armor as old until we implement the new archetype system
+			(itemDefinitionsTmp.archetype = itemDefinitionsTmp.archetype || []).push("old_armor");
+			(itemDefinitionsTmp.archetypeIcon = itemDefinitionsTmp.archetypeIcon || []).push("");
 		} else {
 			// Not armor - no archetype
 			(itemDefinitionsTmp.archetype = itemDefinitionsTmp.archetype || []).push("");
+			(itemDefinitionsTmp.archetypeIcon = itemDefinitionsTmp.archetypeIcon || []).push("");
 		}
 						if (resItemDefinitions[resItemDef]['collectibleHash'] !== undefined) {
 							(itemDefinitionsTmp.collectibleID = itemDefinitionsTmp.collectibleID || []).push(resItemDefinitions[resItemDef]['collectibleHash']);
@@ -301,6 +303,7 @@ async function getDefinitions(){
 		let id = itemDefinitionsTmp.id;
 		let iconURL = itemDefinitionsTmp.iconURL;
 		let archetype = itemDefinitionsTmp.archetype;
+		let archetypeIcon = itemDefinitionsTmp.archetypeIcon;
 		let collectibleID = itemDefinitionsTmp.collectibleID;
 		let bucketHash = itemDefinitionsTmp.bucketHash;
 		let bucket = itemDefinitionsTmp.bucket;
@@ -311,8 +314,16 @@ async function getDefinitions(){
 		let subcategory = itemDefinitionsTmp.subcategory;
 		let exo = itemDefinitionsTmp.exo;
 		let catHash = itemDefinitionsTmp.catHash;
-		itemDefinitions = sortArrays({type,name,id,iconURL,archetype,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory,exo,catHash});
+		itemDefinitions = sortArrays({type,name,id,iconURL,archetype,archetypeIcon,collectibleID,bucketHash,bucket,bucketOrder,categoryHash,category,subcategoryHash,subcategory,exo,catHash});
 
+	// Collect all possible archetype hashes from the manifest
+	const archetypeHashes = [];
+	for (let resItemDef in resItemDefinitions) {
+		if (resItemDefinitions[resItemDef]['plug'] && resItemDefinitions[resItemDef]['plug']['plugCategoryIdentifier'] === 'armor_archetypes') {
+			archetypeHashes.push(resItemDef);
+		}
+	}
+	
 	// Save all definitions to IndexedDB
 	const definitions = {
 		stat: statDefinitions,
@@ -322,6 +333,7 @@ async function getDefinitions(){
 		damageType: damageTypeDefinitions,
 		vendor: vendorDefinitions,
 		record: recordDefinitions,
+		archetypeHashes: archetypeHashes,
 	};
 	
 	// Save each definition type to IndexedDB
@@ -475,21 +487,14 @@ function getEquippedMods(itemDetails) {
 	const mods = [];
 	
 	if (!itemDetails || !itemDetails.sockets) {
-		console.log('getEquippedMods: No itemDetails or sockets found');
 		return mods;
 	}
 	
-	console.log('getEquippedMods: Processing sockets for item');
-	console.log('getEquippedMods: Full sockets object:', itemDetails.sockets);
-	
 	// The socket data structure from the API has socketEntries array
 	if (itemDetails.sockets.socketEntries && Array.isArray(itemDetails.sockets.socketEntries)) {
-		console.log('getEquippedMods: Sockets has socketEntries, length:', itemDetails.sockets.socketEntries.length);
 		// Only process the first socket (general armor mod slot)
 		const firstSocket = itemDetails.sockets.socketEntries[0];
 		if (firstSocket && firstSocket.plugHash && firstSocket.plugHash !== 0) {
-			console.log(`getEquippedMods: Found plug in first socket:`, firstSocket.plugHash);
-			
 			// Store plugHash for image loading - we'll use this to get actual mod images
 			mods.push({
 				name: "General Mod",
@@ -498,12 +503,9 @@ function getEquippedMods(itemDetails) {
 			});
 		}
 	} else if (Array.isArray(itemDetails.sockets)) {
-		console.log('getEquippedMods: Sockets is array, length:', itemDetails.sockets.length);
 		// Only process the first socket (general armor mod slot)
 		const firstSocket = itemDetails.sockets[0];
 		if (firstSocket && firstSocket.plugHash && firstSocket.plugHash !== 0) {
-			console.log(`getEquippedMods: Found plug in first socket:`, firstSocket.plugHash);
-			
 			// Store plugHash for image loading - we'll use this to get actual mod images
 			mods.push({
 				name: "General Mod",
@@ -511,12 +513,8 @@ function getEquippedMods(itemDetails) {
 				plugHash: firstSocket.plugHash
 			});
 		}
-	} else {
-		console.log('getEquippedMods: No socketEntries found in sockets object');
-		console.log('getEquippedMods: Sockets object keys:', Object.keys(itemDetails.sockets));
 	}
 	
-	console.log('getEquippedMods: Returning mods:', mods);
 	return mods;
 }
 
@@ -573,32 +571,23 @@ function getArchetypeClass(archetype, itemInstanceId = null) {
 // Check if armor is old armor based on item details (fallback for when archetype is not set)
 function isOldArmor(itemDetails) {
 	if (!itemDetails || !itemDetails.sockets) {
-		console.log('isOldArmor: No itemDetails or sockets found');
 		return false;
 	}
 	
-	console.log('isOldArmor: Checking sockets structure:', itemDetails.sockets);
-	
-	// Old armor typically has socketEntries array with mod sockets
-	if (itemDetails.sockets.socketEntries && Array.isArray(itemDetails.sockets.socketEntries)) {
-		console.log('isOldArmor: Found socketEntries array with length:', itemDetails.sockets.socketEntries.length);
-		// Check if there are socket entries (indicating this is old armor with mod sockets)
-		// Don't require plugHash to be non-zero, as empty sockets are still mod sockets
-		const isOld = itemDetails.sockets.socketEntries.length > 0;
-		console.log('isOldArmor: Returning', isOld, 'for socketEntries structure');
-		return isOld;
+	// Check if this item has an archetype icon in the manifest
+	// If it has an archetype icon, it's new armor, not old armor
+	const itemHash = itemDetails.itemHash;
+	if (itemHash) {
+		const indexItem = userDB['Definitions']['item'].id.indexOf(itemHash.toString());
+		if (indexItem !== -1) {
+			const hasArchetypeIcon = userDB['Definitions']['item'].archetypeIcon && userDB['Definitions']['item'].archetypeIcon[indexItem];
+			if (hasArchetypeIcon) {
+				return false; // New armor with archetype
+			}
+		}
 	}
 	
-	// Also check if sockets is a direct array (alternative structure)
-	if (Array.isArray(itemDetails.sockets)) {
-		console.log('isOldArmor: Found direct sockets array with length:', itemDetails.sockets.length);
-		const isOld = itemDetails.sockets.length > 0;
-		console.log('isOldArmor: Returning', isOld, 'for direct array structure');
-		return isOld;
-	}
-	
-	console.log('isOldArmor: No recognized socket structure found, returning false');
-	return false;
+	return true; // Old armor without archetype
 }
 
 // Calculate armor progress percentage
@@ -778,9 +767,6 @@ async function InitData(){
                 
                 // Load mod images after HTML is generated
                 await loadModImages();
-                
-                // Detect and update archetypes for all armor items
-                await detectAndUpdateArchetypes(firstPlayer);
             }
         }
         
@@ -1098,58 +1084,21 @@ function generatePlayerHTML(cP){
 									// Get item details for archetype icon
 									const equippedItemDetails = cP.itemDetails[cEquip[item].itemInstanceId];
 									
-									// Add archetype icon if detected
-									if (isArmor && equippedItemDetails && equippedItemDetails.detectedArchetypeIcon) {
-										console.log('Adding archetype icon for item:', cEquip[item].itemInstanceId, 'Icon:', equippedItemDetails.detectedArchetypeIcon, 'Name:', equippedItemDetails.detectedArchetype);
-										HTML += '<img class="archetype-icon" src="' + equippedItemDetails.detectedArchetypeIcon + '" title="' + equippedItemDetails.detectedArchetype + '">';
-									} else if (isArmor) {
-										console.log('No archetype icon for item:', cEquip[item].itemInstanceId, 'Details:', equippedItemDetails);
+									// Add archetype icon if detected from socket data
+									if (isArmor) {
+										const archetypeHash = detectArchetypeFromSockets(equippedItemDetails);
+										if (archetypeHash) {
+											const archetypeIconUrl = getArchetypeIconUrl(archetypeHash);
+											if (archetypeIconUrl) {
+												HTML += '<img class="archetype-icon" src="' + archetypeIconUrl + '" title="Archetype">';
+											}
+										}
 									}
 									
 	HTML +=							"<div class='itemIconContainerLvl'>";
 									// Check if this is armor or weapon (using existing variables)
 									
-									if (isArmor) {
-										// Debug logging for equipped armor items only
-										console.log('=== EQUIPPED ARMOR ITEM DEBUG ===');
-										console.log('Item Name:', userDB['Definitions']['item'].name[indexItem]);
-										console.log('Item Type:', itemType);
-										console.log('Item Instance ID:', cEquip[item].itemInstanceId);
-										console.log('Item Details:', cP.itemDetails[cEquip[item].itemInstanceId]);
-										
-										// Check socket data specifically
-										const itemDetails = cP.itemDetails[cEquip[item].itemInstanceId];
-										if (itemDetails && itemDetails.sockets) {
-											console.log('Socket data found:', itemDetails.sockets);
-											console.log('Socket data type:', typeof itemDetails.sockets);
-											console.log('Socket data keys:', Object.keys(itemDetails.sockets));
-											
-											if (Array.isArray(itemDetails.sockets)) {
-												console.log('Sockets is array, length:', itemDetails.sockets.length);
-												itemDetails.sockets.forEach((socket, index) => {
-													console.log(`Socket ${index}:`, socket);
-													if (socket.plugHash && socket.plugHash !== 0) {
-														console.log(`  - Plug Hash: ${socket.plugHash}`);
-														console.log(`  - Socket Type Hash: ${socket.socketTypeHash}`);
-														console.log(`  - Is Enabled: ${socket.isEnabled}`);
-													}
-												});
-											} else if (itemDetails.sockets.socketEntries) {
-												console.log('Sockets has socketEntries, length:', itemDetails.sockets.socketEntries.length);
-												itemDetails.sockets.socketEntries.forEach((socket, index) => {
-													console.log(`Socket ${index}:`, socket);
-													if (socket.plugHash && socket.plugHash !== 0) {
-														console.log(`  - Plug Hash: ${socket.plugHash}`);
-														console.log(`  - Socket Type Hash: ${socket.socketTypeHash}`);
-														console.log(`  - Is Enabled: ${socket.isEnabled}`);
-													}
-												});
-											}
-										} else {
-											console.log('No socket data found for this item');
-										}
-										console.log('=====================================');
-										
+																		if (isArmor) {
 										// Armor - show general mod slot and archetype icon
 										// Get general mod (first socket)
 										const generalMod = getGeneralMod(equippedItemDetails);
@@ -1159,11 +1108,24 @@ function generatePlayerHTML(cP){
 											HTML += '<div class="itemIconContainerEnergy mod-icon" title="No mod equipped">⚪</div>';
 										}
 										
-										// Show energy type if no archetype detected
-										const archetypeClass = getArchetypeClass(userDB['Definitions']['item'].archetype[indexItem], cEquip[item].itemInstanceId);
-										if (archetypeClass === "") {
-											if (cP.itemDetails[cEquip[item].itemInstanceId].energy !== undefined) {
-												HTML += '<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType)] + '">';
+										// Show energy type if no archetype icon detected
+										const archetypeHash = detectArchetypeFromSockets(equippedItemDetails);
+										const hasArchetypeIcon = archetypeHash !== null;
+										
+										
+										
+										if (!hasArchetypeIcon) {
+									if (cP.itemDetails[cEquip[item].itemInstanceId].energy !== undefined) {
+												const energyType = cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType;
+												const energyTypeIndex = userDB['Definitions']['energy'].no.indexOf(energyType);
+												
+
+												
+												if (energyTypeIndex !== -1 && userDB['Definitions']['energy'].iconURL[energyTypeIndex]) {
+													HTML += '<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[energyTypeIndex] + '">';
+												} else {
+													HTML += '<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';
+												}
 											} else {
 												HTML += '<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';
 											}
@@ -1171,14 +1133,25 @@ function generatePlayerHTML(cP){
 									} else {
 										// Weapon - show energy type or damage type
 									if (cP.itemDetails[cEquip[item].itemInstanceId].energy !== undefined) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType)] + '">' +
-										" ";								
-									} else if (cP.itemDetails[cEquip[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cEquip[item].itemInstanceId].damageType !== 0) {
-	HTML +=								'<img class="itemIconContainerEnergy" data-damage-type="' + cP.itemDetails[cEquip[item].itemInstanceId].damageType + '" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].damageType)] + '">' +
-										" ";								
+										const energyType = cP.itemDetails[cEquip[item].itemInstanceId].energy.energyType;
+										const energyTypeIndex = userDB['Definitions']['energy'].no.indexOf(energyType);
+										if (energyTypeIndex !== -1 && userDB['Definitions']['energy'].iconURL[energyTypeIndex]) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[energyTypeIndex] + '">' +
+											" ";								
 										} else {
 	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
 										}
+									} else if (cP.itemDetails[cEquip[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cEquip[item].itemInstanceId].damageType !== 0) {
+										const damageTypeIndex = userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cEquip[item].itemInstanceId].damageType);
+										if (damageTypeIndex !== -1 && userDB['Definitions']['damageType'].iconURL[damageTypeIndex]) {
+	HTML +=								'<img class="itemIconContainerEnergy" data-damage-type="' + cP.itemDetails[cEquip[item].itemInstanceId].damageType + '" src="' + userDB['Definitions']['damageType'].iconURL[damageTypeIndex] + '">' +
+										" ";								
+										} else {
+	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
+									}
+									} else {
+	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
+									}
 									}
 									if (cP.itemDetails[cEquip[item].itemInstanceId].primaryStat !== undefined) {
 	HTML +=								(cP.itemDetails[cEquip[item].itemInstanceId].primaryStat.value);
@@ -1216,8 +1189,15 @@ function generatePlayerHTML(cP){
 									const armorTooltip = hasMods ? '' : ' title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')"';
 									
 	HTML +=						"<div class='itemIconContainer'>" +
-									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '"' + armorTooltip + ' onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
-									"<div class='itemIconContainerLvl'>";
+									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '"' + armorTooltip + ' onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">';
+									
+									// Add archetype icon from manifest if available
+									if (isArmor && userDB['Definitions']['item'].archetypeIcon && userDB['Definitions']['item'].archetypeIcon[indexItem]) {
+										const archetypeIconUrl = userDB['Definitions']['item'].archetypeIcon[indexItem];
+										HTML += '<img class="archetype-icon" src="' + archetypeIconUrl + '" title="Archetype">';
+									}
+									
+									HTML += "<div class='itemIconContainerLvl'>";
 									// Check if this is armor or weapon (using existing variables)
 									
 									if (isArmor) {
@@ -1232,11 +1212,23 @@ function generatePlayerHTML(cP){
 											HTML += '<div class="itemIconContainerEnergy mod-icon" title="No mod equipped">⚪</div>';
 										}
 										
-										// Show energy type if no archetype detected
-										const archetypeClass = getArchetypeClass(userDB['Definitions']['item'].archetype[indexItem], cInv[item].itemInstanceId);
-										if (archetypeClass === "") {
-											if (cP.itemDetails[cInv[item].itemInstanceId].energy !== undefined) {
-												HTML += '<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType)] + '">';
+										// Show energy type if no archetype icon detected
+										const hasArchetypeIcon = userDB['Definitions']['item'].archetypeIcon && userDB['Definitions']['item'].archetypeIcon[indexItem];
+										
+
+										
+										if (!hasArchetypeIcon) {
+									if (cP.itemDetails[cInv[item].itemInstanceId].energy !== undefined) {
+												const energyType = cP.itemDetails[cInv[item].itemInstanceId].energy.energyType;
+												const energyTypeIndex = userDB['Definitions']['energy'].no.indexOf(energyType);
+												
+
+												
+												if (energyTypeIndex !== -1 && userDB['Definitions']['energy'].iconURL[energyTypeIndex]) {
+													HTML += '<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[energyTypeIndex] + '">';
+												} else {
+													HTML += '<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';
+												}
 											} else {
 												HTML += '<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';
 											}
@@ -1244,14 +1236,24 @@ function generatePlayerHTML(cP){
 									} else {
 										// Weapon - show energy type or damage type
 									if (cP.itemDetails[cInv[item].itemInstanceId].energy !== undefined) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType)] + '">' +
-										" ";								
-									} else if (cP.itemDetails[cInv[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cInv[item].itemInstanceId].damageType !== 0) {
-	HTML +=								'<img class="itemIconContainerEnergy" data-damage-type="' + cP.itemDetails[cInv[item].itemInstanceId].damageType + '" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].damageType)] + '">' +
-										" ";								
+										const energyTypeIndex = userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].energy.energyType);
+										if (energyTypeIndex !== -1 && userDB['Definitions']['energy'].iconURL[energyTypeIndex]) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[energyTypeIndex] + '">' +
+											" ";								
 										} else {
 	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
 										}
+									} else if (cP.itemDetails[cInv[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cInv[item].itemInstanceId].damageType !== 0) {
+										const damageTypeIndex = userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cInv[item].itemInstanceId].damageType);
+										if (damageTypeIndex !== -1 && userDB['Definitions']['damageType'].iconURL[damageTypeIndex]) {
+	HTML +=								'<img class="itemIconContainerEnergy" data-damage-type="' + cP.itemDetails[cInv[item].itemInstanceId].damageType + '" src="' + userDB['Definitions']['damageType'].iconURL[damageTypeIndex] + '">' +
+										" ";								
+										} else {
+	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
+									}
+									} else {
+	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
+									}
 									}
 									if (cP.itemDetails[cInv[item].itemInstanceId].primaryStat !== undefined) {
 	HTML +=								(cP.itemDetails[cInv[item].itemInstanceId].primaryStat.value);
@@ -1300,51 +1302,64 @@ function generatePlayerHTML(cP){
 									const armorTooltip = hasMods ? '' : ' title="' + userDB['Definitions']['item'].name[indexItem] + ' (' + userDB['Definitions']['item'].type[indexItem] + ')"';
 									
 	HTML +=						"<div class='itemIconContainer'>" +
-									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '"' + armorTooltip + ' onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">' +
-									"<div class='itemIconContainerLvl'>";
+									'<img src="' + userDB['Definitions']['item'].iconURL[indexItem] + '"' + armorTooltip + ' onerror="this.src=\'css/images/placeholder.png\'" onload="this.style.opacity=\'1\'" style="opacity: 0;">';
+									
+									// Add archetype icon from manifest if available
+									if (isArmor && userDB['Definitions']['item'].archetypeIcon && userDB['Definitions']['item'].archetypeIcon[indexItem]) {
+										const archetypeIconUrl = userDB['Definitions']['item'].archetypeIcon[indexItem];
+										HTML += '<img class="archetype-icon" src="' + archetypeIconUrl + '" title="Archetype">';
+									}
+									
+									HTML += "<div class='itemIconContainerLvl'>";
 									// Check if this is armor or weapon (using existing variables)
 									
 									if (isArmor) {
-										// Armor - check for archetype or mods
-										const archetypeClass = getArchetypeClass(userDB['Definitions']['item'].archetype[indexItem], cP.profileInventory[item].itemInstanceId);
+										// Armor - show general mod slot and archetype icon
 										const vaultItemDetails = cP.itemDetails[cP.profileInventory[item].itemInstanceId];
 										
-										// Check if this is old armor (either by archetype or by socket structure)
-										if (archetypeClass === "archetype-old-armor" || isOldArmor(vaultItemDetails)) {
-											// Old armor - show equipped mods instead of energy type
-											const equippedMods = getEquippedMods(vaultItemDetails);
-											if (equippedMods.length > 0) {
-												equippedMods.forEach(mod => {
-													if (mod.plugHash) {
-														// Store plugHash as data attribute for future image loading
-														HTML += '<div class="itemIconContainerEnergy mod-icon" title="' + mod.name + '" data-plug-hash="' + mod.plugHash + '">' + mod.icon + '</div>';
-													} else {
-														HTML += '<div class="itemIconContainerEnergy mod-icon" title="' + mod.name + '">' + mod.icon + '</div>';
-													}
-												});
-											} else {
-												HTML += '<div class="itemIconContainerEnergy mod-icon" title="No mod equipped">⚪</div>';
-											}
-										} else if (archetypeClass !== "") {
-	HTML +=										'<div class="itemIconContainerEnergy ' + archetypeClass + '"></div>' +
-												" ";								
-										} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy !== undefined) {
-	HTML +=										'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType)] + '">' +
-												" ";								
+										// Get general mod (first socket)
+										const generalMod = getGeneralMod(vaultItemDetails);
+										if (generalMod && generalMod.plugHash) {
+											HTML += '<div class="itemIconContainerEnergy mod-icon" title="' + generalMod.name + '" data-plug-hash="' + generalMod.plugHash + '">' + generalMod.icon + '</div>';
 										} else {
-	HTML +=									'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
+											HTML += '<div class="itemIconContainerEnergy mod-icon" title="No mod equipped">⚪</div>';
+										}
+										
+										// Show energy type if no archetype icon detected
+										const hasArchetypeIcon = userDB['Definitions']['item'].archetypeIcon && userDB['Definitions']['item'].archetypeIcon[indexItem];
+										if (!hasArchetypeIcon) {
+									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy !== undefined) {
+												const energyTypeIndex = userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType);
+												if (energyTypeIndex !== -1 && userDB['Definitions']['energy'].iconURL[energyTypeIndex]) {
+													HTML += '<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[energyTypeIndex] + '">';
+												} else {
+													HTML += '<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';
+												}
+											} else {
+												HTML += '<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';
+											}
 										}
 									} else {
 										// Weapon - show energy type or damage type
 									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy !== undefined) {
-	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType)] + '">' +
-										" ";								
-									} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== 0) {
-	HTML +=								'<img class="itemIconContainerEnergy" data-damage-type="' + cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType + '" src="' + userDB['Definitions']['damageType'].iconURL[userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType)] + '">' +
-										" ";								
+										const energyTypeIndex = userDB['Definitions']['energy'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].energy.energyType);
+										if (energyTypeIndex !== -1 && userDB['Definitions']['energy'].iconURL[energyTypeIndex]) {
+	HTML +=								'<img class="itemIconContainerEnergy" src="' + userDB['Definitions']['energy'].iconURL[energyTypeIndex] + '">' +
+											" ";								
 										} else {
 	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
 										}
+									} else if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== undefined && cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType !== 0) {
+										const damageTypeIndex = userDB['Definitions']['damageType'].no.indexOf(cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType);
+										if (damageTypeIndex !== -1 && userDB['Definitions']['damageType'].iconURL[damageTypeIndex]) {
+	HTML +=								'<img class="itemIconContainerEnergy" data-damage-type="' + cP.itemDetails[cP.profileInventory[item].itemInstanceId].damageType + '" src="' + userDB['Definitions']['damageType'].iconURL[damageTypeIndex] + '">' +
+										" ";								
+										} else {
+	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
+									}
+									} else {
+	HTML +=							'<img class="itemIconContainerEnergy" src="css/images/placeholder.png">';									
+									}
 									}
 									if (cP.itemDetails[cP.profileInventory[item].itemInstanceId].primaryStat !== undefined) {
 	HTML +=								(cP.itemDetails[cP.profileInventory[item].itemInstanceId].primaryStat.value);
@@ -1468,102 +1483,11 @@ let manifestCache = {
 let archetypeHashes = null;
 
 // Find all archetype hashes from the manifest
-async function findArchetypeHashes() {
-	if (archetypeHashes) {
-		console.log('findArchetypeHashes: Using cached archetype hashes');
-		return archetypeHashes;
-	}
-	
-	console.log('findArchetypeHashes: Finding archetype hashes from manifest...');
-	
-	try {
-		const itemDefinitions = await getCachedManifestData();
-		if (!itemDefinitions) {
-			console.log('findArchetypeHashes: No manifest data available');
-			return [];
-		}
-		
-		const hashes = [];
-		
-		// Search through all item definitions for archetype plugs
-		for (const [hash, definition] of Object.entries(itemDefinitions)) {
-			if (definition.plug && definition.plug.plugCategoryIdentifier === 'armor_archetypes') {
-				hashes.push(parseInt(hash));
-				console.log('findArchetypeHashes: Found archetype hash:', hash, 'Name:', definition.displayProperties?.name);
-			}
-		}
-		
-		archetypeHashes = hashes;
-			console.log('findArchetypeHashes: Found', hashes.length, 'archetype hashes:', hashes);
-	return hashes;
-	
-} catch (error) {
-	console.error('findArchetypeHashes: Error finding archetype hashes:', error);
-	return [];
-}
-}
 
 
 
-// Detect archetype from socket data
-async function detectArchetypeFromSockets(socketData, membershipId, itemInstanceId) {
-	try {
-		console.log('detectArchetypeFromSockets: Detecting archetype for item:', itemInstanceId);
-		
-		// Get archetype hashes
-		const archetypeHashes = await findArchetypeHashes();
-		if (archetypeHashes.length === 0) {
-			console.log('detectArchetypeFromSockets: No archetype hashes found');
-			return null;
-		}
-		
-		// Use provided socket data (no API call needed)
-		const sockets = socketData;
-		if (!sockets) {
-			console.log('detectArchetypeFromSockets: No socket data provided');
-			return null;
-		}
-		
-		// Check socket entries for archetype plugs
-		console.log('detectArchetypeFromSockets: Checking socket entries:', sockets.socketEntries?.length || 0);
-		if (sockets.socketEntries && Array.isArray(sockets.socketEntries)) {
-			for (let i = 0; i < sockets.socketEntries.length; i++) {
-				const socket = sockets.socketEntries[i];
-				console.log('detectArchetypeFromSockets: Socket', i, ':', socket);
-				
-				if (socket.data && socket.data.sockets && Array.isArray(socket.data.sockets)) {
-					console.log('detectArchetypeFromSockets: Socket', i, 'has', socket.data.sockets.length, 'plugs');
-					for (const plug of socket.data.sockets) {
-						console.log('detectArchetypeFromSockets: Checking plug:', plug.plugHash, 'isEnabled:', plug.isEnabled, 'isArchetype:', archetypeHashes.includes(plug.plugHash));
-						if (archetypeHashes.includes(plug.plugHash) && plug.isEnabled === true) {
-							console.log('detectArchetypeFromSockets: Found enabled archetype plug:', plug.plugHash, 'for item:', itemInstanceId);
-							
-							// Get the archetype name and icon from manifest
-							const itemDefinitions = await getCachedManifestData();
-							if (itemDefinitions && itemDefinitions[plug.plugHash]) {
-								const archetypeName = itemDefinitions[plug.plugHash].displayProperties?.name;
-								const archetypeIcon = itemDefinitions[plug.plugHash].displayProperties?.icon;
-								const iconUrl = archetypeIcon ? 'https://www.bungie.net' + archetypeIcon : null;
-								console.log('detectArchetypeFromSockets: Archetype name:', archetypeName, 'icon:', iconUrl);
-								return {
-									name: archetypeName,
-									icon: iconUrl
-								};
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		console.log('detectArchetypeFromSockets: No archetype found for item:', itemInstanceId);
-		return null;
-		
-	} catch (error) {
-		console.error('detectArchetypeFromSockets: Error detecting archetype:', error);
-		return null;
-	}
-}
+
+
 
 // Get cached manifest data or fetch it if needed
 async function getCachedManifestData() {
@@ -1600,7 +1524,7 @@ async function getModImageUrl(plugHash) {
 		// Get cached manifest data
 		const itemDefinitions = await getCachedManifestData();
 		if (!itemDefinitions) {
-			console.log('getModImageUrl: No manifest data available');
+	
 			return null;
 		}
 		
@@ -1641,14 +1565,13 @@ async function getModImageUrl(plugHash) {
 				}
 			}
 			
-			console.log('getModImageUrl: Found mod image URL:', iconUrl, 'Name:', modName, 'Stat Description:', statDescription);
+
 			return {
 				url: iconUrl,
 				name: modName,
 				statDescription: statDescription
 			};
 		} else {
-			console.log('getModImageUrl: No mod definition found for plugHash:', plugHash);
 			return null;
 		}
 	} catch (error) {
@@ -1660,26 +1583,12 @@ async function getModImageUrl(plugHash) {
 // Load mod images for all mod icons with data-plug-hash attributes
 async function loadModImages() {
 	try {
-		console.log('loadModImages: Starting to load mod images...');
-		
 		// Find all mod icons with data-plug-hash attributes
 		const modIcons = document.querySelectorAll('.mod-icon[data-plug-hash]');
-		console.log('loadModImages: Found', modIcons.length, 'mod icons to process');
-		
-		// Debug: Log all mod icons found
-		modIcons.forEach((icon, index) => {
-			console.log(`loadModImages: Mod icon ${index}:`, {
-				plugHash: icon.getAttribute('data-plug-hash'),
-				currentTitle: icon.title,
-				className: icon.className
-			});
-		});
 		
 		for (const modIcon of modIcons) {
 			const plugHash = modIcon.getAttribute('data-plug-hash');
 			if (plugHash && plugHash !== '0') {
-				console.log('loadModImages: Loading image for plugHash:', plugHash);
-				
 				try {
 					const modData = await getModImageUrl(plugHash);
 					if (modData && modData.url) {
@@ -1691,140 +1600,25 @@ async function loadModImages() {
 						img.style.objectFit = 'contain';
 						
 						// Update the mod icon's title attribute with the stat description
-						const oldTitle = modIcon.title;
-						modIcon.title = modData.statDescription || modData.name || 'Mod';
-						console.log('loadModImages: Updated tooltip for plugHash:', plugHash, 'from:', oldTitle, 'to:', modData.statDescription);
+						const newTitle = modData.statDescription || modData.name || 'Mod';
+						modIcon.title = newTitle;
 						
 						// Clear the existing content and add the image
 						modIcon.innerHTML = '';
 						modIcon.appendChild(img);
-						
-						console.log('loadModImages: Successfully loaded image for plugHash:', plugHash, 'Name:', modData.name);
-					} else {
-						console.log('loadModImages: No image URL found for plugHash:', plugHash);
 					}
 				} catch (error) {
 					console.error('loadModImages: Error loading image for plugHash:', plugHash, error);
 				}
 			}
 		}
-		
-			console.log('loadModImages: Finished loading mod images');
 } catch (error) {
 	console.error('loadModImages: Error in loadModImages:', error);
 }
 }
 
 // Detect and update archetypes for all armor items
-async function detectAndUpdateArchetypes(cP) {
-	try {
-		console.log('detectAndUpdateArchetypes: Starting archetype detection...');
-		
-		// Get archetype hashes first
-		const archetypeHashes = await findArchetypeHashes();
-		if (archetypeHashes.length === 0) {
-			console.log('detectAndUpdateArchetypes: No archetype hashes found');
-			return;
-		}
-		
-		// Collect all armor items from equipped, inventory, and vault
-		const armorItems = [];
-		
-		// Add equipped items
-		if (cP.charEquipped) {
-			for (const charKey in cP.charEquipped) {
-				const charEquipped = cP.charEquipped[charKey];
-				for (const item of charEquipped) {
-					if (cP.itemDetails[item.itemInstanceId]) {
-						const itemDetails = cP.itemDetails[item.itemInstanceId];
-						const itemType = getItemType(item.itemHash);
-						if (isArmorType(itemType)) {
-							armorItems.push({
-								itemInstanceId: item.itemInstanceId,
-								itemHash: item.itemHash,
-								membershipId: cP.membershipId,
-								location: 'equipped',
-								charKey: charKey
-							});
-						}
-					}
-				}
-			}
-		}
-		
-		// Add inventory items
-		if (cP.charInventory) {
-			for (const charKey in cP.charInventory) {
-				const charInventory = cP.charInventory[charKey];
-				for (const item of charInventory) {
-					if (cP.itemDetails[item.itemInstanceId]) {
-						const itemDetails = cP.itemDetails[item.itemInstanceId];
-						const itemType = getItemType(item.itemHash);
-						if (isArmorType(itemType)) {
-							armorItems.push({
-								itemInstanceId: item.itemInstanceId,
-								itemHash: item.itemHash,
-								membershipId: cP.membershipId,
-								location: 'inventory',
-								charKey: charKey
-							});
-						}
-					}
-				}
-			}
-		}
-		
-		// Add vault items
-		if (cP.vaultItems) {
-			for (const item of cP.vaultItems) {
-				if (cP.itemDetails[item.itemInstanceId]) {
-					const itemDetails = cP.itemDetails[item.itemInstanceId];
-					const itemType = getItemType(item.itemHash);
-					if (isArmorType(itemType)) {
-						armorItems.push({
-							itemInstanceId: item.itemInstanceId,
-							itemHash: item.itemHash,
-							membershipId: cP.membershipId,
-							location: 'vault'
-						});
-					}
-				}
-			}
-		}
-		
-		console.log('detectAndUpdateArchetypes: Found', armorItems.length, 'armor items to check');
-		
-		// Process each armor item using existing socket data
-		for (const armorItem of armorItems) {
-			try {
-				// Get socket data from existing itemDetails
-				const itemDetails = cP.itemDetails[armorItem.itemInstanceId];
-				console.log('detectAndUpdateArchetypes: Processing item', armorItem.itemInstanceId, 'has sockets:', !!itemDetails?.sockets);
-				
-				if (itemDetails && itemDetails.sockets) {
-					console.log('detectAndUpdateArchetypes: Socket data for item', armorItem.itemInstanceId, ':', itemDetails.sockets);
-					const archetypeData = await detectArchetypeFromSockets(itemDetails.sockets, armorItem.membershipId, armorItem.itemInstanceId);
-					if (archetypeData) {
-						console.log('detectAndUpdateArchetypes: Found archetype', archetypeData.name, 'for item', armorItem.itemInstanceId);
-						
-						// Update the archetype in the item details
-						cP.itemDetails[armorItem.itemInstanceId].detectedArchetype = archetypeData.name;
-						cP.itemDetails[armorItem.itemInstanceId].detectedArchetypeIcon = archetypeData.icon;
-					}
-				} else {
-					console.log('detectAndUpdateArchetypes: No socket data found for item', armorItem.itemInstanceId);
-				}
-			} catch (error) {
-				console.error('detectAndUpdateArchetypes: Error processing item', armorItem.itemInstanceId, error);
-			}
-		}
-		
-		console.log('detectAndUpdateArchetypes: Finished archetype detection');
-		
-	} catch (error) {
-		console.error('detectAndUpdateArchetypes: Error in archetype detection:', error);
-	}
-}
+
 
 // Helper function to get item type
 function getItemType(itemHash) {
@@ -1868,6 +1662,59 @@ function getGeneralMod(itemDetails) {
 				plugHash: firstSocket.plugHash
 			};
 		}
+	}
+	
+	return null;
+}
+
+// Detect archetype from socket data
+function detectArchetypeFromSockets(itemDetails) {
+	if (!itemDetails || !itemDetails.sockets || !userDB.Definitions.archetypeHashes) {
+		return null;
+	}
+	
+	const archetypeHashes = userDB.Definitions.archetypeHashes;
+	
+	// Check socketEntries structure
+	if (itemDetails.sockets.socketEntries && Array.isArray(itemDetails.sockets.socketEntries)) {
+		for (const socket of itemDetails.sockets.socketEntries) {
+			if (socket.data && socket.data.sockets && Array.isArray(socket.data.sockets)) {
+				for (const socketData of socket.data.sockets) {
+					if (archetypeHashes.includes(socketData.toString()) && socket.isEnabled) {
+						// Found an enabled archetype socket
+						return socketData.toString();
+					}
+				}
+			}
+		}
+	}
+	
+	// Check direct sockets array structure
+	if (Array.isArray(itemDetails.sockets)) {
+		for (const socket of itemDetails.sockets) {
+			if (socket.data && socket.data.sockets && Array.isArray(socket.data.sockets)) {
+				for (const socketData of socket.data.sockets) {
+					if (archetypeHashes.includes(socketData.toString()) && socket.isEnabled) {
+						// Found an enabled archetype socket
+						return socketData.toString();
+					}
+				}
+			}
+		}
+	}
+	
+	return null;
+}
+
+// Get archetype icon URL from archetype hash
+function getArchetypeIconUrl(archetypeHash) {
+	if (!archetypeHash || !userDB.Definitions.item) {
+		return null;
+	}
+	
+	const index = userDB.Definitions.item.id.indexOf(archetypeHash);
+	if (index !== -1 && userDB.Definitions.item.displayProperties && userDB.Definitions.item.displayProperties.icon) {
+		return 'https://www.bungie.net' + userDB.Definitions.item.displayProperties.icon[index];
 	}
 	
 	return null;
